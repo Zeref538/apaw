@@ -61,12 +61,16 @@ These cost real debugging time to find. All are pinned by tests — keep them.
 - **Open-Meteo's previous-runs archive starts in 2025.** Earlier dates return
   nulls, so older rows fall back to ERA5 observed rain and are scored
   separately.
+- **Open-Meteo's rate limit is hourly, not per-burst.** Retrying with backoff
+  spends the remaining budget on doomed requests; `fetch_weather.py` fails fast
+  on 429 instead. It also writes to a temp file and swaps, so a failed rebuild
+  can never leave `data/weather.csv` missing.
 - **`json.dump` writes bare `NaN`**, which is invalid JSON — one missing
   reference elevation blanked the whole dashboard until `_clean()` was added.
 
 ## First moves in a fresh session
 
-1. `uv sync --group dev && uv run pytest -q` — 21 tests; they encode the traps
+1. `uv sync --group dev && uv run pytest -q` — 26 tests; they encode the traps
    above.
 2. `uv run python pipeline/run.py` — one full cycle locally.
 3. Check the Action is still green. If the parser broke, PAGASA changed the

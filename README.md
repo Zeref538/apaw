@@ -27,20 +27,35 @@ is predicted by a model that has only ever seen strictly earlier ones, then
 learned from. No train/test split to get wrong, and the same procedure the live
 loop runs.
 
+A horizon with fewer than **200** scored forecasts is published with its count
+and **not ranked** — small-n verdicts are noise, not skill.
+
 | Horizon | APAW | Persistence | Best baseline | n | Verdict |
 |---|---|---|---|---|---|
-| +1d | 0.393 | **0.330** | 0.330 persistence | 844 | baseline wins |
-| +2d | **0.602** | 0.698 | 0.682 drift | 206 | **APAW** |
-| +3d | **0.701** | 0.794 | 0.707 drift | 178 | **APAW** |
-| +4d | 1.170 | **0.649** | 0.649 persistence | 152 | baseline wins |
-| +5d | 0.920 | **0.807** | 0.807 persistence | 117 | baseline wins |
-| +6d | 1.130 | **0.981** | 0.981 persistence | 117 | baseline wins |
-| +7d | 2.854 | **0.902** | 0.902 persistence | 144 | baseline wins |
+| +1d | 0.402 | **0.330** | 0.330 persistence | 844 | baseline wins |
+| +2d | **0.614** | 0.698 | 0.682 drift | 206 | **APAW** |
+| +3d | 0.723 | 0.794 | 0.707 drift | 178 | too few to call |
+| +4d | 1.173 | 0.649 | 0.649 persistence | 152 | too few to call |
+| +5d | 0.920 | 0.807 | 0.807 persistence | 117 | too few to call |
+| +6d | 1.133 | 0.981 | 0.981 persistence | 117 | too few to call |
+| +7d | 2.854 | 0.902 | 0.902 persistence | 144 | too few to call |
 
-**The model wins at +2d and +3d only.** Persistence wins at +1d, which is
-expected — a reservoir tomorrow is very nearly a reservoir today. The +7d
-number is not a real result yet; it is an unstable fit on 144 sparse points,
-and it is published rather than hidden.
+**+2d is the only ranked win.** Persistence wins at +1d, which is expected — a
+reservoir tomorrow is very nearly a reservoir today. Everything past +2d is
+still below the sample gate and is published unranked rather than hidden; those
+horizons unlock themselves as the collector accrues history.
+
+These numbers are *worse* than an earlier version of this table, on purpose.
+Forward rain used to be observed reanalysis — perfect foresight the model would
+never have at issue time — and rainfall was read at the dam wall rather than
+averaged over the catchment. Removing both cost about 0.01 m at +1d and +2d.
+That is the size of the advantage the old scores were quietly enjoying.
+
+Split by rain source, the MAE is 0.956 m for ERA5-proxy rows (n=1074) and
+0.580 m for real archived forecasts (n=684) — but the two groups differ by
+**era** as well as by source, since the proxy rows are the sparse 2021–2024
+Wayback seed where the model had learned far less. The split is confounded and
+is reported as a description, not a finding.
 
 Regenerate with `uv run python eval/backtest.py`.
 
