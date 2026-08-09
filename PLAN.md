@@ -1,4 +1,4 @@
-# Pulso — Phased Build Plan
+# APAW — Phased Build Plan
 
 > Self-improving dengue nowcaster. Free tier only. ~4 weeks part-time.
 > Full spec: [PRD.md](PRD.md). Kickoff context: [HANDOFF.md](HANDOFF.md).

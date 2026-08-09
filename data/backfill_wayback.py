@@ -25,7 +25,7 @@ from fetch_dams import OUT, append, parse  # noqa: E402
 
 CDX = "http://web.archive.org/cdx/search/cdx"
 SNAPSHOT = "http://web.archive.org/web/{ts}id_/https://www.pagasa.dost.gov.ph/flood"
-UA = "Mozilla/5.0 (compatible; Pulso/0.1; +https://github.com/Zeref538/pulso)"
+UA = "Mozilla/5.0 (compatible; APAW/0.1; +https://github.com/Zeref538/apaw)"
 
 
 def _fetch(url: str, attempts: int = 4) -> requests.Response:

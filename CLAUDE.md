@@ -1,4 +1,4 @@
-# Pulso — working contract
+# APAW — working contract
 
 Self-improving nowcaster for PAGASA dam reservoir levels and spill risk.
 Spec: [PRD.md](PRD.md) · phases: [PLAN.md](PLAN.md)

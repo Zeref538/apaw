@@ -1,4 +1,4 @@
-# Pulso — Handoff / Kickoff Context
+# APAW — Handoff / Kickoff Context
 
 > Copy this whole folder into a fresh empty repo folder, open a new session
 > there, and paste the "Kickoff prompt" below. This file is the context a fresh
@@ -6,7 +6,7 @@
 
 ## What this is
 
-**Pulso** — a self-improving dengue nowcaster for the Philippines. Predicts
+**APAW** — a self-improving dengue nowcaster for the Philippines. Predicts
 regional dengue cases 1–4 weeks ahead from weather + case history, and keeps
 improving via incremental (online) learning on a free, scheduled pipeline.
 Full spec in [PRD.md](PRD.md); phased build in [PLAN.md](PLAN.md).
@@ -19,7 +19,7 @@ proves it with a visible learning curve — all on free infrastructure.**
 - Owner: John Andrei Martinez (GitHub `Zeref538`) — AI/ML engineering student,
   portfolio at johnandrei.vercel.app. This becomes a portfolio project card.
 - Sibling project: **Hangin'** (github.com/Zeref538/hangin) — PH air-quality
-  forecaster. Pulso reuses Hangin's proven pattern (GitHub Actions hourly/daily
+  forecaster. APAW reuses Hangin's proven pattern (GitHub Actions hourly/daily
   refresh, honest backtest vs naive baseline, React dashboard) and ADDS the new
   parts: online/incremental learning, drift detection, and a self-improvement
   learning curve. Study Hangin' first as the template.
@@ -49,7 +49,7 @@ data source is confirmed.**
 
 ## Kickoff prompt (paste into the fresh session)
 
-> I'm starting Pulso, a self-improving dengue nowcaster for the Philippines.
+> I'm starting APAW, a self-improving dengue nowcaster for the Philippines.
 > Read PRD.md, PLAN.md, and HANDOFF.md in this folder — they're the full spec.
 > Hard constraints: free tier only (GitHub Actions + open data + Open-Meteo +
 > free static host), honest backtest vs a naive baseline, incremental learning

@@ -1,6 +1,6 @@
-# PRD — Pulso: Self-Improving Dengue Nowcaster
+# PRD — APAW: Self-Improving Dengue Nowcaster
 
-**Status:** draft, not started · **Name:** Pulso (Filipino/Spanish: *pulse*) ·
+**Status:** draft, not started · **Name:** APAW (Filipino/Spanish: *pulse*) ·
 **Est. effort:** ~4 weeks part-time · **Cost:** ₱0 (free tier only — hard req)
 
 ---
@@ -15,7 +15,7 @@ near-term case counts are *forecastable* — but no free, public tool does it,
 and no student-portfolio ML model demonstrates a system that **keeps learning
 as new weeks arrive** rather than being trained once and frozen.
 
-## 2. What Pulso is
+## 2. What APAW is
 
 A forecaster that predicts dengue cases per Philippine region 1–4 weeks ahead
 from weather + recent case history — and, crucially, **improves itself every

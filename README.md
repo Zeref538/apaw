@@ -1,11 +1,15 @@
-# Pulso
+# APAW
+
+**A**daptive **P**rediction of **A**ccumulating **W**ater — and *apaw*, Filipino
+for *to overflow, to brim over*, which is what a reservoir does when the rain
+keeps coming.
 
 **A self-improving nowcaster for Luzon dam levels and spill risk.**
 Forecasts reservoir water level 1–7 days ahead for the nine major dams PAGASA
 publishes, learns from every new observation, and reports the horizons where a
 naive baseline still beats it.
 
-**[Live dashboard →](https://zeref538.github.io/pulso/)**
+**[Live dashboard →](https://zeref538.github.io/apaw/)**
 
 Runs entirely on free infrastructure: GitHub Actions, open data, Open-Meteo,
 GitHub Pages. No API keys, no paid compute.
@@ -23,11 +27,11 @@ is predicted by a model that has only ever seen strictly earlier ones, then
 learned from. No train/test split to get wrong, and the same procedure the live
 loop runs.
 
-| Horizon | Pulso | Persistence | Best baseline | n | Verdict |
+| Horizon | APAW | Persistence | Best baseline | n | Verdict |
 |---|---|---|---|---|---|
 | +1d | 0.393 | **0.330** | 0.330 persistence | 844 | baseline wins |
-| +2d | **0.602** | 0.698 | 0.682 drift | 206 | **Pulso** |
-| +3d | **0.701** | 0.794 | 0.707 drift | 178 | **Pulso** |
+| +2d | **0.602** | 0.698 | 0.682 drift | 206 | **APAW** |
+| +3d | **0.701** | 0.794 | 0.707 drift | 178 | **APAW** |
 | +4d | 1.170 | **0.649** | 0.649 persistence | 152 | baseline wins |
 | +5d | 0.920 | **0.807** | 0.807 persistence | 117 | baseline wins |
 | +6d | 1.130 | **0.981** | 0.981 persistence | 117 | baseline wins |
@@ -129,4 +133,4 @@ web/      static dashboard (GitHub Pages)
   gut the tool exactly when it matters.
 
 Sibling project: [Hangin'](https://github.com/Zeref538/hangin), a PH air-quality
-forecaster, whose refresh-and-publish pattern Pulso reuses.
+forecaster, whose refresh-and-publish pattern APAW reuses.

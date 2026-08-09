@@ -1,5 +1,5 @@
 [project]
-name = "pulso"
+name = "apaw"
 version = "0.1.0"
 description = "Self-improving PAGASA dam level and spill-risk nowcaster"
 requires-python = ">=3.11"

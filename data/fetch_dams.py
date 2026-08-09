@@ -23,7 +23,7 @@ from dams import canonical  # noqa: E402
 
 URL = "https://www.pagasa.dost.gov.ph/flood"
 OUT = Path(__file__).parent / "dam_levels.csv"
-UA = "Mozilla/5.0 (compatible; Pulso/0.1; +https://github.com/Zeref538/pulso)"
+UA = "Mozilla/5.0 (compatible; APAW/0.1; +https://github.com/Zeref538/apaw)"
 
 # Position-indexed: the table's two-row header flattens inconsistently, but the
 # column order has been stable. Verified against the 2026-08-07 fixture.

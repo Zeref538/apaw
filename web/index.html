@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pulso — Luzon dam levels &amp; spill risk</title>
+<title>APAW — Luzon dam levels &amp; spill risk</title>
 <meta name="description" content="How full the major Luzon dams are, and how full they'll get this week. A self-improving forecast scored honestly against a naive baseline.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23103B4F'/%3E%3Cpath d='M4 21h24M4 25h24' stroke='%236FB3C9' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M6 16h20' stroke='%23CDE4EC' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M10 10h12' stroke='%23E8B44A' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -96,6 +96,12 @@ body {
 }
 .hero .lede { font-size: 17px; color: var(--ink-2); margin: 0; max-width: 60ch; }
 .hero .lede b { color: var(--ink); font-weight: 600; }
+.hero .gloss {
+  margin: 20px 0 0; padding-left: 14px; border-left: 2px solid var(--d3);
+  font-size: 14px; color: var(--muted); max-width: 54ch;
+}
+.hero .gloss b { font-family: var(--font-display); font-weight: 700; color: var(--ink-2); }
+.hero .gloss span { font-family: var(--font-mono); font-size: 12.5px; }
 
 .readout {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
@@ -155,6 +161,7 @@ body {
 }
 .tile .state i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
 .tile svg.spark { display: block; width: 100%; height: 40px; margin-top: 9px; }
+.tile svg.damviz { display: block; width: 100%; height: auto; margin-top: 10px; }
 
 /* capacity bar */
 .cap { margin-top: 9px; }
@@ -279,23 +286,27 @@ footer.end a { color: var(--ink-2); }
         <path d="M6 16h20" stroke="#CDE4EC" stroke-width="2" stroke-linecap="round"/>
         <path d="M10 10h12" stroke="#E8B44A" stroke-width="2" stroke-linecap="round"/>
       </svg>
-      Pulso
+      APAW
     </a>
     <div class="sep"></div>
     <div class="stamp" id="stamp"></div>
-    <a class="src" href="https://github.com/Zeref538/pulso" target="_blank" rel="noopener">Source</a>
+    <a class="src" href="https://github.com/Zeref538/apaw" target="_blank" rel="noopener">Source</a>
   </div>
 </div>
 
 <div class="wrap">
   <header class="hero">
-    <div class="kicker">Luzon reservoir watch</div>
+    <div class="kicker">Adaptive Prediction of Accumulating Water</div>
     <h1>How full the dams are, and how full they'll get.</h1>
     <p class="lede">
       Nine major reservoirs, read from PAGASA's daily bulletin and forecast a
-      week out from the rain falling on their catchments. Pulso learns from
+      week out from the rain falling on their catchments. APAW learns from
       <b>every new reading</b> — and tells you which forecasts a dumb guess
       still beats.
+    </p>
+    <p class="gloss">
+      <b>apaw</b> <span>/ˈaːpaw/</span> Filipino — to overflow, to brim over.
+      What a reservoir does when the rain keeps coming.
     </p>
     <dl class="readout" id="readout"></dl>
   </header>
@@ -307,7 +318,7 @@ footer.end a { color: var(--ink-2); }
   <section class="notice">
     <h2>Not an official warning</h2>
     <p>
-      Pulso is an <b>educational portfolio project</b>, not a flood advisory.
+      APAW is an <b>educational portfolio project</b>, not a flood advisory.
       <b>PAGASA</b> and your local disaster risk reduction office decide what
       counts as a warning and when water is released — follow them, not this
       page. The forecasts here come from a small statistical model that is
@@ -440,6 +451,113 @@ function depthChart(d) {
   return svg;
 }
 
+/* ---------- dam cross-section ----------
+   A side elevation: sloping basin on the left, concrete wall on the right,
+   impounded water banded by depth. The crest is pinned to the full mark, so
+   water touching the top of the wall means exactly what it looks like.       */
+function damSection(d) {
+  const W = 240, H = 128;
+  const CREST = 20, BED = 104, TOE = 118;
+  const svg = svgEl("svg", { class: "damviz", viewBox: `0 0 ${W} ${H}`, "aria-hidden": "true" });
+
+  const rwl = N(d.rwl_m), nhwl = N(d.nhwl_m), rule = N(d.rule_curve_m);
+  const peak = Math.max(...d.forecasts.map(x => N(x.pred_rwl_m) ?? -Infinity), rwl);
+
+  // Elevation -> y. With a published full mark, pin it to the crest.
+  let hi, lo;
+  if (nhwl !== null) {
+    hi = nhwl;
+    const base = Math.min(rwl, rule ?? rwl, ...(d.observed || []).map(o => o.rwl_m));
+    lo = Math.min(base - 0.5, hi - 1);
+  } else {
+    const ys = (d.observed || []).map(o => o.rwl_m).concat([rwl, peak]);
+    hi = Math.max(...ys) + 0.4; lo = Math.min(...ys) - 1.2;
+  }
+  const Y = v => CREST + (hi - v) / ((hi - lo) || 1) * (BED - CREST);
+  const clampY = v => Math.max(CREST - 8, Math.min(BED, Y(v)));
+
+  // geometry
+  const bankTopX = 8, bankBotX = 52, faceTopX = 176, faceBotX = 164;
+  const bankX = y => bankTopX + (bankBotX - bankTopX) * (y - CREST) / (BED - CREST);
+  const faceX = y => faceTopX - (faceTopX - faceBotX) * (y - CREST) / (BED - CREST);
+
+  // bedrock
+  svg.appendChild(svgEl("path", {
+    d: `M0,${BED} L${W},${BED} L${W},${TOE} L0,${TOE} Z`, fill: "#E4EBEE",
+  }));
+  svg.appendChild(svgEl("path", {
+    d: `M0,${BED} L${W},${BED}`, stroke: "#C3D1D7", "stroke-width": 1.5, fill: "none",
+  }));
+
+  // water, banded by depth
+  const yw = clampY(rwl);
+  const waterPath = `M${bankX(yw)},${yw} L${faceX(yw)},${yw} L${faceBotX},${BED} L${bankBotX},${BED} Z`;
+  const cid = "w" + d.dam.replace(/\W/g, "");
+  const clip = svgEl("clipPath", { id: cid });
+  clip.appendChild(svgEl("path", { d: waterPath }));
+  svg.appendChild(clip);
+  const g = document.createElementNS(NS, "g");
+  g.setAttribute("clip-path", `url(#${cid})`);
+  ["#BFDDE8", "#8FC2D4", "#5AA5BF", "#2E7C99"].forEach((c, i, arr) => {
+    const y0 = CREST + (BED - CREST) * (i / arr.length);
+    const y1 = CREST + (BED - CREST) * ((i + 1) / arr.length);
+    g.appendChild(svgEl("rect", { x: 0, y: y0, width: W, height: y1 - y0, fill: c }));
+  });
+  svg.appendChild(g);
+  svg.appendChild(svgEl("line", {
+    x1: bankX(yw), x2: faceX(yw), y1: yw, y2: yw,
+    stroke: "#16506B", "stroke-width": 2,
+  }));
+
+  // forecast surface, if it moves
+  if (Math.abs(peak - rwl) > 0.02) {
+    const yp = clampY(peak);
+    svg.appendChild(svgEl("line", {
+      x1: bankX(yp) , x2: faceX(yp), y1: yp, y2: yp,
+      stroke: "#C2661B", "stroke-width": 1.8, "stroke-dasharray": "5 3",
+    }));
+  }
+
+  // operating target
+  if (rule !== null && rule > lo && rule < hi) {
+    svg.appendChild(svgEl("line", {
+      x1: bankX(Y(rule)), x2: faceX(Y(rule)), y1: Y(rule), y2: Y(rule),
+      stroke: "#C2851B", "stroke-width": 1.2, "stroke-dasharray": "3 3", opacity: 0.9,
+    }));
+  }
+
+  // the wall
+  svg.appendChild(svgEl("path", {
+    d: `M${faceTopX},${CREST} L${faceTopX + 15},${CREST} L${faceBotX + 42},${BED} L${faceBotX},${BED} Z`,
+    fill: "#B9C6CD", stroke: "#93A5AE", "stroke-width": 1, "stroke-linejoin": "round",
+  }));
+  svg.appendChild(svgEl("line", {
+    x1: faceTopX - 1, x2: faceTopX + 16, y1: CREST, y2: CREST,
+    stroke: "#7C8F99", "stroke-width": 2.5, "stroke-linecap": "round",
+  }));
+
+  // Water sheeting over the crest and down the spillway face when the level is
+  // at or above the full mark. A thin sheet hugging the downstream slope — a
+  // filled wedge here just paints over the wall and reads as a flooded dam.
+  if (nhwl !== null && rwl >= nhwl - 0.01) {
+    svg.appendChild(svgEl("path", {
+      d: `M${faceTopX - 5},${CREST - 1} L${faceTopX + 15},${CREST + 1} L${faceBotX + 42},${BED - 1}`,
+      fill: "none", stroke: "#5AA5BF", "stroke-width": 4,
+      "stroke-linecap": "round", "stroke-linejoin": "round", opacity: 0.95,
+    }));
+    // splash at the toe
+    svg.appendChild(svgEl("circle", { cx: faceBotX + 46, cy: BED - 6, r: 1.8, fill: "#8FC2D4" }));
+    svg.appendChild(svgEl("circle", { cx: faceBotX + 52, cy: BED - 10, r: 1.3, fill: "#8FC2D4" }));
+  }
+
+  // downstream channel
+  svg.appendChild(svgEl("path", {
+    d: `M${faceBotX + 44},${BED - 2} L${W - 4},${BED - 2}`,
+    stroke: "#A6CEDD", "stroke-width": 3, "stroke-linecap": "round",
+  }));
+  return svg;
+}
+
 function sparkline(d) {
   const W = 220, H = 40;
   const svg = svgEl("svg", { class: "spark", viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: "none", "aria-hidden": "true" });
@@ -513,7 +631,7 @@ function nineGrid() {
         <span class="nm">${d.dam}</span><span class="lv">${f2(N(d.rwl_m), 2)} m</span>
       </div>
       <span class="state" style="color:${st(d.risk).c}"><i style="background:${st(d.risk).c}"></i>${st(d.risk).word}</span>`;
-    b.appendChild(sparkline(d));
+    b.appendChild(damSection(d));
     const cap = capacity(d);
     if (cap) b.appendChild(cap);
     b.onclick = () => { pick = d.dam; render(); };
@@ -603,7 +721,7 @@ function learning() {
   box.appendChild(svg);
   const key = document.createElement("div");
   key.className = "key";
-  key.innerHTML = `<span><i style="background:#16506B"></i>Pulso</span><span><i style="background:#788A94"></i>dumb guess (nothing changes)</span>`;
+  key.innerHTML = `<span><i style="background:#16506B"></i>APAW</span><span><i style="background:#788A94"></i>dumb guess (nothing changes)</span>`;
   box.appendChild(key);
   return box;
 }
@@ -620,7 +738,7 @@ function skill() {
 
   box.innerHTML = `<div class="skillhead">
       <span>Days</span>
-      <span class="split"><span>← Pulso better</span><span>baseline better →</span></span>
+      <span class="split"><span>← APAW better</span><span>baseline better →</span></span>
       <span style="text-align:right">error, metres</span>
     </div>`;
   const list = document.createElement("div");
@@ -687,8 +805,8 @@ function render() {
 
   main.appendChild(sect(
     "The nine dams",
-    "Each reservoir, how full it is now, and where it's heading this week. Pick one to see it up close.",
-    "Blue is measured, orange is forecast. The bar shows the level between the operating target and the full mark; the notch is the target.",
+    "Each reservoir drawn side-on: the basin, the wall, and the water behind it. Pick one to see it up close.",
+    "The crest is the full mark, so water touching the top of the wall means the dam is full. Solid blue is the level now, dashed orange is where the week is heading, and the faint amber line is the operating target.",
     nineGrid()
   ));
 
@@ -707,7 +825,7 @@ function render() {
 
   main.appendChild(sect(
     d.dam,
-    "What the level has done lately, and what Pulso thinks it does next.",
+    "What the level has done lately, and what APAW thinks it does next.",
     "Target is the change in level over the horizon, not the level itself. Rainfall forecast for the days ahead is an input, so this is a real forecast rather than a projection of the past.",
     detail(d)
   ));
@@ -721,7 +839,7 @@ function render() {
 
   main.appendChild(sect(
     "Where it wins, where it loses",
-    "Green means Pulso beat the naive baseline at that range. Red means the baseline won, and we publish those too.",
+    "Green means APAW beat the naive baseline at that range. Red means the baseline won, and we publish those too.",
     "Bar length is the relative improvement in mean absolute error; n is the number of scored forecasts. A reservoir tomorrow is nearly a reservoir today, which is why short ranges are hard to beat.",
     skill()
   ));
