@@ -70,16 +70,29 @@ def _append(path: Path, rows: list[dict]) -> None:
 
 
 def refresh_sources() -> bool:
-    """Scrape today's levels and refresh weather. False if the scrape failed."""
-    ok = True
-    for script in ("data/fetch_dams.py", "data/fetch_weather.py"):
-        result = subprocess.run([sys.executable, str(ROOT / script)],
-                                capture_output=True, text=True)
-        print(f"$ {script}\n{result.stdout.strip()}")
-        if result.returncode != 0:
-            print(result.stderr.strip(), file=sys.stderr)
-            ok = False
-    return ok
+    """Scrape today's levels and refresh weather.
+
+    Only the dam scrape is fatal. PAGASA publishes today and yesterday and
+    nothing else, so a missed reading is gone forever — but weather has years
+    of committed history and an archive we can re-pull any time, so a flaky
+    Open-Meteo call degrades to slightly stale rainfall instead of costing us
+    the run.
+    """
+    dams = subprocess.run([sys.executable, str(ROOT / "data/fetch_dams.py")],
+                          capture_output=True, text=True)
+    print(f"$ data/fetch_dams.py\n{dams.stdout.strip()}")
+    if dams.returncode != 0:
+        print(dams.stderr.strip(), file=sys.stderr)
+        return False
+
+    wx = subprocess.run([sys.executable, str(ROOT / "data/fetch_weather.py")],
+                        capture_output=True, text=True)
+    print(f"$ data/fetch_weather.py\n{wx.stdout.strip()}")
+    if wx.returncode != 0:
+        print(wx.stderr.strip(), file=sys.stderr)
+        print("weather refresh failed; continuing on the committed history",
+              file=sys.stderr)
+    return True
 
 
 def score_due(table: pd.DataFrame, models: dict, detectors: dict) -> tuple[int, list]:

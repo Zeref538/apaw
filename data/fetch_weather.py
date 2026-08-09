@@ -43,11 +43,16 @@ KEY = ["dam", "date"]
 
 
 def _get(url: str, params: dict) -> dict:
-    """Open-Meteo drops long connections and rate-limits the free tier."""
+    """Open-Meteo drops long connections and rate-limits the free tier.
+
+    Catches RequestException, not just ConnectionError: a read timeout is a
+    Timeout, which is a sibling rather than a subclass, and slipped straight
+    past a narrower handler in CI.
+    """
     for attempt in range(4):
         try:
             r = requests.get(url, params=params, timeout=60)
-        except requests.exceptions.ConnectionError:
+        except requests.exceptions.RequestException:
             time.sleep(3 * (attempt + 1))
             continue
         if r.status_code == 429:
