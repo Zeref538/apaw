@@ -79,3 +79,26 @@ def test_append_is_idempotent(df, tmp_path):
     assert append(df, out) == len(df)
     assert append(df, out) == 0
     assert len(pd.read_csv(out)) == len(df)
+
+
+BASIN_FIXTURE = Path(__file__).parent / "fixtures" / "basins_20260809.html"
+
+
+def test_basin_flood_watch():
+    """The flood table on the same page: 18 river basins + dam sub-basins."""
+    from data.fetch_dams import parse_basins
+    b = parse_basins(BASIN_FIXTURE.read_text(encoding="utf-8"), SCRAPED_AT)
+    assert len(b) == 22
+    assert set(b["kind"]) == {"river_basin", "dam_sub_basin"}
+    assert (b["kind"] == "river_basin").sum() == 18
+
+
+def test_non_flood_watch_is_not_a_watch():
+    """"Non-Flood Watch" contains "Flood Watch" — a substring test inverts
+    every quiet basin into an alarm."""
+    from data.fetch_dams import parse_basins
+    b = parse_basins(BASIN_FIXTURE.read_text(encoding="utf-8"), SCRAPED_AT)
+    quiet = b[b["status"].str.lower().str.startswith("non")]
+    assert len(quiet) > 0
+    assert not quiet["on_watch"].any()
+    assert b[~b["status"].str.lower().str.startswith("non")]["on_watch"].all()

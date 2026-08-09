@@ -279,9 +279,21 @@ def publish(dashboard: list[dict], scored: int, drift_rows: list) -> None:
                  .round(4).where(lambda d: d.notna(), None)
                  .to_dict("records"))
 
+    # Nationwide flood watch, from the same PAGASA page. The dams only cover
+    # Luzon; this is the rest of the country.
+    basins = []
+    bpath = ROOT / "data" / "basin_status.csv"
+    if bpath.exists():
+        b = pd.read_csv(bpath)
+        latest = b[b["date"] == b["date"].max()]
+        basins = (latest[["basin", "status", "on_watch", "kind", "date"]]
+                  .sort_values(["on_watch", "basin"], ascending=[False, True])
+                  .to_dict("records"))
+
     payload = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "dams": dashboard,
+        "basins": basins,
         "metrics": metrics.get("per_horizon", {}),
         "learning_curve": curve,
         "scored_this_run": scored,

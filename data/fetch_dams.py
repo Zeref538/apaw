@@ -126,6 +126,58 @@ def parse(html: str, scraped_at: datetime) -> pd.DataFrame:
     return df.sort_values(KEY).reset_index(drop=True)
 
 
+BASINS_OUT = Path(__file__).parent / "basin_status.csv"
+BASIN_KEY = ["basin", "date"]
+
+
+def parse_basins(html: str, scraped_at: datetime) -> pd.DataFrame:
+    """PAGASA's flood-watch table: 18 river basins + 4 dam sub-basins.
+
+    It sits on the same page as the dam levels and costs nothing extra to
+    collect, and it is the only nationwide flood signal here — the dams only
+    cover Luzon. Stored one row per basin per day so a history of flood-watch
+    days accrues alongside the levels.
+    """
+    tables = pd.read_html(io.StringIO(html))
+    for t in tables:
+        flat = t.astype(str)
+        if t.shape[1] == 2 and flat.apply(
+            lambda c: c.str.contains("Flood Watch", case=False, na=False)
+        ).any().any():
+            raw = t
+            break
+    else:
+        raise ValueError("basin status table not found — PAGASA layout changed")
+
+    raw = raw.copy()
+    raw.columns = ["basin", "status"]
+    raw = raw[~raw["basin"].astype(str).str.contains(
+        "RIVER BASINS|DAMS/RESERVOIR|STATUS", case=False, na=False)]
+    raw = raw[raw["status"].astype(str).str.contains("Flood Watch", case=False, na=False)]
+
+    raw["basin"] = raw["basin"].astype(str).str.strip()
+    raw["status"] = raw["status"].astype(str).str.strip()
+    # "Non-Flood Watch" contains "Flood Watch", so test for the negative first.
+    raw["on_watch"] = ~raw["status"].str.lower().str.startswith("non")
+    raw["kind"] = raw["basin"].str.contains("sub-basin", case=False).map(
+        {True: "dam_sub_basin", False: "river_basin"})
+    raw["date"] = scraped_at.date().isoformat()
+    raw["scraped_at"] = scraped_at.isoformat(timespec="seconds")
+    return raw.reset_index(drop=True)
+
+
+def append_basins(df: pd.DataFrame, out: Path = BASINS_OUT) -> int:
+    if out.exists():
+        old = pd.read_csv(out)
+        combined = pd.concat([old, df], ignore_index=True)
+    else:
+        old, combined = None, df
+    # Keep the last reading of the day: a basin can be raised to watch later on.
+    combined = combined.drop_duplicates(subset=BASIN_KEY, keep="last").sort_values(BASIN_KEY)
+    combined.to_csv(out, index=False)
+    return len(combined) - (0 if old is None else len(old))
+
+
 def append(df: pd.DataFrame, out: Path = OUT) -> int:
     """Merge into the CSV, keeping the first-seen version of each observation."""
     if out.exists():
@@ -150,6 +202,18 @@ def main() -> int:
     added = append(df)
     print(f"parsed {len(df)} observations across {df['dam'].nunique()} dams; "
           f"{added} new rows -> {OUT}")
+
+    # Basin flood watch is a bonus on the same page; never let it break the
+    # dam collection, which is the irreplaceable part.
+    try:
+        basins = parse_basins(resp.text, scraped_at)
+        b_added = append_basins(basins)
+        on = int(basins["on_watch"].sum())
+        print(f"parsed {len(basins)} basins, {on} on flood watch; "
+              f"{b_added} new rows -> {BASINS_OUT}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"basin status unavailable: {type(exc).__name__}: {exc}",
+              file=sys.stderr)
     return 0
 
 

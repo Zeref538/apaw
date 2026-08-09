@@ -9,7 +9,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 :root {
   /* bathymetric chart: pale shallows to deep water */
@@ -23,8 +22,11 @@
   --ink-2:      #3F535E;
   --muted:      #788A94;
 
-  --d1: #D7E9F1;
-  --d2: #A6CEDD;
+  /* water column, shallow to deep */
+  --b1: #D7E9F1;
+  --b2: #A6CEDD;
+  --b3: #6FB3C9;
+  --b4: #2E7C99;
   --d3: #6FB3C9;
   --d4: #2E7C99;
   --d5: #103B4F;
@@ -34,6 +36,16 @@
   --normal:     #2F7D5B;
   --watch:      #C2851B;
   --spill:      #B4462F;
+  --neutral:    #788A94;
+
+  --wall:       #B9C6CD;
+  --wall-edge:  #93A5AE;
+  --wall-top:   #7C8F99;
+  --rock:       #E4EBEE;
+  --rock-line:  #C3D1D7;
+  --flagbg:     #FBF4E4;
+  --noticebg:   #FBF1EE;
+  --noticebd:   #E3C9C1;
 
   --font-display: "Bricolage Grotesque", system-ui, sans-serif;
   --font-body: "IBM Plex Sans", system-ui, sans-serif;
@@ -41,8 +53,39 @@
   --radius: 6px;
 }
 
+/* Dark: the same bathymetric idea seen at night. Water still reads shallow to
+   deep, but the ramp brightens against the ground instead of darkening. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0E171C; --paper-2: #121D23; --card: #16232A;
+    --rule-line: #26363E; --rule-soft: #1D2A31;
+    --ink: #E7EEF1; --ink-2: #A9BAC3; --muted: #7B8E98;
+    --b1: #24505F; --b2: #2E6C83; --b3: #3E8BA6; --b4: #5FB0C9;
+    --d3: #3E8BA6; --d4: #6FC0D6; --d5: #8FD4E6;
+    --measured: #7FC9E2; --forecast: #F0954A;
+    --normal: #4FB07E; --watch: #E0A94A; --spill: #E37B62; --neutral: #8397A1;
+    --wall: #3A4A53; --wall-edge: #4E616B; --wall-top: #647A85;
+    --rock: #17232A; --rock-line: #26363E;
+    --flagbg: #241F13; --noticebg: #241715; --noticebd: #4A2C26;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0E171C; --paper-2: #121D23; --card: #16232A;
+  --rule-line: #26363E; --rule-soft: #1D2A31;
+  --ink: #E7EEF1; --ink-2: #A9BAC3; --muted: #7B8E98;
+  --b1: #24505F; --b2: #2E6C83; --b3: #3E8BA6; --b4: #5FB0C9;
+  --d3: #3E8BA6; --d4: #6FC0D6; --d5: #8FD4E6;
+  --measured: #7FC9E2; --forecast: #F0954A;
+  --normal: #4FB07E; --watch: #E0A94A; --spill: #E37B62; --neutral: #8397A1;
+  --wall: #3A4A53; --wall-edge: #4E616B; --wall-top: #647A85;
+  --rock: #17232A; --rock-line: #26363E;
+  --flagbg: #241F13; --noticebg: #241715; --noticebd: #4A2C26;
+}
+
 * { box-sizing: border-box; }
-html { color-scheme: light; scroll-behavior: smooth; }
+html { color-scheme: light dark; scroll-behavior: smooth; }
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"]  { color-scheme: dark; }
 
 body {
   margin: 0;
@@ -82,6 +125,27 @@ body {
 }
 .masthead .src:hover { color: var(--ink); border-color: var(--ink); }
 @media (max-width: 620px) { .masthead .stamp { display: none; } }
+
+/* segmented toggles */
+.seg {
+  display: inline-flex; border: 1px solid var(--rule-line);
+  border-radius: 5px; overflow: hidden; background: var(--card);
+}
+.seg button {
+  font: inherit; font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.04em; padding: 5px 10px; min-height: 30px;
+  border: 0; background: transparent; color: var(--muted); cursor: pointer;
+}
+.seg button + button { border-left: 1px solid var(--rule-line); }
+.seg button[aria-pressed="true"] { background: var(--d4); color: var(--paper); }
+.seg button:focus-visible { outline: 2px solid var(--d4); outline-offset: -2px; }
+@media (max-width: 760px) { .seg.themeseg button span { display: none; } }
+
+/* plain vs technical register */
+:root[data-mode="plain"] .tech,
+:root[data-mode="plain"] .techonly { display: none; }
+:root[data-mode="tech"] .say,
+:root[data-mode="tech"] .plainonly { display: none; }
 
 /* ---------- hero ---------- */
 .hero { padding: 54px 0 34px; }
@@ -137,6 +201,58 @@ body {
   border-radius: var(--radius); padding: 20px 22px;
 }
 
+/* ---------- feature dam ---------- */
+.stage {
+  border: 1px solid var(--rule-line); border-radius: var(--radius);
+  background: var(--card); overflow: hidden;
+}
+.stage svg { display: block; width: 100%; height: auto; }
+@keyframes drift { from { transform: translateX(0); } to { transform: translateX(-240px); } }
+.wave1 { animation: drift 9s linear infinite; }
+.wave2 { animation: drift 14s linear infinite reverse; }
+@keyframes fall { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -36px; } }
+.spillflow { animation: fall 1.1s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .wave1, .wave2, .spillflow { animation: none; }
+}
+
+.picker {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  padding: 12px; border-top: 1px solid var(--rule-line); background: var(--paper-2);
+}
+.picker button {
+  font: inherit; font-size: 13.5px; padding: 7px 12px; min-height: 38px;
+  border: 1px solid var(--rule-line); border-radius: 999px;
+  background: var(--card); color: var(--ink-2); cursor: pointer;
+  display: inline-flex; align-items: center; gap: 7px;
+  transition: border-color 140ms ease, color 140ms ease;
+}
+.picker button i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.picker button:hover { color: var(--ink); border-color: var(--d3); }
+.picker button[aria-pressed="true"] {
+  border-color: var(--d5); color: var(--ink); font-weight: 600;
+  box-shadow: inset 0 0 0 1px var(--d5);
+}
+.picker button:focus-visible { outline: 2px solid var(--d4); outline-offset: 2px; }
+
+/* ---------- basins ---------- */
+.basinhead { margin: 0 0 16px; color: var(--ink-2); font-size: 15px; }
+.basins {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2px 18px;
+}
+.basin {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 0; border-bottom: 1px solid var(--rule-soft); font-size: 14px;
+}
+.basin i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.basin .bn { flex: 1; color: var(--ink-2); }
+.basin.hot .bn { color: var(--ink); font-weight: 600; }
+.basin .bs {
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+
 /* ---------- nine-dam grid ---------- */
 .nine { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 @media (max-width: 860px) { .nine { grid-template-columns: repeat(2, 1fr); } }
@@ -176,28 +292,6 @@ body {
   font-family: var(--font-mono); font-size: 10px; color: var(--muted);
 }
 
-/* ---------- map ---------- */
-.mapshell {
-  border: 1px solid var(--rule-line); border-radius: var(--radius);
-  overflow: hidden; position: relative; height: 460px; background: var(--paper-2);
-}
-@media (max-width: 700px) { .mapshell { height: 380px; } }
-#map { height: 100%; width: 100%; }
-.mapshell.dead { height: auto; }
-.mapshell.dead #map { display: none; }
-.mapfallback { display: none; padding: 18px 20px; color: var(--muted); font-size: 13.5px; }
-.mapshell.dead .mapfallback { display: block; }
-.leaflet-container { height: 100%; width: 100%; background: var(--paper-2); font: inherit; }
-.leaflet-control-attribution { font-size: 9.5px !important; }
-.dot {
-  display: grid; place-items: center; width: 100%; height: 100%;
-  border-radius: 50%; border: 2px solid #fff;
-  font: 600 10px/1 var(--font-mono); color: #fff;
-  box-shadow: 0 1px 6px rgba(14, 27, 36, 0.35); cursor: pointer;
-  transition: transform 140ms ease;
-}
-.dot:hover { transform: scale(1.14); }
-.dot.on { outline: 3px solid rgba(16, 59, 79, 0.28); outline-offset: 2px; }
 
 /* ---------- detail ---------- */
 .verdict {
@@ -217,7 +311,7 @@ body {
 .facts dd { margin: 2px 0 0; font-family: var(--font-mono); font-size: 16px; font-weight: 500; }
 
 .flag {
-  border-left: 3px solid var(--watch); background: #FBF4E4;
+  border-left: 3px solid var(--watch); background: var(--flagbg);
   padding: 12px 15px; border-radius: 0 var(--radius) var(--radius) 0;
   font-size: 14px; color: var(--ink-2); margin-top: 16px;
 }
@@ -253,8 +347,8 @@ body {
 /* ---------- notice ---------- */
 .notice {
   margin: 44px 0 0; padding: 20px 22px;
-  border: 1px solid #E3C9C1; border-left: 3px solid var(--spill);
-  border-radius: 0 var(--radius) var(--radius) 0; background: #FBF1EE;
+  border: 1px solid var(--noticebd); border-left: 3px solid var(--spill);
+  border-radius: 0 var(--radius) var(--radius) 0; background: var(--noticebg);
 }
 .notice h2 {
   font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.13em;
@@ -290,6 +384,14 @@ footer.end a { color: var(--ink-2); }
     </a>
     <div class="sep"></div>
     <div class="stamp" id="stamp"></div>
+    <div class="seg" role="group" aria-label="Reading level">
+      <button type="button" id="mPlain" aria-pressed="true">Plain</button>
+      <button type="button" id="mTech" aria-pressed="false">Technical</button>
+    </div>
+    <div class="seg themeseg" role="group" aria-label="Colour theme">
+      <button type="button" id="tLight" aria-pressed="false" title="Light">☀<span> Light</span></button>
+      <button type="button" id="tDark" aria-pressed="false" title="Dark">☾<span> Dark</span></button>
+    </div>
     <a class="src" href="https://github.com/Zeref538/apaw" target="_blank" rel="noopener">Source</a>
   </div>
 </div>
@@ -329,20 +431,20 @@ footer.end a { color: var(--ink-2); }
   <footer class="end" id="end"></footer>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const NS = "http://www.w3.org/2000/svg";
 const svgEl = (n, a = {}) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); return e; };
 const N = v => (v === null || v === undefined || Number.isNaN(v)) ? null : Number(v);
 const f2 = (v, d = 2) => v === null ? "—" : v.toFixed(d);
 
+const V = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const STATE = {
-  "Normal":      { c: "#2F7D5B", word: "Normal" },
-  "Watch":       { c: "#C2851B", word: "Watch" },
-  "Spill Watch": { c: "#B4462F", word: "Spill watch" },
-  "Not rated":   { c: "#788A94", word: "Not rated" },
+  "Normal":      { v: "--normal",  word: "Normal" },
+  "Watch":       { v: "--watch",   word: "Watch" },
+  "Spill Watch": { v: "--spill",   word: "Spill watch" },
+  "Not rated":   { v: "--neutral", word: "Not rated" },
 };
-const st = r => STATE[r] || STATE["Not rated"];
+const st = r => { const e = STATE[r] || STATE["Not rated"]; return { c: V(e.v), word: e.word }; };
 
 /* Plain English first, the numbers second. */
 function saying(d) {
@@ -361,7 +463,7 @@ function saying(d) {
     : ["Room to spare.", `${d.dam} is comfortably below the level operators aim for.`];
 }
 
-let DATA = null, pick = null, map = null, pins = {};
+let DATA = null, pick = null;
 
 /* ---------- bathymetric area chart ---------- */
 function depthChart(d) {
@@ -389,7 +491,7 @@ function depthChart(d) {
   // Depth bands: the water column drawn as a bathymetric chart, shallow water
   // pale at the surface and deepening toward the bed. The slabs must not
   // overlap — stacked full-height rects just paint over each other.
-  const bands = ["#D7E9F1", "#A6CEDD", "#6FB3C9", "#2E7C99"];
+  const bands = [V("--b1"), V("--b2"), V("--b3"), V("--b4")];
   const bed = Y(lo);
   const area = obs.concat(fc.slice(1));
   const clip = svgEl("clipPath", { id: "watercol" });
@@ -412,8 +514,8 @@ function depthChart(d) {
   // gridlines
   for (let i = 0; i <= 3; i++) {
     const v = lo + (hi - lo) * i / 3;
-    svg.appendChild(svgEl("line", { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: "#D3DEE3", "stroke-width": 1, "stroke-dasharray": "2 3" }));
-    const t = svgEl("text", { x: L - 9, y: Y(v) + 4, fill: "#788A94", "font-size": 11, "text-anchor": "end", "font-family": "IBM Plex Mono, monospace" });
+    svg.appendChild(svgEl("line", { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: V("--rule-line"), "stroke-width": 1, "stroke-dasharray": "2 3" }));
+    const t = svgEl("text", { x: L - 9, y: Y(v) + 4, fill: V("--muted"), "font-size": 11, "text-anchor": "end", "font-family": "IBM Plex Mono, monospace" });
     t.textContent = v.toFixed(1);
     svg.appendChild(t);
   }
@@ -426,8 +528,8 @@ function depthChart(d) {
     t.textContent = label;
     svg.appendChild(t);
   };
-  ref(nhwl, "#B4462F", "full");
-  ref(rule, "#C2851B", "target");
+  ref(nhwl, V("--spill"), "full");
+  ref(rule, V("--watch"), "target");
 
   // measured + forecast lines
   const line = (pts, color, dash) => {
@@ -438,20 +540,180 @@ function depthChart(d) {
       "stroke-linejoin": "round", "stroke-linecap": "round",
     }));
   };
-  line(obs, "#16506B");
-  line(fc, "#C2661B", "6 4");
-  fc.slice(1).forEach(p => svg.appendChild(svgEl("circle", { cx: X(p.x), cy: Y(p.y), r: 3.2, fill: "#C2661B" })));
-  if (obs.length) svg.appendChild(svgEl("circle", { cx: X(last.x), cy: Y(last.y), r: 4, fill: "#16506B" }));
+  line(obs, V("--measured"));
+  line(fc, V("--forecast"), "6 4");
+  fc.slice(1).forEach(p => svg.appendChild(svgEl("circle", { cx: X(p.x), cy: Y(p.y), r: 3.2, fill: V("--forecast") })));
+  if (obs.length) svg.appendChild(svgEl("circle", { cx: X(last.x), cy: Y(last.y), r: 4, fill: V("--measured") }));
 
   [x0, x1].forEach((v, i) => {
-    const t = svgEl("text", { x: X(v), y: H - 11, fill: "#788A94", "font-size": 11, "text-anchor": i ? "end" : "start", "font-family": "IBM Plex Mono, monospace" });
+    const t = svgEl("text", { x: X(v), y: H - 11, fill: V("--muted"), "font-size": 11, "text-anchor": i ? "end" : "start", "font-family": "IBM Plex Mono, monospace" });
     t.textContent = new Date(v).toISOString().slice(5, 10);
     svg.appendChild(t);
   });
   return svg;
 }
 
-/* ---------- dam cross-section ----------
+/* ---------- the feature dam ----------
+   One reservoir, big, drawn side-on with live water. Elevation zones are
+   coloured and named, so the picture answers "how full, and is that bad?"
+   before a single number is read.                                          */
+function stage(d) {
+  const W = 900, H = 364;
+  const TOP = 38, BED = 318, GROUND = 358;
+  const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+  svg.appendChild(svgEl("title")).textContent =
+    `${d.dam}: ${f2(N(d.rwl_m))} metres, ${st(d.risk).word}`;
+
+  const rwl = N(d.rwl_m), nhwl = N(d.nhwl_m), rule = N(d.rule_curve_m);
+  const fcv = d.forecasts.map(x => N(x.pred_rwl_m)).filter(v => v !== null);
+  const peak = fcv.length ? Math.max(...fcv) : rwl;
+  const obsMin = Math.min(rwl, ...(d.observed || []).map(o => o.rwl_m));
+
+  const marks = [rwl, nhwl, rule, peak, obsMin].filter(v => v !== null);
+  let hi = Math.max(...marks), lo = Math.min(...marks);
+  const span = (hi - lo) || 4;
+  hi += span * 0.18; lo -= span * 0.32;
+  const Y = v => TOP + (hi - v) / (hi - lo) * (BED - TOP);
+
+  const bankTop = 26, bankBot = 140, faceTop = 640, faceBot = 616;
+  const bankX = y => bankTop + (bankBot - bankTop) * (y - TOP) / (BED - TOP);
+  const faceX = y => faceTop - (faceTop - faceBot) * (y - TOP) / (BED - TOP);
+
+  svg.appendChild(svgEl("rect", { x: 0, y: 0, width: W, height: GROUND, fill: V("--paper-2") }));
+
+  // Named elevation zones — colour says what the level means, not just where.
+  const zones = [];
+  if (nhwl !== null) {
+    zones.push({ from: nhwl, to: hi, c: V("--spill"), name: "Spilling" });
+    if (rule !== null) {
+      zones.push({ from: rule, to: nhwl, c: V("--watch"), name: "Above target" });
+      zones.push({ from: lo, to: rule, c: V("--normal"), name: "Room to spare" });
+    } else {
+      zones.push({ from: lo, to: nhwl, c: V("--normal"), name: "Below full" });
+    }
+  }
+  const zoneLabels = [];
+  zones.forEach(z => {
+    const y0 = Y(Math.min(z.to, hi)), y1 = Y(Math.max(z.from, lo));
+    if (y1 - y0 < 3) return;
+    svg.appendChild(svgEl("rect", { x: 0, y: y0, width: W, height: y1 - y0, fill: z.c, opacity: 0.10 }));
+    const t = svgEl("text", { x: 13, y: y0 + 15, fill: z.c, "font-size": 11,
+      "font-family": "IBM Plex Mono, monospace", "font-weight": 600, "letter-spacing": "0.08em" });
+    t.textContent = z.name.toUpperCase();
+    zoneLabels.push(t);  // appended last: the water would otherwise cover them
+  });
+
+  svg.appendChild(svgEl("path", {
+    d: `M0,${BED} L${W},${BED} L${W},${GROUND} L0,${GROUND} Z`, fill: V("--rock"),
+  }));
+
+  // water body, banded by depth
+  const yw = Math.max(TOP, Y(rwl));
+  const clip = svgEl("clipPath", { id: "stagewater" });
+  clip.appendChild(svgEl("path", {
+    d: `M${bankX(yw)},${yw} L${faceX(yw)},${yw} L${faceBot},${BED} L${bankBot},${BED} Z`,
+  }));
+  svg.appendChild(clip);
+  const water = document.createElementNS(NS, "g");
+  water.setAttribute("clip-path", "url(#stagewater)");
+  [V("--b1"), V("--b2"), V("--b3"), V("--b4")].forEach((c, i, a) => {
+    const y0 = TOP + (BED - TOP) * (i / a.length), y1 = TOP + (BED - TOP) * ((i + 1) / a.length);
+    water.appendChild(svgEl("rect", { x: 0, y: y0, width: W, height: y1 - y0, fill: c }));
+  });
+  svg.appendChild(water);
+
+  // two sine sheets sliding at different speeds — reads as moving water
+  const waves = document.createElementNS(NS, "g");
+  waves.setAttribute("clip-path", "url(#stagewater)");
+  const sine = (amp, y) => {
+    let p = `M-240,${y}`;
+    for (let x = -240; x <= W + 240; x += 120) p += ` q30,${-amp} 60,0 q30,${amp} 60,0`;
+    return p + ` L${W + 240},${BED + 10} L-240,${BED + 10} Z`;
+  };
+  waves.append(
+    svgEl("path", { class: "wave2", d: sine(5, yw + 10), fill: V("--b1"), opacity: 0.45 }),
+    svgEl("path", { class: "wave1", d: sine(7, yw + 3), fill: V("--b2"), opacity: 0.6 }),
+  );
+  svg.appendChild(waves);
+  svg.appendChild(svgEl("line", {
+    x1: bankX(yw), x2: faceX(yw), y1: yw, y2: yw, stroke: V("--measured"), "stroke-width": 2.5,
+  }));
+
+  const mark = (v, color, name) => {
+    if (v === null || v > hi || v < lo) return;
+    const y = Y(v);
+    svg.appendChild(svgEl("line", { x1: bankX(y), x2: 780, y1: y, y2: y,
+      stroke: color, "stroke-width": 1.6, "stroke-dasharray": "7 5" }));
+    const a = svgEl("text", { x: 790, y: y - 2, fill: color, "font-size": 12,
+      "font-family": "IBM Plex Mono, monospace", "font-weight": 600 });
+    a.textContent = name;
+    const b = svgEl("text", { x: 790, y: y + 13, fill: V("--muted"), "font-size": 11,
+      "font-family": "IBM Plex Mono, monospace" });
+    b.textContent = f2(v) + " m";
+    svg.append(a, b);
+  };
+  mark(nhwl, V("--spill"), "FULL");
+  mark(rule, V("--watch"), "TARGET");
+
+  if (Math.abs(peak - rwl) > 0.02) {
+    const yp = Math.max(TOP - 4, Y(peak));
+    const h = (d.forecasts.find(x => N(x.pred_rwl_m) === peak) || {}).horizon;
+    svg.appendChild(svgEl("line", { x1: bankX(yp), x2: faceX(yp), y1: yp, y2: yp,
+      stroke: V("--forecast"), "stroke-width": 2, "stroke-dasharray": "8 5" }));
+    const t = svgEl("text", { x: 330, y: yp - 8, fill: V("--forecast"),
+      "font-size": 12.5, "font-family": "IBM Plex Mono, monospace", "font-weight": 600 });
+    t.textContent = `forecast +${h}d · ${f2(peak)} m`;
+    svg.appendChild(t);
+  }
+
+  svg.appendChild(svgEl("path", {
+    d: `M${faceTop},${TOP + 4} L${faceTop + 44},${TOP + 4} L${faceBot + 126},${BED} L${faceBot},${BED} Z`,
+    fill: V("--wall"), stroke: V("--wall-edge"), "stroke-width": 1.5, "stroke-linejoin": "round",
+  }));
+  svg.appendChild(svgEl("line", { x1: faceTop - 3, x2: faceTop + 46, y1: TOP + 4, y2: TOP + 4,
+    stroke: V("--wall-top"), "stroke-width": 5, "stroke-linecap": "round" }));
+
+  if (nhwl !== null && rwl >= nhwl - 0.01) {
+    svg.appendChild(svgEl("path", { class: "spillflow",
+      d: `M${faceTop - 8},${TOP + 3} L${faceTop + 44},${TOP + 9} L${faceBot + 124},${BED - 3}`,
+      fill: "none", stroke: V("--b3"), "stroke-width": 9, "stroke-linecap": "round",
+      "stroke-dasharray": "18 18", opacity: 0.85 }));
+  }
+  svg.appendChild(svgEl("path", { d: `M${faceBot + 128},${BED - 4} L${W - 20},${BED - 4}`,
+    stroke: V("--b2"), "stroke-width": 7, "stroke-linecap": "round" }));
+
+  // headline number, sitting on the water
+  const bx = Math.min(bankX(yw) + 24, 300), by = Math.max(yw - 74, TOP + 4);
+  const g = document.createElementNS(NS, "g");
+  g.appendChild(svgEl("rect", { x: bx, y: by, width: 172, height: 62, rx: 5,
+    fill: V("--card"), stroke: st(d.risk).c, "stroke-width": 1.5 }));
+  const n1 = svgEl("text", { x: bx + 14, y: by + 31, fill: V("--ink"), "font-size": 25,
+    "font-family": "Bricolage Grotesque, sans-serif", "font-weight": 700 });
+  n1.textContent = f2(rwl) + " m";
+  const n2 = svgEl("text", { x: bx + 14, y: by + 49, fill: st(d.risk).c, "font-size": 11,
+    "font-family": "IBM Plex Mono, monospace", "font-weight": 600, "letter-spacing": "0.06em" });
+  n2.textContent = st(d.risk).word.toUpperCase();
+  g.append(n1, n2);
+  svg.appendChild(g);
+  zoneLabels.forEach(t => svg.appendChild(t));
+  return svg;
+}
+
+function damPicker() {
+  const row = document.createElement("div");
+  row.className = "picker";
+  [...DATA.dams].sort((a, b) => b.lat - a.lat).forEach(d => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(d.dam === pick));
+    b.innerHTML = `<i style="background:${st(d.risk).c}"></i>${d.dam}`;
+    b.onclick = () => { pick = d.dam; render(); };
+    row.appendChild(b);
+  });
+  return row;
+}
+
+/* ---------- dam cross-section (small, for the grid) ----------
    A side elevation: sloping basin on the left, concrete wall on the right,
    impounded water banded by depth. The crest is pinned to the full mark, so
    water touching the top of the wall means exactly what it looks like.       */
@@ -483,10 +745,10 @@ function damSection(d) {
 
   // bedrock
   svg.appendChild(svgEl("path", {
-    d: `M0,${BED} L${W},${BED} L${W},${TOE} L0,${TOE} Z`, fill: "#E4EBEE",
+    d: `M0,${BED} L${W},${BED} L${W},${TOE} L0,${TOE} Z`, fill: V("--rock"),
   }));
   svg.appendChild(svgEl("path", {
-    d: `M0,${BED} L${W},${BED}`, stroke: "#C3D1D7", "stroke-width": 1.5, fill: "none",
+    d: `M0,${BED} L${W},${BED}`, stroke: V("--rock-line"), "stroke-width": 1.5, fill: "none",
   }));
 
   // water, banded by depth
@@ -498,7 +760,7 @@ function damSection(d) {
   svg.appendChild(clip);
   const g = document.createElementNS(NS, "g");
   g.setAttribute("clip-path", `url(#${cid})`);
-  ["#BFDDE8", "#8FC2D4", "#5AA5BF", "#2E7C99"].forEach((c, i, arr) => {
+  [V("--b1"), V("--b2"), V("--b3"), V("--b4")].forEach((c, i, arr) => {
     const y0 = CREST + (BED - CREST) * (i / arr.length);
     const y1 = CREST + (BED - CREST) * ((i + 1) / arr.length);
     g.appendChild(svgEl("rect", { x: 0, y: y0, width: W, height: y1 - y0, fill: c }));
@@ -506,7 +768,7 @@ function damSection(d) {
   svg.appendChild(g);
   svg.appendChild(svgEl("line", {
     x1: bankX(yw), x2: faceX(yw), y1: yw, y2: yw,
-    stroke: "#16506B", "stroke-width": 2,
+    stroke: V("--measured"), "stroke-width": 2,
   }));
 
   // forecast surface, if it moves
@@ -514,7 +776,7 @@ function damSection(d) {
     const yp = clampY(peak);
     svg.appendChild(svgEl("line", {
       x1: bankX(yp) , x2: faceX(yp), y1: yp, y2: yp,
-      stroke: "#C2661B", "stroke-width": 1.8, "stroke-dasharray": "5 3",
+      stroke: V("--forecast"), "stroke-width": 1.8, "stroke-dasharray": "5 3",
     }));
   }
 
@@ -522,18 +784,18 @@ function damSection(d) {
   if (rule !== null && rule > lo && rule < hi) {
     svg.appendChild(svgEl("line", {
       x1: bankX(Y(rule)), x2: faceX(Y(rule)), y1: Y(rule), y2: Y(rule),
-      stroke: "#C2851B", "stroke-width": 1.2, "stroke-dasharray": "3 3", opacity: 0.9,
+      stroke: V("--watch"), "stroke-width": 1.2, "stroke-dasharray": "3 3", opacity: 0.9,
     }));
   }
 
   // the wall
   svg.appendChild(svgEl("path", {
     d: `M${faceTopX},${CREST} L${faceTopX + 15},${CREST} L${faceBotX + 42},${BED} L${faceBotX},${BED} Z`,
-    fill: "#B9C6CD", stroke: "#93A5AE", "stroke-width": 1, "stroke-linejoin": "round",
+    fill: V("--wall"), stroke: V("--wall-edge"), "stroke-width": 1, "stroke-linejoin": "round",
   }));
   svg.appendChild(svgEl("line", {
     x1: faceTopX - 1, x2: faceTopX + 16, y1: CREST, y2: CREST,
-    stroke: "#7C8F99", "stroke-width": 2.5, "stroke-linecap": "round",
+    stroke: V("--wall-top"), "stroke-width": 2.5, "stroke-linecap": "round",
   }));
 
   // Water sheeting over the crest and down the spillway face when the level is
@@ -542,18 +804,18 @@ function damSection(d) {
   if (nhwl !== null && rwl >= nhwl - 0.01) {
     svg.appendChild(svgEl("path", {
       d: `M${faceTopX - 5},${CREST - 1} L${faceTopX + 15},${CREST + 1} L${faceBotX + 42},${BED - 1}`,
-      fill: "none", stroke: "#5AA5BF", "stroke-width": 4,
+      fill: "none", stroke: V("--b3"), "stroke-width": 4,
       "stroke-linecap": "round", "stroke-linejoin": "round", opacity: 0.95,
     }));
     // splash at the toe
-    svg.appendChild(svgEl("circle", { cx: faceBotX + 46, cy: BED - 6, r: 1.8, fill: "#8FC2D4" }));
-    svg.appendChild(svgEl("circle", { cx: faceBotX + 52, cy: BED - 10, r: 1.3, fill: "#8FC2D4" }));
+    svg.appendChild(svgEl("circle", { cx: faceBotX + 46, cy: BED - 6, r: 1.8, fill: V("--b2") }));
+    svg.appendChild(svgEl("circle", { cx: faceBotX + 52, cy: BED - 10, r: 1.3, fill: V("--b2") }));
   }
 
   // downstream channel
   svg.appendChild(svgEl("path", {
     d: `M${faceBotX + 44},${BED - 2} L${W - 4},${BED - 2}`,
-    stroke: "#A6CEDD", "stroke-width": 3, "stroke-linecap": "round",
+    stroke: V("--b2"), "stroke-width": 3, "stroke-linecap": "round",
   }));
   return svg;
 }
@@ -576,14 +838,14 @@ function sparkline(d) {
   const area = obs.concat(fc);
   svg.appendChild(svgEl("path", {
     d: area.map((p, i) => `${i ? "L" : "M"}${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" ") + ` L${W},${H} L0,${H} Z`,
-    fill: "#A6CEDD", opacity: 0.4,
+    fill: V("--b2"), opacity: 0.4,
   }));
   const seg = (pts, c, dash) => pts.length > 1 && svg.appendChild(svgEl("path", {
     d: pts.map((p, i) => `${i ? "L" : "M"}${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" "),
     fill: "none", stroke: c, "stroke-width": 1.8, "stroke-dasharray": dash || "none", "vector-effect": "non-scaling-stroke",
   }));
-  seg(obs, "#16506B");
-  seg([obs.at(-1)].filter(Boolean).concat(fc), "#C2661B", "4 3");
+  seg(obs, V("--measured"));
+  seg([obs.at(-1)].filter(Boolean).concat(fc), V("--forecast"), "4 3");
   return svg;
 }
 
@@ -613,8 +875,8 @@ function readout() {
   const m = DATA.metrics || {};
   const wins = Object.values(m).filter(x => x.beats_baseline).length;
   document.getElementById("readout").innerHTML = `
-    <div><dt>At or near full</dt><dd style="color:${STATE["Spill Watch"].c}">${spill}<small> of ${dams.length}</small></dd></div>
-    <div><dt>Above target</dt><dd style="color:${STATE["Watch"].c}">${watch}</dd></div>
+    <div><dt>At or near full</dt><dd style="color:${V("--spill")}">${spill}<small> of ${dams.length}</small></dd></div>
+    <div><dt>Above target</dt><dd style="color:${V("--watch")}">${watch}</dd></div>
     <div><dt>Beats a dumb guess</dt><dd>${wins}<small> of ${Object.keys(m).length} horizons</small></dd></div>
     <div><dt>Unfamiliar conditions</dt><dd>${extra}<small> of ${dams.length} dams</small></dd></div>`;
 }
@@ -645,9 +907,23 @@ function detail(d) {
   const rwl = N(d.rwl_m), nhwl = N(d.nhwl_m), rule = N(d.rule_curve_m);
   const sec = document.createElement("div");
   sec.className = "panel";
+  const peak = Math.max(...d.forecasts.map(x => N(x.pred_rwl_m) ?? -Infinity));
+  const peakH = (d.forecasts.find(x => N(x.pred_rwl_m) === peak) || {}).horizon;
+  const tech = [
+    `RWL ${f2(rwl)} m`,
+    nhwl === null ? "NHWL undefined" : `NHWL ${f2(nhwl)} m (Δ ${f2(rwl - nhwl)} m)`,
+    rule === null ? "no rule curve" : `rule curve ${f2(rule)} m (Δ ${f2(rwl - rule)} m)`,
+    `peak forecast ${f2(peak)} m at +${peakH}d`,
+    d.rain_7d === null ? "" : `P7d ${d.rain_7d} mm`,
+    d.rain_next_7d === null ? "" : `P7d fcst ${d.rain_next_7d} mm`,
+  ].filter(Boolean).join(" · ");
+
   sec.innerHTML = `
-    <p class="verdict" style="color:${st(d.risk).c}">${head}</p>
-    <p class="detailsay">${body}</p>
+    <p class="verdict" style="color:${st(d.risk).c}">
+      <span class="plainonly">${head}</span><span class="techonly">${d.risk}</span>
+    </p>
+    <p class="detailsay plainonly">${body}</p>
+    <p class="detailsay techonly" style="font-family:var(--font-mono);font-size:13.5px">${tech}</p>
     <dl class="facts">
       <div><dt>Level now</dt><dd>${f2(rwl)} m</dd></div>
       <div><dt>Full at</dt><dd>${f2(nhwl)} m</dd></div>
@@ -662,10 +938,10 @@ function detail(d) {
   chart.appendChild(depthChart(d));
   const key = document.createElement("div");
   key.className = "key";
-  key.innerHTML = `<span><i style="background:#16506B"></i>measured</span>
-    <span><i style="background:#C2661B"></i>forecast</span>
-    <span><i style="background:#B4462F"></i>full mark (NHWL)</span>
-    <span><i style="background:#C2851B"></i>operating target (rule curve)</span>`;
+  key.innerHTML = `<span><i style="background:${V("--measured")}"></i>measured</span>
+    <span><i style="background:${V("--forecast")}"></i>forecast</span>
+    <span><i style="background:${V("--spill")}"></i>full mark (NHWL)</span>
+    <span><i style="background:${V("--watch")}"></i>operating target (rule curve)</span>`;
   chart.appendChild(key);
   sec.appendChild(chart);
 
@@ -702,8 +978,8 @@ function learning() {
   const Y = v => T + (hi - v) / (hi - lo) * (H - T - B);
   for (let i = 0; i <= 3; i++) {
     const v = lo + (hi - lo) * i / 3;
-    svg.appendChild(svgEl("line", { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: "#D3DEE3", "stroke-width": 1, "stroke-dasharray": "2 3" }));
-    const t = svgEl("text", { x: L - 9, y: Y(v) + 4, fill: "#788A94", "font-size": 11, "text-anchor": "end", "font-family": "IBM Plex Mono, monospace" });
+    svg.appendChild(svgEl("line", { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: V("--rule-line"), "stroke-width": 1, "stroke-dasharray": "2 3" }));
+    const t = svgEl("text", { x: L - 9, y: Y(v) + 4, fill: V("--muted"), "font-size": 11, "text-anchor": "end", "font-family": "IBM Plex Mono, monospace" });
     t.textContent = v.toFixed(2);
     svg.appendChild(t);
   }
@@ -711,17 +987,17 @@ function learning() {
     d: pts.map((p, i) => `${i ? "L" : "M"}${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" "),
     fill: "none", stroke: c, "stroke-width": 2.2, "stroke-dasharray": dash || "none", "stroke-linejoin": "round",
   }));
-  draw(b, "#788A94", "5 4");
-  draw(a, "#16506B");
+  draw(b, V("--muted"), "5 4");
+  draw(a, V("--measured"));
   [x0, x1].forEach((v, i) => {
-    const t = svgEl("text", { x: X(v), y: H - 11, fill: "#788A94", "font-size": 11, "text-anchor": i ? "end" : "start", "font-family": "IBM Plex Mono, monospace" });
+    const t = svgEl("text", { x: X(v), y: H - 11, fill: V("--muted"), "font-size": 11, "text-anchor": i ? "end" : "start", "font-family": "IBM Plex Mono, monospace" });
     t.textContent = new Date(v).toISOString().slice(0, 10);
     svg.appendChild(t);
   });
   box.appendChild(svg);
   const key = document.createElement("div");
   key.className = "key";
-  key.innerHTML = `<span><i style="background:#16506B"></i>APAW</span><span><i style="background:#788A94"></i>dumb guess (nothing changes)</span>`;
+  key.innerHTML = `<span><i style="background:${V("--measured")}"></i>APAW</span><span><i style="background:${V("--muted")}"></i>dumb guess (nothing changes)</span>`;
   box.appendChild(key);
   return box;
 }
@@ -753,13 +1029,39 @@ function skill() {
       <span class="skillbar">
         <span class="mid"></span>
         <span class="bar" style="${rel >= 0
-          ? `right:50%;width:${w}%;background:#2F7D5B`
-          : `left:50%;width:${w}%;background:#B4462F`}"></span>
+          ? `right:50%;width:${w}%;background:${V("--normal")}`
+          : `left:50%;width:${w}%;background:${V("--spill")}`}"></span>
       </span>
       <span class="val">${r.mae_model.toFixed(3)} vs ${r.mae_best_baseline.toFixed(3)} · n=${r.n}</span>`;
     list.appendChild(row);
   });
   box.appendChild(list);
+  return box;
+}
+
+function basinBoard() {
+  const rows = DATA.basins || [];
+  const box = document.createElement("div");
+  box.className = "panel";
+  if (!rows.length) { box.innerHTML = `<div class="loading">No basin status collected yet.</div>`; return box; }
+  const on = rows.filter(r => r.on_watch);
+  const grid = document.createElement("div");
+  grid.className = "basins";
+  rows.forEach(r => {
+    const c = r.on_watch ? V("--spill") : V("--normal");
+    const el = document.createElement("div");
+    el.className = "basin" + (r.on_watch ? " hot" : "");
+    el.innerHTML = `<i style="background:${c}"></i>
+      <span class="bn">${r.basin.replace(" Sub-basin", "")}</span>
+      <span class="bs" style="color:${c}">${r.on_watch ? "flood watch" : "quiet"}</span>`;
+    grid.appendChild(el);
+  });
+  const head = document.createElement("p");
+  head.className = "basinhead";
+  head.innerHTML = on.length
+    ? `<b style="color:${V("--spill")}">${on.length} of ${rows.length}</b> basins are on flood watch right now: ${on.map(r => r.basin.replace(" Sub-basin", "")).join(", ")}.`
+    : `None of the ${rows.length} basins are on flood watch right now.`;
+  box.append(head, grid);
   return box;
 }
 
@@ -773,35 +1075,22 @@ function sect(title, say, tech, node) {
   return s;
 }
 
-function paintPins() {
-  DATA.dams.forEach(d => {
-    const n = pins[d.dam]?.getElement()?.querySelector(".dot");
-    if (n) n.classList.toggle("on", d.dam === pick);
-  });
-}
-
-function initMap() {
-  if (typeof L === "undefined") { document.getElementById("mapshell").classList.add("dead"); return; }
-  map = L.map("map", { scrollWheelZoom: false }).setView([15.7, 121.0], 7);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-    attribution: "&copy; OpenStreetMap &copy; CARTO", maxZoom: 18,
-  }).addTo(map);
-  DATA.dams.forEach(d => {
-    const icon = L.divIcon({ className: "", iconSize: [26, 26],
-      html: `<div class="dot" style="background:${st(d.risk).c}">${d.dam.slice(0, 2).toUpperCase()}</div>` });
-    const mk = L.marker([d.lat, d.lon], { icon }).addTo(map);
-    mk.bindTooltip(`<b>${d.dam}</b><br>${f2(N(d.rwl_m))} m · ${st(d.risk).word}`);
-    mk.on("click", () => { pick = d.dam; render(); });
-    pins[d.dam] = mk;
-  });
-}
-
 function render() {
   const d = DATA.dams.find(x => x.dam === pick) || DATA.dams[0];
   readout();
-  paintPins();
   const main = document.getElementById("main");
   main.textContent = "";
+
+  const shell = document.createElement("div");
+  shell.className = "stage";
+  shell.appendChild(stage(d));
+  shell.appendChild(damPicker());
+  main.appendChild(sect(
+    d.dam,
+    "The reservoir seen side-on, with the water where it actually stands. The coloured bands say what each height means — room to spare, above the level operators aim for, or over the top and spilling.",
+    "Cross-section scaled to this dam's own elevation range. Solid line is the measured surface, dashed orange is the highest level forecast in the next seven days, and the dashed markers are the normal high water level and the rule curve.",
+    shell
+  ));
 
   main.appendChild(sect(
     "The nine dams",
@@ -810,24 +1099,18 @@ function render() {
     nineGrid()
   ));
 
-  const mapWrap = document.createElement("div");
-  mapWrap.className = "mapshell";
-  mapWrap.id = "mapshell";
-  mapWrap.innerHTML = `<div id="map"></div>
-    <p class="mapfallback">The map didn't load, so it's hidden. Everything else on this page still works.</p>`;
-  main.appendChild(sect(
-    "Where they are",
-    "The dams sit along the mountains that feed Metro Manila, the Cagayan valley and the Agno river.",
-    "Coordinates from PAGASA's own placemark file. Colour is the risk level.",
-    mapWrap
-  ));
-  try { initMap(); } catch (e) { mapWrap.classList.add("dead"); }
-
   main.appendChild(sect(
     d.dam,
     "What the level has done lately, and what APAW thinks it does next.",
     "Target is the change in level over the horizon, not the level itself. Rainfall forecast for the days ahead is an input, so this is a real forecast rather than a projection of the past.",
     detail(d)
+  ));
+
+  main.appendChild(sect(
+    "Flood watch across the country",
+    "The dams are Luzon only. PAGASA also flags which of the 18 major river basins are under flood watch, and that covers the whole country — this is read straight from the same bulletin.",
+    "Status is PAGASA's own classification, collected daily. It is reported as published and is not modelled or forecast by APAW.",
+    basinBoard()
   ));
 
   main.appendChild(sect(
@@ -844,6 +1127,50 @@ function render() {
     skill()
   ));
 }
+
+/* ---------- theme + reading level ----------
+   Charts are drawn as SVG with resolved colour values, not CSS classes, so a
+   theme change has to redraw them — CSS variables alone won't reach paint
+   attributes already written into the DOM. */
+const root = document.documentElement;
+
+function applyTheme(t) {
+  if (t === "light" || t === "dark") root.setAttribute("data-theme", t);
+  else root.removeAttribute("data-theme");
+  document.getElementById("tLight").setAttribute("aria-pressed", String(t === "light"));
+  document.getElementById("tDark").setAttribute("aria-pressed", String(t === "dark"));
+  // render() rebuilds the map with the right tiles, so no separate swap here.
+  if (DATA) render();
+}
+
+function applyMode(m) {
+  root.setAttribute("data-mode", m);
+  document.getElementById("mPlain").setAttribute("aria-pressed", String(m === "plain"));
+  document.getElementById("mTech").setAttribute("aria-pressed", String(m === "tech"));
+}
+
+(function initPrefs() {
+  const t = localStorage.getItem("apaw-theme") || "";
+  const m = localStorage.getItem("apaw-mode") || "plain";
+  if (t) root.setAttribute("data-theme", t);
+  root.setAttribute("data-mode", m);
+  addEventListener("DOMContentLoaded", () => {
+    applyMode(m);
+    document.getElementById("tLight").setAttribute("aria-pressed", String(t === "light"));
+    document.getElementById("tDark").setAttribute("aria-pressed", String(t === "dark"));
+    const set = (v) => { v ? localStorage.setItem("apaw-theme", v) : localStorage.removeItem("apaw-theme"); applyTheme(v); };
+    // Clicking the active button returns to following the system setting.
+    document.getElementById("tLight").onclick = () =>
+      set(root.getAttribute("data-theme") === "light" ? "" : "light");
+    document.getElementById("tDark").onclick = () =>
+      set(root.getAttribute("data-theme") === "dark" ? "" : "dark");
+    document.getElementById("mPlain").onclick = () => { localStorage.setItem("apaw-mode", "plain"); applyMode("plain"); };
+    document.getElementById("mTech").onclick = () => { localStorage.setItem("apaw-mode", "tech"); applyMode("tech"); };
+  });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!root.getAttribute("data-theme") && DATA) { if (map) setTiles(matchMedia("(prefers-color-scheme: dark)").matches); render(); }
+  });
+})();
 
 fetch("data/forecasts.json", { cache: "no-store" })
   .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T17:57:47",
+  "generated_at": "2026-08-09T20:16:44",
   "dams": [
     {
       "dam": "Ambuklao",
@@ -891,6 +891,162 @@
           "beyond_observed_rise": false
         }
       ]
+    }
+  ],
+  "basins": [
+    {
+      "basin": "Abra",
+      "status": "Flood Watch",
+      "on_watch": true,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Agno",
+      "status": "Flood Watch",
+      "on_watch": true,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Ambuklao-Binga-San Roque Sub-basin",
+      "status": "Flood Watch",
+      "on_watch": true,
+      "kind": "dam_sub_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Angat Sub-basin",
+      "status": "Flood Watch",
+      "on_watch": true,
+      "kind": "dam_sub_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "NCR/Pasig Marikina Laguna de Bay",
+      "status": "Flood Watch",
+      "on_watch": true,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Pampanga",
+      "status": "Flood Watch",
+      "on_watch": true,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Agus",
+      "status": "Non-Flood Watch",
+      "on_watch": false,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Agusan",
+      "status": "Non-Flood Watch",
+      "on_watch": false,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Apayao-Abulug",
+      "status": "Non-Flood Watch",
+      "on_watch": false,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Bicol",
+      "status": "Non-Flood Watch",
+      "on_watch": false,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Buayan-Malungon",
+      "status": "Non-Flood Watch",
+      "on_watch": false,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Cagayan",
+      "status": "Non-Flood Watch",
+      "on_watch": false,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Cagayan De Oro",
+      "status": "Non-Flood Watch",
+      "on_watch": false,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Davao",
+      "status": "Non-Flood Watch",
+      "on_watch": false,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Ilog-Hilabangan",
+      "status": "Non-Flood Watch",
+      "on_watch": false,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Jalaur",
+      "status": "Non-Flood Watch",
+      "on_watch": false,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Magat Sub-basin",
+      "status": "Non-Flood Watch",
+      "on_watch": false,
+      "kind": "dam_sub_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Mindanao",
+      "status": "Non-Flood Watch",
+      "on_watch": false,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Panay",
+      "status": "Non-Flood Watch",
+      "on_watch": false,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Pantabangan Sub-basin",
+      "status": "Non-Flood Watch",
+      "on_watch": false,
+      "kind": "dam_sub_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Tagoloan",
+      "status": "Non-Flood Watch",
+      "on_watch": false,
+      "kind": "river_basin",
+      "date": "2026-08-09"
+    },
+    {
+      "basin": "Tagum-Libuganon",
+      "status": "Non-Flood Watch",
+      "on_watch": false,
+      "kind": "river_basin",
+      "date": "2026-08-09"
     }
   ],
   "metrics": {
