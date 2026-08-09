@@ -290,11 +290,29 @@ def publish(dashboard: list[dict], scored: int, drift_rows: list) -> None:
                   .sort_values(["on_watch", "basin"], ascending=[False, True])
                   .to_dict("records"))
 
+    # Freshness. A flood-adjacent page that quietly serves a week-old reading
+    # is worse than one that says it is stale, so the age is published and the
+    # dashboard shows a banner past two days.
+    latest_obs = max((d["issue_date"] for d in dashboard), default=None)
+    age_days = None
+    if latest_obs:
+        age_days = (datetime.now().date()
+                    - datetime.fromisoformat(latest_obs).date()).days
+
+    basin_metrics = {}
+    bm = ROOT / "eval" / "basin_metrics.json"
+    if bm.exists():
+        basin_metrics = json.loads(bm.read_text(encoding="utf-8"))
+
     payload = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "latest_observation": latest_obs,
+        "data_age_days": age_days,
         "dams": dashboard,
         "basins": basins,
+        "basin_forecast": basin_metrics,
         "metrics": metrics.get("per_horizon", {}),
+        "metrics_by_rain_source": metrics.get("by_rain_source", {}),
         "learning_curve": curve,
         "scored_this_run": scored,
         "drift_events_this_run": drift_rows,
@@ -318,6 +336,11 @@ def main() -> int:
 
     table = build()
     table.to_csv(ROOT / "data" / "modeling_table.csv", index=False)
+
+    # Second target: basin flood watch. Writes its own metrics file and says
+    # so plainly while there is too little history to score.
+    subprocess.run([sys.executable, str(ROOT / "eval" / "basin_forecast.py")],
+                   capture_output=True, text=True)
 
     models = load()
     detectors = {key: new_detector() for key in models}

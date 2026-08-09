@@ -1,162 +1,167 @@
-# PRD — APAW: Self-Improving Dengue Nowcaster
+# PRD — APAW: Self-Improving Dam Level & Flood-Watch Nowcaster
 
-**Status:** draft, not started · **Name:** APAW (Filipino/Spanish: *pulse*) ·
-**Est. effort:** ~4 weeks part-time · **Cost:** ₱0 (free tier only — hard req)
+**Status:** live · **Name:** APAW — *Adaptive Prediction of Accumulating
+Water*; also *apaw*, Filipino for *to overflow, to brim over* ·
+**Cost:** ₱0 (free tier only — hard requirement)
+
+> Supersedes the original dengue scope. No free, refreshable source of current
+> PH regional dengue case data exists — see §11.
 
 ---
 
 ## 1. Problem
 
-Philippine dengue surveillance is **reactive** — DOH reports confirmed cases
-after they happen, on a weekly lag. By the time a spike is visible in the
-report, the outbreak is already underway. Dengue transmission tracks weather
-(rainfall and temperature drive mosquito breeding) with a delay, so
-near-term case counts are *forecastable* — but no free, public tool does it,
-and no student-portfolio ML model demonstrates a system that **keeps learning
-as new weeks arrive** rather than being trained once and frozen.
+Philippine reservoir operation is visible but never *forecast* in public.
+PAGASA publishes a dam bulletin each morning — nine major dams with their
+water level, the normal high water level (NHWL) and the operating rule curve —
+and separately flags which river basins are under flood watch. Both are
+snapshots of *now*. Nothing free and public says **where the level is
+heading**, which is the question that matters to anyone living downstream of a
+dam that is about to release water.
+
+Worse, **PAGASA keeps no archive.** The page shows today and yesterday and
+nothing else. There is no public record to learn from, so the record has to be
+built.
 
 ## 2. What APAW is
 
-A forecaster that predicts dengue cases per Philippine region 1–4 weeks ahead
-from weather + recent case history — and, crucially, **improves itself every
-cycle** via incremental (online) learning, with a public dashboard that shows
-its accuracy getting better over calendar time.
+A forecaster that predicts reservoir water level 1–7 days ahead for the nine
+major Luzon dams from catchment rainfall and recent levels, translates that
+into a plain-language spill risk, and **improves itself every cycle** through
+incremental learning — with a public dashboard showing its accuracy over
+calendar time, including where it loses.
 
 The portfolio thesis: **a live, self-improving ML system**, not a static model.
-The differentiator versus a normal forecasting project is the MLOps loop —
-scheduled data refresh, incremental model updates, drift detection, and a
-visible learning curve — all on free infrastructure.
+The differentiator is the MLOps loop — scheduled collection, incremental
+updates, drift detection, deferred honest scoring, and a visible learning
+curve — all on free infrastructure.
 
 ## 3. Goals
 
-- Forecast regional dengue cases 1–4 weeks ahead, with plain-language risk
-  levels (low / rising / high).
-- **Incremental learning:** the model updates on each new week's labeled data
-  via `partial_fit` / River — never a from-scratch retrain.
+- Forecast reservoir level 1–7 days ahead per dam, with plain-language risk
+  (Room to spare / Above target / Spilling).
+- **Incremental learning:** update on each newly labeled observation via River
+  `learn_one` — never a from-scratch retrain.
 - **Self-improvement, proven:** log prediction-vs-actual error every cycle and
-  chart it over time so the improvement is visible, not claimed.
-- **Drift-aware:** detect distribution shift (e.g. a season change or an
-  anomalous outbreak) and adapt / flag it.
-- **Honest evaluation:** always compare against a naive baseline on a
-  chronological holdout (the discipline that made Hangin' credible).
+  chart it over calendar time.
+- **Drift-aware:** ADWIN over each model's error stream; adapt and log.
+- **Honest evaluation:** always against naive baselines, prequentially, with
+  losing horizons published as losses.
+- **Build the archive** PAGASA does not keep.
 
 ### Non-goals
 
-- Not a medical/clinical tool — educational forecasting with a visible
-  disclaimer. No individual diagnosis, no treatment advice.
-- No paid compute, no GPU, no paid data. If a data source isn't free and
-  public, it's out.
-- Not real-time streaming — the cadence is a scheduled daily pipeline heartbeat
-  with weekly label updates.
+- Not an official warning or advisory. Educational framing with a visible
+  disclaimer; PAGASA and the LGUs are the authorities.
+- No paid compute, no GPU, no paid data.
+- Not a hydrological simulation. Statistical nowcasting, not HEC-RAS.
 
-## 4. Cadence (be honest about this)
+## 4. Cadence
 
-- **Daily:** GitHub Actions cron fetches fresh **weather** data and republishes
-  the dashboard (the visible "pulse").
-- **Weekly:** when new **case counts** are published, the model does an
-  incremental update on that labeled week, logs its error, and the learning
-  curve gains a point.
-- So "daily refresh" = pipeline + features + dashboard daily; "self-improving"
-  = incremental label updates weekly.
+**Twice daily**, via GitHub Actions: scrape the bulletin, refresh rainfall,
+score any forecast whose target day has arrived, learn from it, issue new
+forecasts, republish the dashboard.
+
+A missed run is a **permanently lost observation** — which is why it runs
+twice a day and why the raw CSV is committed rather than ignored.
 
 ## 5. Users
 
 | user | need |
 |---|---|
-| Primary — recruiter/hiring manager | See a live, self-improving ML system with an honest evaluation and MLOps automation |
-| Secondary — a curious PH resident | A readable regional dengue risk outlook |
+| Primary — recruiter / hiring manager | A live, self-improving ML system with honest evaluation and real MLOps |
+| Secondary — a curious PH resident | Is the dam near me about to spill? |
 
 ## 6. Functional requirements
 
 ### 6.1 Data
-- **FR-1** Source free, public dengue case data for PH regions (candidate:
-  OpenDengue global database, which includes PH; DOH/PIDSR weekly bulletins as
-  a secondary). **Phase 0 must confirm a working, refreshable source before
-  anything else is built.**
-- **FR-2** Weather features from Open-Meteo (free, no key): rainfall,
-  temperature, humidity — with engineered lags (dengue responds to weather
-  weeks earlier).
-- **FR-3** All fetched data cached in-repo (CSV/parquet) with a timestamp;
-  pipeline is idempotent and resumable.
+- **FR-1** Scrape the PAGASA dam table — 9 dams, with level, NHWL, rule curve,
+  gate opening, inflow/outflow. Idempotent; committed to the repo.
+- **FR-2** Scrape the basin flood-watch table from the same page (18 river
+  basins + 4 dam sub-basins) — the only nationwide signal here, since the dams
+  are Luzon only.
+- **FR-3** Rainfall, temperature, humidity and ET₀ from Open-Meteo (free, no
+  key), averaged over sampled catchment points rather than read at the wall.
+- **FR-4** Forward rainfall must come from the **archived forecast at the lead
+  time we would actually have had**, not from observed reanalysis. Where the
+  forecast archive does not reach, the fallback is recorded per row and scored
+  separately.
+- **FR-5** Seed history from Wayback Machine snapshots of the bulletin.
 
 ### 6.2 Model
-- **FR-4** Online/incremental regressor per region (River, or sklearn
-  `partial_fit` — SGDRegressor / PassiveAggressive). No full retrain in the
-  daily loop.
-- **FR-5** Forecast horizons: 1, 2, 3, 4 weeks ahead.
-- **FR-6** Drift detection (River ADWIN or a rolling-error threshold); on drift,
-  adapt learning rate / reset window and flag it in the log.
-- **FR-7** Persist model state between runs (committed to repo or a free store)
-  so learning is cumulative across days.
+- **FR-6** Online regressor per (dam, horizon), horizons 1–7 days. Target is
+  **ΔRWL over the horizon**, never the raw level.
+- **FR-7** Online classifier per (basin, horizon) for flood watch, 1–3 days.
+- **FR-8** Drift detection (ADWIN) on the error stream; events logged.
+- **FR-9** Model state persists between runs and is committed.
 
-### 6.3 Evaluation (the credibility core)
-- **FR-8** Naive baseline: last-week persistence (and a seasonal-naive variant).
-- **FR-9** Every cycle logs, per region/horizon: prediction, actual (when it
-  arrives), error (MAE), and the baseline's error on the same target.
-- **FR-10** **Learning curve:** rolling model-error over calendar time, shown
-  against the baseline — the headline artifact.
-- **FR-11** Chronological holdout for the initial backtest; no future data
-  leaks into past training.
+### 6.3 Evaluation
+- **FR-10** Baselines: persistence (level unchanged) and drift (last 24h change
+  extrapolated); for basins, persistence of status.
+- **FR-11** Prequential scoring — predict before learning, always in date
+  order. Live forecasts go to a ledger with the exact features they saw and are
+  scored only once the target day arrives.
+- **FR-12** Publish a learning curve and a per-horizon scoreboard **including
+  horizons where a baseline wins**.
+- **FR-13** A horizon with fewer than 200 scored forecasts is published as "too
+  few to call" and is not ranked.
 
 ### 6.4 Product
-- **FR-12** Static dashboard (React or plain HTML, free host): PH region map /
-  heatmap of risk, per-region forecast chart, the self-improvement learning
-  curve, and a model-performance panel.
-- **FR-13** Plain-language risk levels with a visible educational disclaimer.
+- **FR-14** Static dashboard: animated dam cross-section with named elevation
+  zones, nine-dam overview, forecast chart, basin flood-watch board, learning
+  curve, scoreboard.
+- **FR-15** Plain-language and technical registers, switchable.
+- **FR-16** Light and dark themes.
+- **FR-17** Visible staleness banner when the newest reading is ≥2 days old.
+- **FR-18** Extrapolation flags when conditions exceed the training range.
 
-## 7. Non-functional requirements
+## 7. Non-functional
 
-- **NFR-1** 100% free: GitHub Actions (cron), open data, free static host
-  (Vercel/GitHub Pages). No paid anything — enforced.
-- **NFR-2** Daily job runs in minutes, well within free Actions limits.
-- **NFR-3** Reproducible: pinned deps, committed data snapshots, seeded splits.
-- **NFR-4** Fails safe: a bad/late data fetch keeps the last good dashboard up.
+- **NFR-1** 100% free: GitHub Actions, open data, Open-Meteo, GitHub Pages.
+- **NFR-2** Each run completes in minutes, inside free Actions limits.
+- **NFR-3** Reproducible: pinned deps, committed data, committed model state.
+- **NFR-4** Fails safe. The scrape runs before the model and the commit step
+  runs even on failure, so a modelling bug can never cost an observation.
 
-## 8. Success metrics (published)
+## 8. Success metrics
 
 | metric | target |
 |---|---|
-| Forecast skill vs naive persistence (MAE) | beat baseline at the 2–4 week horizons |
-| Self-improvement | rolling error trends **down** over the tracked period |
-| Drift response | at least one detected+handled drift event, documented |
-| Automation | daily Action green streak; zero manual intervention for weeks |
+| Forecast skill vs persistence (MAE) | beat it at some horizon, honestly reported |
+| Self-improvement | rolling error trends down over the tracked period |
+| Drift response | at least one detected and documented event |
+| Automation | green Action streak, zero manual intervention |
+| Coverage | the archive PAGASA does not keep, growing daily |
 
-Ship tiers:
-- **Minimum:** incremental model + daily Action + baseline comparison + dashboard.
-- **Good:** + learning curve showing improvement over time, drift detection live.
-- **Headline:** beats baseline at 2–4wk horizons with a documented drift-adapt
-  event and a multi-week hands-off green Actions streak.
-
-## 9. Milestones
-
-| week | deliverable | exit gate |
-|---|---|---|
-| 1 | **Phase 0:** confirm free dengue data source; build refreshable fetcher + weather join | one command produces a clean regional weekly table with weather features |
-| 2 | Incremental model + chronological backtest vs naive baseline | model beats (or honestly ties) baseline on holdout; metrics logged |
-| 3 | GitHub Actions daily cron: fetch → update → log → publish; drift detection | Action runs unattended for 3+ days, state persists, learning curve updates |
-| 4 | Dashboard, disclaimer, README, portfolio card | live dashboard with map + forecast + learning curve; write-up done |
-
-## 10. Risks
+## 9. Risks
 
 | risk | mitigation |
 |---|---|
-| **Dengue data isn't freely refreshable** (biggest risk) | Phase 0 gate — confirm the source *first*; fallback to ILI/flu or a different reportable disease with open data, or a well-documented static-with-simulated-updates mode clearly labeled as such |
-| Weekly labels make "self-improving" slow to show | Backfill history so the learning curve starts populated; daily heartbeat keeps the system visibly live |
-| Online model underperforms a batch retrain | It's a design choice for continual learning — measure and report the tradeoff honestly |
-| Reporting lag / revised case numbers | Version each data pull; note revisions rather than silently overwriting |
-| Health-advice liability optics | Educational framing + disclaimer; no clinical claims |
+| **PAGASA changes the page layout** (highest risk) | Fixture-based parser tests fail loudly; a failed parse writes nothing rather than NaNs |
+| No historical archive | Wayback seed plus our own record from day one; thin horizons marked unrankable |
+| Sparse history flatters or ruins early metrics | MIN_SCORED gate; publish n beside every figure |
+| Forward-rain optimism | Real archived forecasts where available; the remaining gap is measured and published |
+| Point rainfall ≠ catchment rainfall | Sampled catchment mean; upgrade path is real basin polygons |
+| Mistaken for an official warning | Disclaimer, "not rated" where PAGASA publishes no limits, no alarm language |
 
-## 11. Open questions
+## 10. Stack
 
-- Disease: commit to dengue, or pick ILI/flu if its open data refreshes more
-  cleanly? (Decide in Phase 0.)
-- Model store: commit state to the repo (simple, versioned) vs a free external
-  store? Repo is the lazy default unless state gets large.
-- Granularity: region-level only for v1, or attempt province-level if data
-  supports it?
+Python · River (online ML) · pandas · Open-Meteo · GitHub Actions · static
+HTML/SVG dashboard · GitHub Pages · pytest · uv.
 
-## 12. Stack
+## 11. Why not dengue (the original scope)
 
-Python · River (online ML) or scikit-learn `partial_fit` · pandas · Open-Meteo
-API · GitHub Actions (cron) · React or plain HTML dashboard · Vercel/GitHub
-Pages · pytest.
+Phase 0 gated the project on a free, refreshable source of PH regional dengue
+case data. Verified 2026-08-07, none exists:
+
+| source | granularity | ends | refreshes? |
+|---|---|---|---|
+| OpenDengue V1.3 | PH admin2, weekly | Nov 2023 | No — bulk release, repo idle since 2025-05 |
+| HDX (Cirrolytix/DOH-EB) | province, weekly | 2021 | No — last modified 2022 |
+| doh.gov.ph weekly surveillance | region, weekly | current | **403 Cloudflare**, PDF only |
+| WHO arbovirus API (`xmart-api-public.who.int/ARBOV`) | country, epiweek | live | **PHL returns 0 rows** |
+| WHO WPRO biweekly report #750 | country | live | PH appears only in the methods annex |
+
+The thesis — a live self-improving system on free infrastructure, honestly
+benchmarked — survived the pivot intact. Only the subject changed, to one with
+genuinely live Philippine data.

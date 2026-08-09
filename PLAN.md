@@ -1,76 +1,93 @@
-# APAW — Phased Build Plan
+# APAW — Build Plan & Status
 
-> Self-improving dengue nowcaster. Free tier only. ~4 weeks part-time.
-> Full spec: [PRD.md](PRD.md). Kickoff context: [HANDOFF.md](HANDOFF.md).
+> Self-improving dam level and flood-watch nowcaster. Free tier only.
+> Spec: [PRD.md](PRD.md) · working contract: [CLAUDE.md](CLAUDE.md)
 
-## Proposed repo layout
+## Repo layout
 
 ```
-data/          fetchers (dengue, weather), cached snapshots (csv/parquet)
-model/         incremental model, drift detector, persisted state
-eval/          baseline, backtest, metrics logging, learning-curve builder
-pipeline/      the daily orchestration entrypoint (fetch → update → log → publish)
-web/           static dashboard (map, forecast chart, learning curve)
-.github/workflows/daily.yml   the cron
-CLAUDE.md      working contract
+data/      scrapers, the committed observation record, feature build
+             fetch_dams.py          dam levels + basin flood watch
+             fetch_weather.py       Open-Meteo, catchment-mean rainfall
+             fetch_rain_forecast.py archived forecasts at real lead times
+             backfill_wayback.py    one-shot history seed
+             build_table.py         join into the modelling table
+             dams.py                registry, aliases, catchment points
+model/     River models per (dam, horizon), pickled state
+eval/      baselines, prequential backtest, risk rules, basin forecaster,
+           prediction ledger, error log, metrics
+pipeline/  run.py — the loop
+web/       static dashboard (GitHub Pages)
+.github/workflows/daily.yml
 ```
 
-## Phase 0 — Data source (GATE, do this first)
+## Phase 0 — Collection ✅
 
-- [ ] Confirm a free, refreshable PH regional dengue case source (OpenDengue /
-      DOH-PIDSR). Document cadence, granularity, license, and how to fetch.
-- [ ] Build `data/fetch_dengue.py` → clean regional weekly table.
-- [ ] Build `data/fetch_weather.py` (Open-Meteo, no key) → daily weather per
-      region, with engineered lags.
-- [ ] Join into one modeling table; cache snapshots with timestamps.
-- **EXIT GATE:** one command produces a clean, refreshable regional table with
-  weather features. **No modeling before this passes.** If no free source
-  works, invoke the HANDOFF fallback and re-scope.
+- [x] `fetch_dams.py` — 9 dams from the PAGASA table, idempotent
+- [x] Basin flood watch (18 river basins + 4 sub-basins) from the same page
+- [x] `fetch_weather.py` — Open-Meteo archive + forecast, catchment mean
+- [x] `backfill_wayback.py` — 166 dates recovered, 2021–2026
+- [x] `build_table.py` — features and ΔRWL targets
+- [x] Twice-daily Action, committing the record
 
-## Phase 1 — Baseline + incremental model
+**Gate met:** the Action runs green and the CSV grows on its own.
 
-- [ ] Naive baselines: last-week persistence + seasonal-naive.
-- [ ] Incremental regressor per region (River or sklearn `partial_fit`),
-      horizons 1–4 weeks.
-- [ ] Chronological backtest (no leakage) vs baselines; log MAE per
-      region/horizon.
-- [ ] Persist model state to repo so learning is cumulative.
-- **EXIT GATE:** model beats (or honestly ties) the baseline at 2–4wk horizons
-  on the holdout; metrics written to `eval/`.
+## Phase 1 — Baselines + incremental model ✅
 
-## Phase 2 — The self-improving loop
+- [x] Persistence and drift baselines
+- [x] River regressor per (dam, horizon), 1–7 days, target ΔRWL
+- [x] Prequential backtest, no leakage
+- [x] State persisted and committed; the backtest warm-starts the live loop
 
-- [ ] `pipeline/run.py`: fetch new data → incremental update on newly labeled
-      weeks → log prediction-vs-actual error → rebuild learning curve →
-      publish dashboard data.
-- [ ] Drift detection (River ADWIN or rolling-error threshold); on drift, adapt
-      and flag in the log.
-- [ ] `.github/workflows/daily.yml`: cron, commits updated state + metrics.
-- **EXIT GATE:** the Action runs unattended for 3+ days, state persists across
-  runs, and the learning curve gains points automatically.
+**Gate met:** metrics published, losing horizons reported as losses.
 
-## Phase 3 — Dashboard + ship
+## Phase 2 — The self-improving loop ✅
 
-- [ ] Static dashboard: PH region risk map/heatmap, per-region forecast chart,
-      the self-improvement learning curve, model-performance panel.
-- [ ] Plain-language risk levels + educational disclaimer.
-- [ ] README (honest baseline comparison, how the loop works), demo GIF,
-      portfolio card, add to portfolio data.
-- **EXIT GATE:** live dashboard + green daily Action + write-up; card metric in
-  house format.
+- [x] `pipeline/run.py` — fetch → score due → learn → issue → publish
+- [x] Prediction ledger with the features captured at issue time
+- [x] ADWIN drift detection wired into both backtest and loop
+- [x] Fail-safe ordering: scrape first, commit even on failure
 
-## Success tiers (from PRD)
+**Gate met:** unattended runs, state persists, error log grows.
 
-- **Minimum:** incremental model + daily Action + baseline comparison + dashboard.
-- **Good:** + learning curve trending down, drift detection live.
-- **Headline:** beats baseline at 2–4wk, a documented drift-adapt event, multi-week
-  hands-off Actions streak.
+## Phase 3 — Dashboard ✅
 
-## Ponytail notes (keep it lazy)
+- [x] Animated dam cross-section with named elevation zones
+- [x] Nine-dam overview, forecast chart, learning curve, skill scoreboard
+- [x] Basin flood-watch board
+- [x] Plain/technical registers, light/dark themes
+- [x] Staleness banner, extrapolation flags, disclaimer
 
-- Reuse Hangin's Actions workflow and dashboard scaffolding — don't rebuild from
-  scratch.
-- Repo-committed model state is the free, versioned default; only reach for an
-  external store if state gets large.
-- One small online model per region; no ensemble/deep-learning until the simple
-  version is measured and proven insufficient.
+## Phase 4 — Honesty hardening ✅
+
+- [x] Real archived forecast rain at true lead times where the archive reaches
+      (2025→), ERA5 proxy elsewhere, **scored separately** so the optimism is
+      visible rather than assumed away
+- [x] Catchment-mean rainfall instead of a single point at the wall
+- [x] Horizons under 200 scored forecasts published but not ranked
+- [x] Second target: basin flood watch, with its own persistence baseline
+
+## What's next
+
+Ordered by value, not effort:
+
+1. **Accrue history.** Most of what remains weak is thin data. Longer horizons
+   and the basin classifier both unlock themselves as the collector runs.
+2. **Real catchment polygons.** The sampled cross is a stand-in; HydroSHEDS
+   basin boundaries are free and would make the rainfall input physically
+   correct.
+3. **Non-linear model** — but only once the linear one is measured and found
+   wanting. `tree.HoeffdingTreeRegressor` is the obvious next rung.
+4. **Inflow/outflow features.** PAGASA publishes both; they are collected and
+   currently unused.
+5. **Portfolio card** in the house format, once a horizon clears MIN_SCORED
+   with a real win.
+
+## Standing rules
+
+- Reuse [Hangin'](https://github.com/Zeref538/hangin)'s refresh-and-publish
+  pattern; only the fetcher, the online model, the drift detector and the
+  dashboard visuals are genuinely new.
+- Repo-committed state is the free, versioned default.
+- One small model per (dam, horizon); no ensembles until the simple version is
+  proven insufficient.

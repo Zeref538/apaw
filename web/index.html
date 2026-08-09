@@ -201,6 +201,14 @@ body {
   border-radius: var(--radius); padding: 20px 22px;
 }
 
+/* ---------- staleness banner ---------- */
+.stale {
+  margin: 18px 0 0; padding: 13px 16px; border-radius: var(--radius);
+  border: 1px solid var(--noticebd); border-left: 3px solid var(--spill);
+  background: var(--noticebg); font-size: 14.5px; color: var(--ink-2);
+}
+.stale b { color: var(--ink); }
+
 /* ---------- feature dam ---------- */
 .stage {
   border: 1px solid var(--rule-line); border-radius: var(--radius);
@@ -343,6 +351,11 @@ body {
   border-bottom: 1px solid var(--rule-line); margin-bottom: 4px;
 }
 .skillhead .split { display: flex; justify-content: space-between; }
+.srcnote {
+  margin: 16px 0 0; padding-top: 14px; border-top: 1px solid var(--rule-soft);
+  font-size: 13.5px; color: var(--muted);
+}
+.srcnote b { color: var(--ink-2); }
 
 /* ---------- notice ---------- */
 .notice {
@@ -411,6 +424,7 @@ footer.end a { color: var(--ink-2); }
       What a reservoir does when the rain keeps coming.
     </p>
     <dl class="readout" id="readout"></dl>
+    <div id="stale"></div>
   </header>
 
   <main id="main">
@@ -874,6 +888,20 @@ function readout() {
   const extra = dams.filter(d => d.extrapolating).length;
   const m = DATA.metrics || {};
   const wins = Object.values(m).filter(x => x.beats_baseline).length;
+  const age = DATA.data_age_days;
+  const stale = document.getElementById("stale");
+  if (age !== null && age !== undefined && age >= 2) {
+    stale.className = "stale";
+    stale.innerHTML = `The newest reading APAW has is <b>${age} days old</b>` +
+      (DATA.latest_observation ? ` (${DATA.latest_observation})` : "") +
+      `. PAGASA's bulletin may be down or its page may have changed, so the ` +
+      `forecasts below are running on stale input. Check ` +
+      `<a href="https://www.pagasa.dost.gov.ph/flood" target="_blank" rel="noopener">PAGASA</a> directly.`;
+  } else {
+    stale.className = "";
+    stale.innerHTML = "";
+  }
+
   document.getElementById("readout").innerHTML = `
     <div><dt>At or near full</dt><dd style="color:${V("--spill")}">${spill}<small> of ${dams.length}</small></dd></div>
     <div><dt>Above target</dt><dd style="color:${V("--watch")}">${watch}</dd></div>
@@ -1009,7 +1037,8 @@ function skill() {
   box.className = "panel";
   if (!hs.length) { box.innerHTML = `<div class="loading">Nothing scored yet.</div>`; return box; }
 
-  const worst = Math.max(...hs.map(h => Math.abs(m[h].mae_best_baseline - m[h].mae_model) / m[h].mae_best_baseline));
+  const ranked = hs.filter(h => m[h].enough_data !== false);
+  const worst = Math.max(0.01, ...ranked.map(h => Math.abs(m[h].mae_best_baseline - m[h].mae_model) / m[h].mae_best_baseline));
   const scale = Math.max(worst, 0.35);
 
   box.innerHTML = `<div class="skillhead">
@@ -1023,18 +1052,38 @@ function skill() {
     const r = m[h];
     const rel = (r.mae_best_baseline - r.mae_model) / r.mae_best_baseline; // >0 = we win
     const w = Math.min(Math.abs(rel) / scale, 1) * 50;
+    const thin = r.enough_data === false;
     const row = document.createElement("div");
     row.className = "skillrow";
+    // Too few scored forecasts to rank: show the count, not a verdict.
     row.innerHTML = `<span class="h">+${h}d</span>
-      <span class="skillbar">
+      <span class="skillbar">${thin ? "" : `
         <span class="mid"></span>
         <span class="bar" style="${rel >= 0
           ? `right:50%;width:${w}%;background:${V("--normal")}`
-          : `left:50%;width:${w}%;background:${V("--spill")}`}"></span>
+          : `left:50%;width:${w}%;background:${V("--spill")}`}"></span>`}
       </span>
-      <span class="val">${r.mae_model.toFixed(3)} vs ${r.mae_best_baseline.toFixed(3)} · n=${r.n}</span>`;
+      <span class="val">${thin
+        ? `only ${r.n} scored — too few to call`
+        : `${r.mae_model.toFixed(3)} vs ${r.mae_best_baseline.toFixed(3)} · n=${r.n}`}</span>`;
+    if (thin) row.style.opacity = "0.55";
     list.appendChild(row);
   });
+  const src = DATA.metrics_by_rain_source;
+  if (src && src.era5_proxy && src.forecast) {
+    const note = document.createElement("p");
+    note.className = "srcnote";
+    note.innerHTML =
+      `Forward rain comes from the <b>real archived forecast</b> where Open-Meteo's ` +
+      `archive reaches (2025 onward): MAE ${src.forecast.mae_model.toFixed(3)} m ` +
+      `(n=${src.forecast.n}). Older rows fall back to observed rain nobody could ` +
+      `have known at the time: MAE ${src.era5_proxy.mae_model.toFixed(3)} m ` +
+      `(n=${src.era5_proxy.n}). Those two groups are different eras as well as ` +
+      `different rain sources — the older rows are sparser and the model had ` +
+      `learned less by then — so this is not a clean measure of what the ` +
+      `shortcut was worth. It is published because the shortcut exists.`;
+    box.appendChild(note);
+  }
   box.appendChild(list);
   return box;
 }

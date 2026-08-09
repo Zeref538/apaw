@@ -24,16 +24,19 @@ from dams import DAMS, canonical  # noqa: E402
 HERE = Path(__file__).parent
 LEVELS = HERE / "dam_levels.csv"
 WEATHER = HERE / "weather.csv"
+RAIN_FCST = HERE / "rain_forecast.csv"
+BASINS = HERE / "basin_status.csv"
 OUT = HERE / "modeling_table.csv"
 
 HORIZONS = range(1, 8)
 RAIN_WINDOWS = (1, 3, 7, 14, 30)
 
-# ponytail: forward rainfall for historical rows comes from the ERA5 archive,
-# i.e. training assumes a perfect rain forecast while inference gets a real
-# (imperfect) one. This flatters the backtest. Fix by re-fetching Open-Meteo's
-# archived *forecasts* per issue date if the gap between backtest and live
-# error turns out to be large.
+# Forward rainfall prefers the real archived forecast at the lead time we would
+# have had (data/rain_forecast.csv). Open-Meteo's previous-runs archive only
+# reaches back to 2025, so earlier rows fall back to ERA5 observed rain — a
+# perfect-foresight proxy that flatters them. Every row records which it got in
+# `fcst_source`, and the backtest reports the two separately so the optimism is
+# measured rather than assumed away.
 
 
 def daily_levels() -> pd.DataFrame:
@@ -87,12 +90,67 @@ def weather_features() -> pd.DataFrame:
     return w
 
 
+def forecast_rain() -> pd.DataFrame:
+    """Rain expected over the next 3 and 7 days, as known on the issue date.
+
+    rain_next_Nd(t) = sum over k=1..N of the forecast for day t+k issued k days
+    earlier — which is precisely `lead == k` on date t+k.
+    """
+    if not RAIN_FCST.exists():
+        return pd.DataFrame(columns=["dam", "date", "fc_rain_next_3d",
+                                     "fc_rain_next_7d"])
+    f = pd.read_csv(RAIN_FCST)
+    f["date"] = pd.to_datetime(f["date"])
+    # Shift each row back to the issue date it was made on.
+    f["issue"] = f["date"] - pd.to_timedelta(f["lead"], unit="D")
+
+    out = []
+    for win in (3, 7):
+        w = f[f["lead"] <= win]
+        g = (w.groupby(["dam", "issue"])
+               .agg(total=("rain_mm", "sum"), n=("lead", "nunique"))
+               .reset_index())
+        # Only trust a window with every lead present, else it under-counts.
+        g = g[g["n"] == win]
+        out.append(g[["dam", "issue", "total"]]
+                   .rename(columns={"total": f"fc_rain_next_{win}d"}))
+    merged = out[0]
+    for extra in out[1:]:
+        merged = merged.merge(extra, on=["dam", "issue"], how="outer")
+    return merged.rename(columns={"issue": "date"})
+
+
+def basin_features() -> pd.DataFrame:
+    """Was this dam's own sub-basin under flood watch on the day?"""
+    if not BASINS.exists():
+        return pd.DataFrame(columns=["date", "basin_on_watch", "basins_on_watch"])
+    b = pd.read_csv(BASINS)
+    b["date"] = pd.to_datetime(b["date"])
+    rivers = b[b["kind"] == "river_basin"]
+    daily = (rivers.groupby("date")["on_watch"].sum()
+             .reset_index().rename(columns={"on_watch": "basins_on_watch"}))
+    return daily
+
+
 def build() -> pd.DataFrame:
     levels = daily_levels()
     weather = weather_features()
 
     feats = levels.merge(weather, on=["dam", "date"], how="left",
                          validate="one_to_one")
+
+    # Real lead-time forecast rain where the archive has it; ERA5 elsewhere.
+    fc = forecast_rain()
+    feats = feats.merge(fc, on=["dam", "date"], how="left")
+    feats["fcst_source"] = np.where(feats["fc_rain_next_7d"].notna(),
+                                    "forecast", "era5_proxy")
+    for win in (3, 7):
+        col, fcol = f"rain_next_{win}d", f"fc_rain_next_{win}d"
+        if fcol in feats:
+            feats[f"era5_{col}"] = feats[col]
+            feats[col] = feats[fcol].fillna(feats[col])
+
+    feats = feats.merge(basin_features(), on="date", how="left")
 
     doy = feats["date"].dt.dayofyear
     feats["doy_sin"] = np.sin(2 * np.pi * doy / 365.25)

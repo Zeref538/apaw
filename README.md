@@ -70,7 +70,9 @@ flatter itself.
 | Source | What | Cadence |
 |---|---|---|
 | [PAGASA `/flood`](https://www.pagasa.dost.gov.ph/flood) | Reservoir level, NHWL, rule curve, gate opening for 9 dams | Daily, 08:00 PHT |
-| [Open-Meteo](https://open-meteo.com) | Rainfall, temperature, humidity, ET₀ per dam | Archive to 1940 + 7-day forecast |
+| PAGASA `/flood`, same page | Flood watch for 18 river basins + 4 dam sub-basins — the only nationwide signal here | Daily |
+| [Open-Meteo](https://open-meteo.com) archive | Rainfall, temperature, humidity, ET₀, averaged over sampled catchment points | 2015→, ~5 day lag |
+| Open-Meteo previous runs | What the rain forecast *said*, at each lead time 1–7 days | 2025→ |
 | Wayback Machine | Historical seed of the PAGASA table | 166 dates, 2021–2026 |
 
 **PAGASA keeps no archive** — the page shows today and yesterday only. A missed
@@ -89,6 +91,10 @@ twice daily and why `data/dam_levels.csv` is committed rather than ignored.
   yesterday row it is the *t → t+1* change. Taken at face value a naive baseline
   "predicts" the next day to 0.05 m. It is recomputed from our own series, and
   `tests/test_build_table.py` keeps it that way.
+- **"Non-Flood Watch" contains "Flood Watch".** A substring test flips every
+  quiet basin into an alarm.
+- **Open-Meteo's forecast archive starts in 2025.** Earlier rows fall back to
+  observed rain and are scored separately, not quietly mixed in.
 - Coordinates come from PAGASA's KML, where **Magat's placemark is mislabelled
   `<name>Layers</name>`**.
 
@@ -124,8 +130,16 @@ web/      static dashboard (GitHub Pages)
 - The target is **ΔRWL over the horizon**, never the raw level. Levels are so
   autocorrelated that predicting them looks impressive while beating nothing.
 - Features at issue time *t* use observations up to *t* plus the rainfall
-  **forecast** for t+1…t+h, so the model is operational rather than merely
-  autoregressive.
+  **forecast** for t+1…t+h — and that forecast is the one actually archived at
+  that lead time, not observed rain reused as if it had been known. Rows
+  predating the forecast archive keep an ERA5 proxy and are reported under a
+  separate MAE so the optimism is visible.
+- Rainfall is a **catchment mean** over sampled points around each dam. Rain at
+  the wall is not what fills a reservoir.
+- A horizon with fewer than 200 scored forecasts is published with its sample
+  count and **not ranked**. Small-n verdicts are noise.
+- A second target rides along: whether each river basin will be under flood
+  watch, scored against the same persistence discipline.
 - The model is a plain scaler + linear regression. Trees and ensembles come
   only if the simple version is measured and found wanting.
 - Predictions are never clipped. When conditions exceed anything in the

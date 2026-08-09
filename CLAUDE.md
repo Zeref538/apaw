@@ -30,6 +30,16 @@ Spec: [PRD.md](PRD.md) · phases: [PLAN.md](PLAN.md)
   and Caliraya have no rule curve. Left as zero, every spill rule fires.
 - The Wayback seed is sparse (166 dates over 5 years) and mostly supports
   h=1. Longer horizons fill in as the collector accrues its own history.
+- **"Non-Flood Watch" contains "Flood Watch"** — a substring test turns every
+  quiet basin into an alarm. Test the negative first.
+- **Open-Meteo's previous-runs archive starts in 2025.** Earlier dates return
+  nulls, so those rows fall back to ERA5 observed rain and are scored under
+  `fcst_source == "era5_proxy"`, separately from real forecasts.
+- **`json.dump` writes bare `NaN`**, which is not valid JSON. One missing
+  reference elevation blanked the whole dashboard before `_clean()`.
+- SVG charts bake resolved colours into paint attributes, so a theme change
+  must redraw them. CSS variables alone never reach an attribute already in
+  the DOM.
 
 ## Commands
 
@@ -38,8 +48,12 @@ uv sync --group dev
 uv run pytest -q                      # always before touching the collector
 uv run python data/fetch_dams.py      # scrape today's levels (idempotent)
 uv run python data/fetch_weather.py   # Open-Meteo archive + 7-day forecast
+uv run python data/fetch_rain_forecast.py  # archived forecasts at real leads
 uv run python data/backfill_wayback.py  # one-shot; re-run retries failures
 uv run python data/build_table.py     # join into data/modeling_table.csv
+uv run python eval/backtest.py        # honest scoreboard + warm-start state
+uv run python eval/basin_forecast.py  # the second target
+uv run python pipeline/run.py         # one full cycle
 ```
 
 ## Conventions
@@ -49,6 +63,13 @@ uv run python data/build_table.py     # join into data/modeling_table.csv
 - Features at issue-time *t* use observations up to *t* plus the rainfall
   *forecast* for t+1..t+h. Backward windows must never include t+1 — there are
   tests for this; keep them.
+- Forward rain uses the **archived forecast at the lead time we would have
+  had**, not observed reanalysis. Where the archive doesn't reach, the row is
+  marked `era5_proxy` and scored separately — never silently mixed in.
+- Rainfall is a **catchment mean** over sampled points, not a reading at the
+  wall.
+- A horizon under `MIN_SCORED` (200) scored forecasts is published with its n
+  and explicitly not ranked. Never call a winner on a handful of points.
 - Deliberate shortcuts get a `ponytail:` comment naming the ceiling and the
-  upgrade path. Two are live: point-rainfall instead of catchment-mean, and
-  perfect-foresight rain in the backtest.
+  upgrade path. One is live: the catchment cross is a stand-in for real
+  watershed polygons.

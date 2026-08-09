@@ -20,7 +20,7 @@ import requests
 
 # Importable both as `python data/fetch_weather.py` and `from data import ...`.
 sys.path.insert(0, str(Path(__file__).parent))
-from dams import DAMS, canonical  # noqa: E402
+from dams import DAMS, canonical, catchment_points  # noqa: E402
 
 ARCHIVE = "https://archive-api.open-meteo.com/v1/archive"
 FORECAST = "https://api.open-meteo.com/v1/forecast"
@@ -36,10 +36,13 @@ DAILY = [
 TZ = "Asia/Manila"
 KEY = ["dam", "date"]
 
-# ponytail: rainfall sampled at the dam wall, not averaged over the upstream
-# catchment. Catchment-mean rainfall is the physically right input; upgrade to
-# a polygon mean (or a few upstream points per dam) if the point value proves
-# too weak a predictor of inflow.
+# Rainfall is averaged over a cross of points around each dam rather than read
+# at the wall — see dams.catchment_points. Open-Meteo takes many coordinates in
+# one request, so the spatial mean costs no extra calls.
+
+
+class RateLimited(RuntimeError):
+    """Open-Meteo's free tier is capped per hour, not per request burst."""
 
 
 def _get(url: str, params: dict) -> dict:
@@ -56,17 +59,28 @@ def _get(url: str, params: dict) -> dict:
             time.sleep(3 * (attempt + 1))
             continue
         if r.status_code == 429:
-            time.sleep(10 * (attempt + 1))
-            continue
+            # The cap is hourly; short retries just burn the remaining budget.
+            raise RateLimited(
+                "Open-Meteo hourly request limit hit. Existing data is left "
+                "untouched; re-run in an hour to continue.")
         r.raise_for_status()
         return r.json()
     raise RuntimeError(f"Open-Meteo unreachable after retries: {url}")
 
 
-def _frame(payload: dict, dam: str, source: str) -> pd.DataFrame:
-    df = pd.DataFrame(payload["daily"]).rename(columns={"time": "date"})
+def _frame(payload, dam: str, source: str) -> pd.DataFrame:
+    """Mean the sampled points into one daily series per dam.
+
+    A multi-coordinate request returns a list, one entry per point; a single
+    coordinate returns a bare object.
+    """
+    parts = payload if isinstance(payload, list) else [payload]
+    frames = [pd.DataFrame(p["daily"]).rename(columns={"time": "date"}) for p in parts]
+    stacked = pd.concat(frames, ignore_index=True)
+    df = stacked.groupby("date", as_index=False).mean(numeric_only=True)
     df.insert(0, "dam", canonical(dam))
     df["source"] = source
+    df["n_points"] = len(parts)
     return df
 
 
@@ -81,10 +95,13 @@ def _year_chunks(start: date, end: date):
 
 def fetch_archive(start: date, end: date) -> pd.DataFrame:
     out = []
-    for dam, meta in DAMS.items():
+    for dam in DAMS:
+        pts = catchment_points(dam)
+        lats = ",".join(str(a) for a, _ in pts)
+        lons = ",".join(str(b) for _, b in pts)
         for chunk_start, chunk_end in _year_chunks(start, end):
             payload = _get(ARCHIVE, {
-                "latitude": meta["lat"], "longitude": meta["lon"],
+                "latitude": lats, "longitude": lons,
                 "start_date": chunk_start.isoformat(),
                 "end_date": chunk_end.isoformat(),
                 "daily": ",".join(DAILY), "timezone": TZ,
@@ -96,9 +113,11 @@ def fetch_archive(start: date, end: date) -> pd.DataFrame:
 
 def fetch_forecast(past_days: int = 14, forecast_days: int = 7) -> pd.DataFrame:
     out = []
-    for dam, meta in DAMS.items():
+    for dam in DAMS:
+        pts = catchment_points(dam)
         payload = _get(FORECAST, {
-            "latitude": meta["lat"], "longitude": meta["lon"],
+            "latitude": ",".join(str(a) for a, _ in pts),
+            "longitude": ",".join(str(b) for _, b in pts),
             "daily": ",".join(DAILY), "timezone": TZ,
             "past_days": past_days, "forecast_days": forecast_days,
         })
@@ -121,12 +140,18 @@ def merge(new: pd.DataFrame, out: Path = OUT) -> pd.DataFrame:
         .drop(columns="_rank")
         .sort_values(KEY)
     )
-    combined.to_csv(out, index=False)
+    # Write via a temp file and swap. A half-finished or rate-limited rebuild
+    # must never leave the collected record truncated or missing.
+    tmp = out.with_suffix(".csv.tmp")
+    combined.to_csv(tmp, index=False)
+    tmp.replace(out)
     return combined
 
 
 def main() -> int:
-    backfill_from = date(2015, 1, 1) if not OUT.exists() else None
+    # Dam observations only start in 2021 (the Wayback seed), so pulling rain
+    # back to 2015 was 6 years of requests nothing could ever join to.
+    backfill_from = date(2021, 1, 1) if not OUT.exists() else None
 
     if backfill_from:
         print(f"first run: pulling archive from {backfill_from}")

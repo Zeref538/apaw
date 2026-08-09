@@ -1,75 +1,84 @@
-# APAW — Handoff / Kickoff Context
+# APAW — Context for a fresh session
 
-> Copy this whole folder into a fresh empty repo folder, open a new session
-> there, and paste the "Kickoff prompt" below. This file is the context a fresh
-> agent needs to start building with zero prior conversation.
+> What someone (or some agent) needs to know before touching this repo, with
+> no prior conversation. Spec: [PRD.md](PRD.md) · status: [PLAN.md](PLAN.md) ·
+> rules: [CLAUDE.md](CLAUDE.md)
 
 ## What this is
 
-**APAW** — a self-improving dengue nowcaster for the Philippines. Predicts
-regional dengue cases 1–4 weeks ahead from weather + case history, and keeps
-improving via incremental (online) learning on a free, scheduled pipeline.
-Full spec in [PRD.md](PRD.md); phased build in [PLAN.md](PLAN.md).
+**APAW** — *Adaptive Prediction of Accumulating Water*; also *apaw*, Filipino
+for *to overflow*. It forecasts reservoir water level 1–7 days ahead for the
+nine major Luzon dams, flags spill risk in plain language, tracks which river
+basins are under flood watch nationwide, and improves itself on every run.
+
+Live: https://zeref538.github.io/apaw/ · Repo: https://github.com/Zeref538/apaw
 
 The one-sentence identity: **a live ML system that learns every cycle and
 proves it with a visible learning curve — all on free infrastructure.**
 
-## Who it's for / who's building it
+## Who's building it
 
-- Owner: John Andrei Martinez (GitHub `Zeref538`) — AI/ML engineering student,
-  portfolio at johnandrei.vercel.app. This becomes a portfolio project card.
-- Sibling project: **Hangin'** (github.com/Zeref538/hangin) — PH air-quality
-  forecaster. APAW reuses Hangin's proven pattern (GitHub Actions hourly/daily
-  refresh, honest backtest vs naive baseline, React dashboard) and ADDS the new
-  parts: online/incremental learning, drift detection, and a self-improvement
-  learning curve. Study Hangin' first as the template.
+Owner: John Andrei Martinez (GitHub `Zeref538`), AI/ML engineering student,
+portfolio at johnandrei.vercel.app.
 
-## Non-negotiable constraints (these are hard requirements)
+Sibling project: **Hangin'** (github.com/Zeref538/hangin), a PH air-quality
+forecaster. APAW reuses its refresh-and-publish pattern and its
+plain-English-then-technical voice, but has its own visual identity — a light
+bathymetric chart rather than Hangin's dark console.
 
-1. **₱0 cost.** Free tier only — GitHub Actions cron, open/public data,
-   Open-Meteo (no key), free static host (Vercel or GitHub Pages). If a step
-   seems to need paid compute/data/GPU, stop and re-scope. No exceptions.
-2. **Honest evaluation.** Every result compared to a naive persistence baseline
-   on a chronological holdout. A model that can't beat persistence at some
-   horizon is reported as such — no cherry-picking.
-3. **Incremental, not retrain-from-scratch.** The daily/weekly loop uses
-   `partial_fit` / River. Cumulative model state persists between runs.
-4. **Educational framing.** Not a medical tool. Visible disclaimer. No clinical
-   or individual advice.
+## Non-negotiable constraints
 
-## The single biggest risk — resolve it FIRST
+1. **₱0.** GitHub Actions, open data, Open-Meteo (no key), GitHub Pages. If
+   something needs paid compute or data, stop and re-scope.
+2. **Honest evaluation.** Every result against a naive baseline, prequentially.
+   Horizons where the baseline wins are published as losses.
+3. **Incremental, not retrain-from-scratch.** River `learn_one`; state persists
+   between runs.
+4. **Educational framing.** Not an official warning. PAGASA and the LGUs are
+   the authorities.
 
-**Is there a free, refreshable source of PH regional dengue case data?**
-Phase 0 exists to answer this before any modeling. Candidates: OpenDengue global
-database (includes PH), DOH/PIDSR weekly bulletins. If none refreshes cleanly
-for free, the documented fallbacks are: (a) switch to ILI/flu or another
-reportable disease with open data, or (b) a clearly-labeled
-"historical + simulated live updates" mode. **Do not build the model until a
-data source is confirmed.**
+## The things that will bite you
 
-## Kickoff prompt (paste into the fresh session)
+These cost real debugging time to find. All are pinned by tests — keep them.
 
-> I'm starting APAW, a self-improving dengue nowcaster for the Philippines.
-> Read PRD.md, PLAN.md, and HANDOFF.md in this folder — they're the full spec.
-> Hard constraints: free tier only (GitHub Actions + open data + Open-Meteo +
-> free static host), honest backtest vs a naive baseline, incremental learning
-> via River/partial_fit, educational framing with a disclaimer. Start with
-> Phase 0: confirm a free, refreshable PH dengue data source and build the
-> fetcher — do NOT build the model until the data source is proven. Show me the
-> Phase 0 plan and the data-source options you find before writing pipeline
-> code.
+- **PAGASA keeps no archive.** `/flood` shows today and yesterday only. A
+  missed collector run is a permanently lost observation. This is why the cron
+  runs twice daily and why `data/dam_levels.csv` is committed, never ignored.
+- **Nine dams, not eight.** San Roque sits in the table with the seven usual.
+- **Magat appears as both "Magat" and "Magat Dam"** across the history. Names
+  go through `data/dams.py:canonical()` on the way in.
+- **`0.00` means "not defined", not zero.** Caliraya has no NHWL; Ipo, La Mesa
+  and Caliraya have no rule curve. Left as zero, every spill rule fires.
+- **The published 24-hour deviation leaks the future.** PAGASA prints one value
+  per snapshot and shows it against both the today and yesterday rows, so on
+  the yesterday row it is the *t → t+1* change. Taken at face value, a naive
+  baseline "predicts" the next day to 0.05 m. It is recomputed from our own
+  series in `build_table.py`.
+- **"Non-Flood Watch" contains "Flood Watch".** A substring test flips every
+  quiet basin into an alarm.
+- **Coordinates** come from PAGASA's KML, where **Magat's placemark is
+  mislabelled `<name>Layers</name>`**.
+- **Open-Meteo's previous-runs archive starts in 2025.** Earlier dates return
+  nulls, so older rows fall back to ERA5 observed rain and are scored
+  separately.
+- **`json.dump` writes bare `NaN`**, which is invalid JSON — one missing
+  reference elevation blanked the whole dashboard until `_clean()` was added.
 
-## First moves for the new agent
+## First moves in a fresh session
 
-1. Confirm the data source (Phase 0 gate) — report options + a working fetch.
-2. Set up the repo: `git init`, a `CLAUDE.md` working contract, `pyproject.toml`,
-   and the folder layout in PLAN.md.
-3. Only after data is proven: baseline → incremental model → Actions loop →
-   dashboard, following PLAN.md phases in order.
+1. `uv sync --group dev && uv run pytest -q` — 21 tests; they encode the traps
+   above.
+2. `uv run python pipeline/run.py` — one full cycle locally.
+3. Check the Action is still green. If the parser broke, PAGASA changed the
+   page; fix the parser and refresh `tests/fixtures/`.
 
-## Definition of done (v1)
+## Definition of done (v1) — reached
 
-A live dashboard showing regional dengue forecasts and a learning curve that
-trends down over time; a green daily GitHub Action running unattended; a README
-with the honest baseline comparison; and a portfolio card in the house format
-(metric like `beats naive at 2–4wk · learns weekly`).
+A live dashboard, a green twice-daily Action running unattended, an honest
+baseline comparison including losses, and a growing archive that PAGASA itself
+does not keep.
+
+## Where to take it next
+
+See PLAN.md §What's next. The short version: the biggest remaining constraint
+is simply **history**, and the collector fixes that by running.

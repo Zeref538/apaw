@@ -44,3 +44,30 @@ DAMS = {
 # Dams PAGASA publishes no rule curve or NHWL for; excluded from spill risk.
 NO_RULE_CURVE = {"Ipo", "La Mesa", "Caliraya"}
 NO_NHWL = {"Caliraya"}
+
+
+# Rain at the dam wall is not what fills a reservoir — rain over the upstream
+# catchment is. Without watershed polygons we sample a cross around each dam
+# and average, which is a coarse stand-in for a catchment mean but strictly
+# better than a single point.
+#
+# ponytail: a symmetric cross, not a real watershed. The upgrade is HydroSHEDS
+# basin polygons (free) and an area-weighted mean over the actual drainage.
+CATCHMENT_RADIUS_KM = 12.0
+_KM_PER_DEG = 111.32
+
+
+def catchment_points(dam: str) -> list[tuple[float, float]]:
+    """Centre plus four offsets, in degrees, around the dam."""
+    import math
+    meta = DAMS[dam]
+    lat, lon = meta["lat"], meta["lon"]
+    dlat = CATCHMENT_RADIUS_KM / _KM_PER_DEG
+    dlon = CATCHMENT_RADIUS_KM / (_KM_PER_DEG * math.cos(math.radians(lat)))
+    return [
+        (lat, lon),
+        (round(lat + dlat, 4), lon),
+        (round(lat - dlat, 4), lon),
+        (lat, round(lon + dlon, 4)),
+        (lat, round(lon - dlon, 4)),
+    ]
