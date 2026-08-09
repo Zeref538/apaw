@@ -1,0 +1,19 @@
+[project]
+name = "pulso"
+version = "0.1.0"
+description = "Self-improving PAGASA dam level and spill-risk nowcaster"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.2,<3",
+    "lxml>=5.2,<6",       # pandas.read_html backend
+    "requests>=2.32,<3",
+    # 0.21 ships no cp313 wheel and its sdist fails to cythonize; 0.25 has
+    # wheels for 3.11-3.14.
+    "river>=0.25,<0.26",  # online learning + ADWIN drift detection
+]
+
+[dependency-groups]
+dev = ["pytest>=8.2,<9"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

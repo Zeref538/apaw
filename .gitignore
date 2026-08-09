@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+uv.lock.bak
+
+# Derived — rebuilt by data/build_table.py from the two source CSVs.
+data/modeling_table.csv
+
+# Not derived, never ignore: data/dam_levels.csv and data/weather.csv are the
+# collected record. PAGASA keeps no archive, so a lost row is lost forever.
+
+# Local screenshots / browser scratch
+*.png
+!web/public/*.png
+.playwright-mcp/

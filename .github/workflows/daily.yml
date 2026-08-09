@@ -1,0 +1,69 @@
+name: daily
+
+# PAGASA's page shows only today and yesterday, so a missed run is a
+# permanently lost observation. Twice daily: after the 08:00 PHT update, and
+# again in the afternoon for same-day revisions.
+#
+# Ordering is deliberate. The scrape runs before the model, and the commit step
+# runs even when later steps fail, so a bug in the modelling code can never
+# cost us the one thing that cannot be re-fetched: the raw reading.
+on:
+  schedule:
+    - cron: "30 0 * * *"   # 08:30 PHT
+    - cron: "30 6 * * *"   # 14:30 PHT
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - run: uv sync --group dev
+
+      # Surfaces a PAGASA layout change without blocking collection: if the
+      # table really did move, the parser raises and writes nothing anyway.
+      - name: Tests
+        id: tests
+        continue-on-error: true
+        run: uv run pytest -q
+
+      - name: Scrape dam levels
+        id: scrape
+        run: uv run python data/fetch_dams.py
+
+      - name: Run the loop
+        id: loop
+        continue-on-error: true
+        run: uv run python pipeline/run.py
+
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data eval model/state web/data
+          if git diff --cached --quiet; then
+            echo "nothing new"
+            exit 0
+          fi
+          git commit -m "data: pulso run $(date -u +%Y-%m-%dT%H:%MZ)"
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+          git push
+
+      - name: Fail if the scrape or tests broke
+        if: always() && (steps.tests.outcome == 'failure' || steps.loop.outcome == 'failure')
+        run: |
+          echo "tests=${{ steps.tests.outcome }} loop=${{ steps.loop.outcome }}"
+          exit 1

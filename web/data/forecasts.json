@@ -1,0 +1,1743 @@
+{
+  "generated_at": "2026-08-09T17:18:26",
+  "dams": [
+    {
+      "dam": "Ambuklao",
+      "lat": 16.46111,
+      "lon": 120.74389,
+      "issue_date": "2026-08-09",
+      "rwl_m": 752.0,
+      "nhwl_m": 752.0,
+      "rule_curve_m": 745.0,
+      "risk": "Spill Watch",
+      "risk_note": "Forecast level reaches the normal high water level within 7 days; a gate release becomes likely.",
+      "extrapolating": true,
+      "rain_7d": 378.9,
+      "rain_next_7d": 147.2,
+      "observed": [
+        {
+          "date": "2026-06-29",
+          "rwl_m": 740.32
+        },
+        {
+          "date": "2026-06-30",
+          "rwl_m": 740.33
+        },
+        {
+          "date": "2026-07-27",
+          "rwl_m": 741.53
+        },
+        {
+          "date": "2026-07-28",
+          "rwl_m": 741.67
+        },
+        {
+          "date": "2026-08-06",
+          "rwl_m": 746.19
+        },
+        {
+          "date": "2026-08-07",
+          "rwl_m": 750.65
+        },
+        {
+          "date": "2026-08-08",
+          "rwl_m": 751.27
+        },
+        {
+          "date": "2026-08-09",
+          "rwl_m": 752.0
+        }
+      ],
+      "forecasts": [
+        {
+          "horizon": 1,
+          "target_date": "2026-08-10",
+          "pred_delta": 2.264,
+          "pred_rwl_m": 754.264,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 2,
+          "target_date": "2026-08-11",
+          "pred_delta": 3.592,
+          "pred_rwl_m": 755.592,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 3,
+          "target_date": "2026-08-12",
+          "pred_delta": 9.653,
+          "pred_rwl_m": 761.653,
+          "beyond_observed_rise": true
+        },
+        {
+          "horizon": 4,
+          "target_date": "2026-08-13",
+          "pred_delta": -2.65,
+          "pred_rwl_m": 749.35,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 5,
+          "target_date": "2026-08-14",
+          "pred_delta": 0.933,
+          "pred_rwl_m": 752.933,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 6,
+          "target_date": "2026-08-15",
+          "pred_delta": 2.619,
+          "pred_rwl_m": 754.619,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 7,
+          "target_date": "2026-08-16",
+          "pred_delta": -0.326,
+          "pred_rwl_m": 751.674,
+          "beyond_observed_rise": false
+        }
+      ]
+    },
+    {
+      "dam": "Angat",
+      "lat": 14.91139,
+      "lon": 121.165,
+      "issue_date": "2026-08-09",
+      "rwl_m": 161.81,
+      "nhwl_m": 210.0,
+      "rule_curve_m": 181.02,
+      "risk": "Normal",
+      "risk_note": "Forecast level stays below the operating rule curve.",
+      "extrapolating": true,
+      "rain_7d": 245.9,
+      "rain_next_7d": 122.4,
+      "observed": [
+        {
+          "date": "2026-06-29",
+          "rwl_m": 160.71
+        },
+        {
+          "date": "2026-06-30",
+          "rwl_m": 159.95
+        },
+        {
+          "date": "2026-07-27",
+          "rwl_m": 151.05
+        },
+        {
+          "date": "2026-07-28",
+          "rwl_m": 150.91
+        },
+        {
+          "date": "2026-08-06",
+          "rwl_m": 157.49
+        },
+        {
+          "date": "2026-08-07",
+          "rwl_m": 158.13
+        },
+        {
+          "date": "2026-08-08",
+          "rwl_m": 158.89
+        },
+        {
+          "date": "2026-08-09",
+          "rwl_m": 161.81
+        }
+      ],
+      "forecasts": [
+        {
+          "horizon": 1,
+          "target_date": "2026-08-10",
+          "pred_delta": 3.676,
+          "pred_rwl_m": 165.486,
+          "beyond_observed_rise": true
+        },
+        {
+          "horizon": 2,
+          "target_date": "2026-08-11",
+          "pred_delta": 4.407,
+          "pred_rwl_m": 166.217,
+          "beyond_observed_rise": true
+        },
+        {
+          "horizon": 3,
+          "target_date": "2026-08-12",
+          "pred_delta": 6.011,
+          "pred_rwl_m": 167.821,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 4,
+          "target_date": "2026-08-13",
+          "pred_delta": 1.502,
+          "pred_rwl_m": 163.312,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 5,
+          "target_date": "2026-08-14",
+          "pred_delta": -0.233,
+          "pred_rwl_m": 161.577,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 6,
+          "target_date": "2026-08-15",
+          "pred_delta": 0.818,
+          "pred_rwl_m": 162.628,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 7,
+          "target_date": "2026-08-16",
+          "pred_delta": -0.452,
+          "pred_rwl_m": 161.358,
+          "beyond_observed_rise": false
+        }
+      ]
+    },
+    {
+      "dam": "Binga",
+      "lat": 16.39611,
+      "lon": 120.72667,
+      "issue_date": "2026-08-09",
+      "rwl_m": 575.0,
+      "nhwl_m": 575.0,
+      "rule_curve_m": 565.0,
+      "risk": "Spill Watch",
+      "risk_note": "Forecast level reaches the normal high water level within 7 days; a gate release becomes likely.",
+      "extrapolating": true,
+      "rain_7d": 378.9,
+      "rain_next_7d": 147.2,
+      "observed": [
+        {
+          "date": "2026-06-29",
+          "rwl_m": 567.72
+        },
+        {
+          "date": "2026-06-30",
+          "rwl_m": 567.16
+        },
+        {
+          "date": "2026-07-27",
+          "rwl_m": 570.61
+        },
+        {
+          "date": "2026-07-28",
+          "rwl_m": 570.82
+        },
+        {
+          "date": "2026-08-06",
+          "rwl_m": 571.62
+        },
+        {
+          "date": "2026-08-07",
+          "rwl_m": 573.75
+        },
+        {
+          "date": "2026-08-08",
+          "rwl_m": 574.34
+        },
+        {
+          "date": "2026-08-09",
+          "rwl_m": 575.0
+        }
+      ],
+      "forecasts": [
+        {
+          "horizon": 1,
+          "target_date": "2026-08-10",
+          "pred_delta": 1.597,
+          "pred_rwl_m": 576.597,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 2,
+          "target_date": "2026-08-11",
+          "pred_delta": 2.622,
+          "pred_rwl_m": 577.622,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 3,
+          "target_date": "2026-08-12",
+          "pred_delta": 7.475,
+          "pred_rwl_m": 582.475,
+          "beyond_observed_rise": true
+        },
+        {
+          "horizon": 4,
+          "target_date": "2026-08-13",
+          "pred_delta": 3.206,
+          "pred_rwl_m": 578.206,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 5,
+          "target_date": "2026-08-14",
+          "pred_delta": 3.801,
+          "pred_rwl_m": 578.801,
+          "beyond_observed_rise": true
+        },
+        {
+          "horizon": 6,
+          "target_date": "2026-08-15",
+          "pred_delta": 2.936,
+          "pred_rwl_m": 577.936,
+          "beyond_observed_rise": true
+        },
+        {
+          "horizon": 7,
+          "target_date": "2026-08-16",
+          "pred_delta": 6.545,
+          "pred_rwl_m": 581.545,
+          "beyond_observed_rise": true
+        }
+      ]
+    },
+    {
+      "dam": "Caliraya",
+      "lat": 14.2883,
+      "lon": 121.5014,
+      "issue_date": "2026-08-09",
+      "rwl_m": 286.99,
+      "nhwl_m": null,
+      "rule_curve_m": null,
+      "risk": "Not rated",
+      "risk_note": "PAGASA publishes no reference elevation for this dam.",
+      "extrapolating": false,
+      "rain_7d": 215.7,
+      "rain_next_7d": 36.0,
+      "observed": [
+        {
+          "date": "2026-06-29",
+          "rwl_m": 286.46
+        },
+        {
+          "date": "2026-06-30",
+          "rwl_m": 286.46
+        },
+        {
+          "date": "2026-07-27",
+          "rwl_m": 287.13
+        },
+        {
+          "date": "2026-07-28",
+          "rwl_m": 287.01
+        },
+        {
+          "date": "2026-08-06",
+          "rwl_m": 286.91
+        },
+        {
+          "date": "2026-08-07",
+          "rwl_m": 286.78
+        },
+        {
+          "date": "2026-08-08",
+          "rwl_m": 286.75
+        },
+        {
+          "date": "2026-08-09",
+          "rwl_m": 286.99
+        }
+      ],
+      "forecasts": [
+        {
+          "horizon": 1,
+          "target_date": "2026-08-10",
+          "pred_delta": 0.321,
+          "pred_rwl_m": 287.311,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 2,
+          "target_date": "2026-08-11",
+          "pred_delta": 0.333,
+          "pred_rwl_m": 287.323,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 3,
+          "target_date": "2026-08-12",
+          "pred_delta": 0.135,
+          "pred_rwl_m": 287.125,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 4,
+          "target_date": "2026-08-13",
+          "pred_delta": -0.52,
+          "pred_rwl_m": 286.47,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 5,
+          "target_date": "2026-08-14",
+          "pred_delta": -0.279,
+          "pred_rwl_m": 286.711,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 6,
+          "target_date": "2026-08-15",
+          "pred_delta": -0.248,
+          "pred_rwl_m": 286.742,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 7,
+          "target_date": "2026-08-16",
+          "pred_delta": -0.179,
+          "pred_rwl_m": 286.811,
+          "beyond_observed_rise": false
+        }
+      ]
+    },
+    {
+      "dam": "Ipo",
+      "lat": 14.875,
+      "lon": 121.06222,
+      "issue_date": "2026-08-09",
+      "rwl_m": 101.78,
+      "nhwl_m": 101.1,
+      "rule_curve_m": null,
+      "risk": "Spill Watch",
+      "risk_note": "Forecast level reaches the normal high water level within 7 days; a gate release becomes likely.",
+      "extrapolating": true,
+      "rain_7d": 203.9,
+      "rain_next_7d": 93.8,
+      "observed": [
+        {
+          "date": "2026-06-29",
+          "rwl_m": 100.18
+        },
+        {
+          "date": "2026-06-30",
+          "rwl_m": 100.25
+        },
+        {
+          "date": "2026-07-27",
+          "rwl_m": 99.79
+        },
+        {
+          "date": "2026-07-28",
+          "rwl_m": 99.6
+        },
+        {
+          "date": "2026-08-06",
+          "rwl_m": 100.06
+        },
+        {
+          "date": "2026-08-07",
+          "rwl_m": 100.33
+        },
+        {
+          "date": "2026-08-08",
+          "rwl_m": 100.28
+        },
+        {
+          "date": "2026-08-09",
+          "rwl_m": 101.78
+        }
+      ],
+      "forecasts": [
+        {
+          "horizon": 1,
+          "target_date": "2026-08-10",
+          "pred_delta": 0.367,
+          "pred_rwl_m": 102.147,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 2,
+          "target_date": "2026-08-11",
+          "pred_delta": 0.501,
+          "pred_rwl_m": 102.281,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 3,
+          "target_date": "2026-08-12",
+          "pred_delta": 0.121,
+          "pred_rwl_m": 101.901,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 4,
+          "target_date": "2026-08-13",
+          "pred_delta": -0.418,
+          "pred_rwl_m": 101.362,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 5,
+          "target_date": "2026-08-14",
+          "pred_delta": -0.086,
+          "pred_rwl_m": 101.694,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 6,
+          "target_date": "2026-08-15",
+          "pred_delta": 0.048,
+          "pred_rwl_m": 101.828,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 7,
+          "target_date": "2026-08-16",
+          "pred_delta": -0.058,
+          "pred_rwl_m": 101.722,
+          "beyond_observed_rise": false
+        }
+      ]
+    },
+    {
+      "dam": "La Mesa",
+      "lat": 14.71372,
+      "lon": 121.07316,
+      "issue_date": "2026-08-09",
+      "rwl_m": 79.72,
+      "nhwl_m": 80.15,
+      "rule_curve_m": null,
+      "risk": "Normal",
+      "risk_note": "Forecast level stays below the operating rule curve.",
+      "extrapolating": false,
+      "rain_7d": 202.6,
+      "rain_next_7d": 77.4,
+      "observed": [
+        {
+          "date": "2026-06-29",
+          "rwl_m": 79.86
+        },
+        {
+          "date": "2026-06-30",
+          "rwl_m": 79.86
+        },
+        {
+          "date": "2026-07-27",
+          "rwl_m": 79.11
+        },
+        {
+          "date": "2026-07-28",
+          "rwl_m": 79.26
+        },
+        {
+          "date": "2026-08-06",
+          "rwl_m": 79.44
+        },
+        {
+          "date": "2026-08-07",
+          "rwl_m": 79.41
+        },
+        {
+          "date": "2026-08-08",
+          "rwl_m": 79.37
+        },
+        {
+          "date": "2026-08-09",
+          "rwl_m": 79.72
+        }
+      ],
+      "forecasts": [
+        {
+          "horizon": 1,
+          "target_date": "2026-08-10",
+          "pred_delta": 0.042,
+          "pred_rwl_m": 79.762,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 2,
+          "target_date": "2026-08-11",
+          "pred_delta": 0.116,
+          "pred_rwl_m": 79.836,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 3,
+          "target_date": "2026-08-12",
+          "pred_delta": 0.233,
+          "pred_rwl_m": 79.953,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 4,
+          "target_date": "2026-08-13",
+          "pred_delta": 0.063,
+          "pred_rwl_m": 79.783,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 5,
+          "target_date": "2026-08-14",
+          "pred_delta": 0.018,
+          "pred_rwl_m": 79.738,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 6,
+          "target_date": "2026-08-15",
+          "pred_delta": 0.032,
+          "pred_rwl_m": 79.752,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 7,
+          "target_date": "2026-08-16",
+          "pred_delta": -0.051,
+          "pred_rwl_m": 79.669,
+          "beyond_observed_rise": false
+        }
+      ]
+    },
+    {
+      "dam": "Magat",
+      "lat": 16.83333,
+      "lon": 121.45056,
+      "issue_date": "2026-08-09",
+      "rwl_m": 170.73,
+      "nhwl_m": 190.0,
+      "rule_curve_m": 179.68,
+      "risk": "Normal",
+      "risk_note": "Forecast level stays below the operating rule curve.",
+      "extrapolating": false,
+      "rain_7d": 133.0,
+      "rain_next_7d": 54.9,
+      "observed": [
+        {
+          "date": "2026-06-29",
+          "rwl_m": 165.55
+        },
+        {
+          "date": "2026-06-30",
+          "rwl_m": 164.89
+        },
+        {
+          "date": "2026-07-27",
+          "rwl_m": 161.21
+        },
+        {
+          "date": "2026-07-28",
+          "rwl_m": 161.05
+        },
+        {
+          "date": "2026-08-06",
+          "rwl_m": 166.39
+        },
+        {
+          "date": "2026-08-07",
+          "rwl_m": 168.32
+        },
+        {
+          "date": "2026-08-08",
+          "rwl_m": 169.62
+        },
+        {
+          "date": "2026-08-09",
+          "rwl_m": 170.73
+        }
+      ],
+      "forecasts": [
+        {
+          "horizon": 1,
+          "target_date": "2026-08-10",
+          "pred_delta": 0.852,
+          "pred_rwl_m": 171.582,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 2,
+          "target_date": "2026-08-11",
+          "pred_delta": 1.765,
+          "pred_rwl_m": 172.495,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 3,
+          "target_date": "2026-08-12",
+          "pred_delta": 2.054,
+          "pred_rwl_m": 172.784,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 4,
+          "target_date": "2026-08-13",
+          "pred_delta": 0.06,
+          "pred_rwl_m": 170.79,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 5,
+          "target_date": "2026-08-14",
+          "pred_delta": 3.176,
+          "pred_rwl_m": 173.906,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 6,
+          "target_date": "2026-08-15",
+          "pred_delta": 0.203,
+          "pred_rwl_m": 170.933,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 7,
+          "target_date": "2026-08-16",
+          "pred_delta": -1.825,
+          "pred_rwl_m": 168.905,
+          "beyond_observed_rise": false
+        }
+      ]
+    },
+    {
+      "dam": "Pantabangan",
+      "lat": 15.81833,
+      "lon": 121.10944,
+      "issue_date": "2026-08-09",
+      "rwl_m": 181.46,
+      "nhwl_m": 216.0,
+      "rule_curve_m": 209.77,
+      "risk": "Normal",
+      "risk_note": "Forecast level stays below the operating rule curve.",
+      "extrapolating": true,
+      "rain_7d": 263.0,
+      "rain_next_7d": 163.5,
+      "observed": [
+        {
+          "date": "2026-06-29",
+          "rwl_m": 180.19
+        },
+        {
+          "date": "2026-06-30",
+          "rwl_m": 179.92
+        },
+        {
+          "date": "2026-07-27",
+          "rwl_m": 176.03
+        },
+        {
+          "date": "2026-07-28",
+          "rwl_m": 175.97
+        },
+        {
+          "date": "2026-08-06",
+          "rwl_m": 179.8
+        },
+        {
+          "date": "2026-08-07",
+          "rwl_m": 180.33
+        },
+        {
+          "date": "2026-08-08",
+          "rwl_m": 180.83
+        },
+        {
+          "date": "2026-08-09",
+          "rwl_m": 181.46
+        }
+      ],
+      "forecasts": [
+        {
+          "horizon": 1,
+          "target_date": "2026-08-10",
+          "pred_delta": 0.856,
+          "pred_rwl_m": 182.316,
+          "beyond_observed_rise": true
+        },
+        {
+          "horizon": 2,
+          "target_date": "2026-08-11",
+          "pred_delta": 1.628,
+          "pred_rwl_m": 183.088,
+          "beyond_observed_rise": true
+        },
+        {
+          "horizon": 3,
+          "target_date": "2026-08-12",
+          "pred_delta": 2.394,
+          "pred_rwl_m": 183.854,
+          "beyond_observed_rise": true
+        },
+        {
+          "horizon": 4,
+          "target_date": "2026-08-13",
+          "pred_delta": 0.9,
+          "pred_rwl_m": 182.36,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 5,
+          "target_date": "2026-08-14",
+          "pred_delta": 2.43,
+          "pred_rwl_m": 183.89,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 6,
+          "target_date": "2026-08-15",
+          "pred_delta": 2.405,
+          "pred_rwl_m": 183.865,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 7,
+          "target_date": "2026-08-16",
+          "pred_delta": 2.518,
+          "pred_rwl_m": 183.978,
+          "beyond_observed_rise": false
+        }
+      ]
+    },
+    {
+      "dam": "San Roque",
+      "lat": 16.146,
+      "lon": 120.684,
+      "issue_date": "2026-08-09",
+      "rwl_m": 239.72,
+      "nhwl_m": 280.0,
+      "rule_curve_m": 242.55,
+      "risk": "Watch",
+      "risk_note": "Forecast level crosses the rule curve within the next 7 days.",
+      "extrapolating": true,
+      "rain_7d": 412.3,
+      "rain_next_7d": 115.8,
+      "observed": [
+        {
+          "date": "2026-06-29",
+          "rwl_m": 230.4
+        },
+        {
+          "date": "2026-06-30",
+          "rwl_m": 230.18
+        },
+        {
+          "date": "2026-07-27",
+          "rwl_m": 226.99
+        },
+        {
+          "date": "2026-07-28",
+          "rwl_m": 226.83
+        },
+        {
+          "date": "2026-08-06",
+          "rwl_m": 228.06
+        },
+        {
+          "date": "2026-08-07",
+          "rwl_m": 230.02
+        },
+        {
+          "date": "2026-08-08",
+          "rwl_m": 233.62
+        },
+        {
+          "date": "2026-08-09",
+          "rwl_m": 239.72
+        }
+      ],
+      "forecasts": [
+        {
+          "horizon": 1,
+          "target_date": "2026-08-10",
+          "pred_delta": 7.859,
+          "pred_rwl_m": 247.579,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 2,
+          "target_date": "2026-08-11",
+          "pred_delta": 12.797,
+          "pred_rwl_m": 252.517,
+          "beyond_observed_rise": true
+        },
+        {
+          "horizon": 3,
+          "target_date": "2026-08-12",
+          "pred_delta": 13.841,
+          "pred_rwl_m": 253.561,
+          "beyond_observed_rise": true
+        },
+        {
+          "horizon": 4,
+          "target_date": "2026-08-13",
+          "pred_delta": 2.75,
+          "pred_rwl_m": 242.47,
+          "beyond_observed_rise": true
+        },
+        {
+          "horizon": 5,
+          "target_date": "2026-08-14",
+          "pred_delta": 1.444,
+          "pred_rwl_m": 241.164,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 6,
+          "target_date": "2026-08-15",
+          "pred_delta": 1.873,
+          "pred_rwl_m": 241.593,
+          "beyond_observed_rise": false
+        },
+        {
+          "horizon": 7,
+          "target_date": "2026-08-16",
+          "pred_delta": 3.12,
+          "pred_rwl_m": 242.84,
+          "beyond_observed_rise": false
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "1": {
+      "n": 844,
+      "mae_model": 0.3934,
+      "mae_persistence": 0.3302,
+      "best_baseline": "persistence",
+      "mae_best_baseline": 0.3302,
+      "beats_baseline": false
+    },
+    "2": {
+      "n": 206,
+      "mae_model": 0.6017,
+      "mae_persistence": 0.6978,
+      "best_baseline": "drift",
+      "mae_best_baseline": 0.6818,
+      "beats_baseline": true
+    },
+    "3": {
+      "n": 178,
+      "mae_model": 0.701,
+      "mae_persistence": 0.794,
+      "best_baseline": "drift",
+      "mae_best_baseline": 0.7069,
+      "beats_baseline": true
+    },
+    "4": {
+      "n": 152,
+      "mae_model": 1.1701,
+      "mae_persistence": 0.6493,
+      "best_baseline": "persistence",
+      "mae_best_baseline": 0.6493,
+      "beats_baseline": false
+    },
+    "5": {
+      "n": 117,
+      "mae_model": 0.9204,
+      "mae_persistence": 0.8071,
+      "best_baseline": "persistence",
+      "mae_best_baseline": 0.8071,
+      "beats_baseline": false
+    },
+    "6": {
+      "n": 117,
+      "mae_model": 1.1301,
+      "mae_persistence": 0.9809,
+      "best_baseline": "persistence",
+      "mae_best_baseline": 0.9809,
+      "beats_baseline": false
+    },
+    "7": {
+      "n": 144,
+      "mae_model": 2.8536,
+      "mae_persistence": 0.9024,
+      "best_baseline": "persistence",
+      "mae_best_baseline": 0.9024,
+      "beats_baseline": false
+    }
+  },
+  "learning_curve": [
+    {
+      "target_date": "2021-09-22",
+      "abs_err_model": 0.3185,
+      "abs_err_persistence": 0.3185,
+      "roll_abs_err_model": null,
+      "roll_abs_err_persistence": null
+    },
+    {
+      "target_date": "2021-09-23",
+      "abs_err_model": 0.3777,
+      "abs_err_persistence": 0.38,
+      "roll_abs_err_model": null,
+      "roll_abs_err_persistence": null
+    },
+    {
+      "target_date": "2021-09-26",
+      "abs_err_model": 0.2015,
+      "abs_err_persistence": 0.2022,
+      "roll_abs_err_model": null,
+      "roll_abs_err_persistence": null
+    },
+    {
+      "target_date": "2021-10-22",
+      "abs_err_model": 0.3499,
+      "abs_err_persistence": 0.2822,
+      "roll_abs_err_model": null,
+      "roll_abs_err_persistence": null
+    },
+    {
+      "target_date": "2021-10-23",
+      "abs_err_model": 0.2582,
+      "abs_err_persistence": 0.2578,
+      "roll_abs_err_model": 0.3012,
+      "roll_abs_err_persistence": 0.2881
+    },
+    {
+      "target_date": "2021-11-01",
+      "abs_err_model": 0.1702,
+      "abs_err_persistence": 0.1222,
+      "roll_abs_err_model": 0.2793,
+      "roll_abs_err_persistence": 0.2605
+    },
+    {
+      "target_date": "2021-11-16",
+      "abs_err_model": 0.1068,
+      "abs_err_persistence": 0.1233,
+      "roll_abs_err_model": 0.2547,
+      "roll_abs_err_persistence": 0.2409
+    },
+    {
+      "target_date": "2021-12-21",
+      "abs_err_model": 0.7934,
+      "abs_err_persistence": 0.8128,
+      "roll_abs_err_model": 0.322,
+      "roll_abs_err_persistence": 0.3124
+    },
+    {
+      "target_date": "2021-12-22",
+      "abs_err_model": 1.2325,
+      "abs_err_persistence": 1.2461,
+      "roll_abs_err_model": 0.4232,
+      "roll_abs_err_persistence": 0.4161
+    },
+    {
+      "target_date": "2021-12-28",
+      "abs_err_model": 0.2386,
+      "abs_err_persistence": 0.2944,
+      "roll_abs_err_model": 0.4047,
+      "roll_abs_err_persistence": 0.404
+    },
+    {
+      "target_date": "2022-01-09",
+      "abs_err_model": 0.371,
+      "abs_err_persistence": 0.2656,
+      "roll_abs_err_model": 0.4017,
+      "roll_abs_err_persistence": 0.3914
+    },
+    {
+      "target_date": "2022-01-18",
+      "abs_err_model": 0.3063,
+      "abs_err_persistence": 0.2244,
+      "roll_abs_err_model": 0.3937,
+      "roll_abs_err_persistence": 0.3775
+    },
+    {
+      "target_date": "2022-04-21",
+      "abs_err_model": 0.1717,
+      "abs_err_persistence": 0.1889,
+      "roll_abs_err_model": 0.3766,
+      "roll_abs_err_persistence": 0.363
+    },
+    {
+      "target_date": "2022-06-14",
+      "abs_err_model": 3.6445,
+      "abs_err_persistence": 0.7459,
+      "roll_abs_err_model": 0.6101,
+      "roll_abs_err_persistence": 0.3903
+    },
+    {
+      "target_date": "2022-06-15",
+      "abs_err_model": 0.6201,
+      "abs_err_persistence": 0.9389,
+      "roll_abs_err_model": 0.6107,
+      "roll_abs_err_persistence": 0.4269
+    },
+    {
+      "target_date": "2022-06-18",
+      "abs_err_model": 0.2075,
+      "abs_err_persistence": 0.1689,
+      "roll_abs_err_model": 0.5855,
+      "roll_abs_err_persistence": 0.4108
+    },
+    {
+      "target_date": "2022-06-19",
+      "abs_err_model": 32.2122,
+      "abs_err_persistence": 0.95,
+      "roll_abs_err_model": 2.4459,
+      "roll_abs_err_persistence": 0.4425
+    },
+    {
+      "target_date": "2022-06-26",
+      "abs_err_model": 0.5212,
+      "abs_err_persistence": 0.4163,
+      "roll_abs_err_model": 2.339,
+      "roll_abs_err_persistence": 0.441
+    },
+    {
+      "target_date": "2022-06-27",
+      "abs_err_model": 0.6949,
+      "abs_err_persistence": 0.4659,
+      "roll_abs_err_model": 2.2525,
+      "roll_abs_err_persistence": 0.4423
+    },
+    {
+      "target_date": "2022-07-01",
+      "abs_err_model": 0.5614,
+      "abs_err_persistence": 0.3856,
+      "roll_abs_err_model": 2.1679,
+      "roll_abs_err_persistence": 0.4395
+    },
+    {
+      "target_date": "2022-07-02",
+      "abs_err_model": 0.2961,
+      "abs_err_persistence": 0.3633,
+      "roll_abs_err_model": 2.1668,
+      "roll_abs_err_persistence": 0.4417
+    },
+    {
+      "target_date": "2022-07-04",
+      "abs_err_model": 0.1892,
+      "abs_err_persistence": 0.1867,
+      "roll_abs_err_model": 2.1573,
+      "roll_abs_err_persistence": 0.4321
+    },
+    {
+      "target_date": "2022-07-16",
+      "abs_err_model": 0.1814,
+      "abs_err_persistence": 0.1856,
+      "roll_abs_err_model": 2.1563,
+      "roll_abs_err_persistence": 0.4312
+    },
+    {
+      "target_date": "2022-08-01",
+      "abs_err_model": 1.089,
+      "abs_err_persistence": 1.0456,
+      "roll_abs_err_model": 2.1933,
+      "roll_abs_err_persistence": 0.4694
+    },
+    {
+      "target_date": "2022-08-02",
+      "abs_err_model": 0.6539,
+      "abs_err_persistence": 0.7794,
+      "roll_abs_err_model": 2.2131,
+      "roll_abs_err_persistence": 0.4955
+    },
+    {
+      "target_date": "2022-08-03",
+      "abs_err_model": 0.5642,
+      "abs_err_persistence": 0.5953,
+      "roll_abs_err_model": 2.2328,
+      "roll_abs_err_persistence": 0.5191
+    },
+    {
+      "target_date": "2022-08-04",
+      "abs_err_model": 0.4194,
+      "abs_err_persistence": 0.4633,
+      "roll_abs_err_model": 2.2484,
+      "roll_abs_err_persistence": 0.5361
+    },
+    {
+      "target_date": "2022-08-05",
+      "abs_err_model": 0.4476,
+      "abs_err_persistence": 0.4756,
+      "roll_abs_err_model": 2.2311,
+      "roll_abs_err_persistence": 0.5193
+    },
+    {
+      "target_date": "2022-08-06",
+      "abs_err_model": 0.4321,
+      "abs_err_persistence": 0.4933,
+      "roll_abs_err_model": 2.1911,
+      "roll_abs_err_persistence": 0.4816
+    },
+    {
+      "target_date": "2022-08-07",
+      "abs_err_model": 0.3888,
+      "abs_err_persistence": 0.4244,
+      "roll_abs_err_model": 2.1986,
+      "roll_abs_err_persistence": 0.4881
+    },
+    {
+      "target_date": "2022-09-23",
+      "abs_err_model": 0.3182,
+      "abs_err_persistence": 0.2689,
+      "roll_abs_err_model": 2.196,
+      "roll_abs_err_persistence": 0.4883
+    },
+    {
+      "target_date": "2022-10-15",
+      "abs_err_model": 0.109,
+      "abs_err_persistence": 0.0633,
+      "roll_abs_err_model": 2.1861,
+      "roll_abs_err_persistence": 0.4803
+    },
+    {
+      "target_date": "2022-10-28",
+      "abs_err_model": 0.334,
+      "abs_err_persistence": 0.2144,
+      "roll_abs_err_model": 2.1942,
+      "roll_abs_err_persistence": 0.4815
+    },
+    {
+      "target_date": "2022-11-29",
+      "abs_err_model": 0.4071,
+      "abs_err_persistence": 0.3563,
+      "roll_abs_err_model": 2.0324,
+      "roll_abs_err_persistence": 0.4621
+    },
+    {
+      "target_date": "2022-11-30",
+      "abs_err_model": 0.2457,
+      "abs_err_persistence": 0.3244,
+      "roll_abs_err_model": 2.0136,
+      "roll_abs_err_persistence": 0.4313
+    },
+    {
+      "target_date": "2022-12-01",
+      "abs_err_model": 0.1524,
+      "abs_err_persistence": 0.2289,
+      "roll_abs_err_model": 2.0109,
+      "roll_abs_err_persistence": 0.4343
+    },
+    {
+      "target_date": "2022-12-10",
+      "abs_err_model": 0.2247,
+      "abs_err_persistence": 0.16,
+      "roll_abs_err_model": 0.4115,
+      "roll_abs_err_persistence": 0.3948
+    },
+    {
+      "target_date": "2023-03-28",
+      "abs_err_model": 0.124,
+      "abs_err_persistence": 0.2511,
+      "roll_abs_err_model": 0.3917,
+      "roll_abs_err_persistence": 0.3866
+    },
+    {
+      "target_date": "2023-04-13",
+      "abs_err_model": 0.2055,
+      "abs_err_persistence": 0.2089,
+      "roll_abs_err_model": 0.3672,
+      "roll_abs_err_persistence": 0.3737
+    },
+    {
+      "target_date": "2023-07-26",
+      "abs_err_model": 2.6353,
+      "abs_err_persistence": 2.9944,
+      "roll_abs_err_model": 0.4709,
+      "roll_abs_err_persistence": 0.5042
+    },
+    {
+      "target_date": "2023-09-30",
+      "abs_err_model": 0.4635,
+      "abs_err_persistence": 0.1444,
+      "roll_abs_err_model": 0.4792,
+      "roll_abs_err_persistence": 0.4932
+    },
+    {
+      "target_date": "2023-11-27",
+      "abs_err_model": 1.1856,
+      "abs_err_persistence": 0.1311,
+      "roll_abs_err_model": 0.5291,
+      "roll_abs_err_persistence": 0.4904
+    },
+    {
+      "target_date": "2024-01-25",
+      "abs_err_model": 0.916,
+      "abs_err_persistence": 0.1711,
+      "roll_abs_err_model": 0.5658,
+      "roll_abs_err_persistence": 0.4897
+    },
+    {
+      "target_date": "2024-04-03",
+      "abs_err_model": 0.8651,
+      "abs_err_persistence": 0.1744,
+      "roll_abs_err_model": 0.5546,
+      "roll_abs_err_persistence": 0.4462
+    },
+    {
+      "target_date": "2024-04-16",
+      "abs_err_model": 0.4747,
+      "abs_err_persistence": 0.1911,
+      "roll_abs_err_model": 0.5456,
+      "roll_abs_err_persistence": 0.4167
+    },
+    {
+      "target_date": "2024-04-29",
+      "abs_err_model": 0.8956,
+      "abs_err_persistence": 0.3654,
+      "roll_abs_err_model": 0.5622,
+      "roll_abs_err_persistence": 0.4053
+    },
+    {
+      "target_date": "2024-04-30",
+      "abs_err_model": 0.3557,
+      "abs_err_persistence": 0.3175,
+      "roll_abs_err_model": 0.559,
+      "roll_abs_err_persistence": 0.398
+    },
+    {
+      "target_date": "2024-05-02",
+      "abs_err_model": 0.2129,
+      "abs_err_persistence": 0.0975,
+      "roll_abs_err_model": 0.5473,
+      "roll_abs_err_persistence": 0.3791
+    },
+    {
+      "target_date": "2024-05-21",
+      "abs_err_model": 0.5438,
+      "abs_err_persistence": 0.2022,
+      "roll_abs_err_model": 0.5529,
+      "roll_abs_err_persistence": 0.3645
+    },
+    {
+      "target_date": "2024-08-03",
+      "abs_err_model": 0.684,
+      "abs_err_persistence": 0.31,
+      "roll_abs_err_model": 0.5676,
+      "roll_abs_err_persistence": 0.3588
+    },
+    {
+      "target_date": "2024-08-23",
+      "abs_err_model": 0.1758,
+      "abs_err_persistence": 0.1767,
+      "roll_abs_err_model": 0.5605,
+      "roll_abs_err_persistence": 0.3542
+    },
+    {
+      "target_date": "2024-09-11",
+      "abs_err_model": 0.54,
+      "abs_err_persistence": 0.4389,
+      "roll_abs_err_model": 0.5821,
+      "roll_abs_err_persistence": 0.3729
+    },
+    {
+      "target_date": "2024-10-04",
+      "abs_err_model": 0.3653,
+      "abs_err_persistence": 0.2139,
+      "roll_abs_err_model": 0.5836,
+      "roll_abs_err_persistence": 0.3729
+    },
+    {
+      "target_date": "2024-10-05",
+      "abs_err_model": 0.2638,
+      "abs_err_persistence": 0.1833,
+      "roll_abs_err_model": 0.5765,
+      "roll_abs_err_persistence": 0.3643
+    },
+    {
+      "target_date": "2024-11-16",
+      "abs_err_model": 1.5283,
+      "abs_err_persistence": 1.2459,
+      "roll_abs_err_model": 0.6406,
+      "roll_abs_err_persistence": 0.4103
+    },
+    {
+      "target_date": "2024-11-17",
+      "abs_err_model": 3.2112,
+      "abs_err_persistence": 1.9894,
+      "roll_abs_err_model": 0.7935,
+      "roll_abs_err_persistence": 0.4984
+    },
+    {
+      "target_date": "2024-11-22",
+      "abs_err_model": 0.8759,
+      "abs_err_persistence": 0.4959,
+      "roll_abs_err_model": 0.8261,
+      "roll_abs_err_persistence": 0.5152
+    },
+    {
+      "target_date": "2024-11-23",
+      "abs_err_model": 0.5742,
+      "abs_err_persistence": 0.5489,
+      "roll_abs_err_model": 0.8486,
+      "roll_abs_err_persistence": 0.5301
+    },
+    {
+      "target_date": "2024-11-26",
+      "abs_err_model": 0.5338,
+      "abs_err_persistence": 0.3628,
+      "roll_abs_err_model": 0.865,
+      "roll_abs_err_persistence": 0.5378
+    },
+    {
+      "target_date": "2024-11-27",
+      "abs_err_model": 0.3514,
+      "abs_err_persistence": 0.4517,
+      "roll_abs_err_model": 0.7508,
+      "roll_abs_err_persistence": 0.4106
+    },
+    {
+      "target_date": "2024-12-03",
+      "abs_err_model": 0.5988,
+      "abs_err_persistence": 0.3089,
+      "roll_abs_err_model": 0.7576,
+      "roll_abs_err_persistence": 0.4188
+    },
+    {
+      "target_date": "2024-12-04",
+      "abs_err_model": 0.4046,
+      "abs_err_persistence": 0.3494,
+      "roll_abs_err_model": 0.7185,
+      "roll_abs_err_persistence": 0.4298
+    },
+    {
+      "target_date": "2024-12-08",
+      "abs_err_model": 0.3888,
+      "abs_err_persistence": 0.1322,
+      "roll_abs_err_model": 0.6922,
+      "roll_abs_err_persistence": 0.4278
+    },
+    {
+      "target_date": "2024-12-09",
+      "abs_err_model": 0.5887,
+      "abs_err_persistence": 0.5422,
+      "roll_abs_err_model": 0.6784,
+      "roll_abs_err_persistence": 0.4462
+    },
+    {
+      "target_date": "2024-12-16",
+      "abs_err_model": 0.2862,
+      "abs_err_persistence": 0.1178,
+      "roll_abs_err_model": 0.6689,
+      "roll_abs_err_persistence": 0.4425
+    },
+    {
+      "target_date": "2025-02-09",
+      "abs_err_model": 0.6914,
+      "abs_err_persistence": 0.4911,
+      "roll_abs_err_model": 0.6587,
+      "roll_abs_err_persistence": 0.4488
+    },
+    {
+      "target_date": "2025-02-10",
+      "abs_err_model": 0.8013,
+      "abs_err_persistence": 0.6972,
+      "roll_abs_err_model": 0.681,
+      "roll_abs_err_persistence": 0.4678
+    },
+    {
+      "target_date": "2025-02-16",
+      "abs_err_model": 0.5261,
+      "abs_err_persistence": 0.2344,
+      "roll_abs_err_model": 0.6967,
+      "roll_abs_err_persistence": 0.4746
+    },
+    {
+      "target_date": "2025-03-06",
+      "abs_err_model": 0.2712,
+      "abs_err_persistence": 0.2589,
+      "roll_abs_err_model": 0.683,
+      "roll_abs_err_persistence": 0.4775
+    },
+    {
+      "target_date": "2025-04-15",
+      "abs_err_model": 0.2361,
+      "abs_err_persistence": 0.2533,
+      "roll_abs_err_model": 0.6606,
+      "roll_abs_err_persistence": 0.4746
+    },
+    {
+      "target_date": "2025-05-03",
+      "abs_err_model": 0.2582,
+      "abs_err_persistence": 0.2448,
+      "roll_abs_err_model": 0.6648,
+      "roll_abs_err_persistence": 0.4781
+    },
+    {
+      "target_date": "2025-05-04",
+      "abs_err_model": 0.2469,
+      "abs_err_persistence": 0.2322,
+      "roll_abs_err_model": 0.6501,
+      "roll_abs_err_persistence": 0.4677
+    },
+    {
+      "target_date": "2025-05-05",
+      "abs_err_model": 0.3628,
+      "abs_err_persistence": 0.1156,
+      "roll_abs_err_model": 0.65,
+      "roll_abs_err_persistence": 0.4628
+    },
+    {
+      "target_date": "2025-05-25",
+      "abs_err_model": 0.3444,
+      "abs_err_persistence": 0.2989,
+      "roll_abs_err_model": 0.654,
+      "roll_abs_err_persistence": 0.4686
+    },
+    {
+      "target_date": "2025-06-06",
+      "abs_err_model": 0.2988,
+      "abs_err_persistence": 0.1522,
+      "roll_abs_err_model": 0.5925,
+      "roll_abs_err_persistence": 0.4139
+    },
+    {
+      "target_date": "2025-06-24",
+      "abs_err_model": 0.606,
+      "abs_err_persistence": 0.2911,
+      "roll_abs_err_model": 0.4623,
+      "roll_abs_err_persistence": 0.329
+    },
+    {
+      "target_date": "2025-07-19",
+      "abs_err_model": 1.194,
+      "abs_err_persistence": 1.4981,
+      "roll_abs_err_model": 0.4782,
+      "roll_abs_err_persistence": 0.3791
+    },
+    {
+      "target_date": "2025-07-20",
+      "abs_err_model": 0.9723,
+      "abs_err_persistence": 1.1656,
+      "roll_abs_err_model": 0.4981,
+      "roll_abs_err_persistence": 0.4099
+    },
+    {
+      "target_date": "2025-07-21",
+      "abs_err_model": 0.3747,
+      "abs_err_persistence": 0.9511,
+      "roll_abs_err_model": 0.4901,
+      "roll_abs_err_persistence": 0.4393
+    },
+    {
+      "target_date": "2025-08-23",
+      "abs_err_model": 0.439,
+      "abs_err_persistence": 0.3233,
+      "roll_abs_err_model": 0.4945,
+      "roll_abs_err_persistence": 0.4329
+    },
+    {
+      "target_date": "2025-09-07",
+      "abs_err_model": 0.5095,
+      "abs_err_persistence": 0.4567,
+      "roll_abs_err_model": 0.49,
+      "roll_abs_err_persistence": 0.4403
+    },
+    {
+      "target_date": "2025-09-21",
+      "abs_err_model": 0.5892,
+      "abs_err_persistence": 0.8511,
+      "roll_abs_err_model": 0.4993,
+      "roll_abs_err_persistence": 0.4654
+    },
+    {
+      "target_date": "2025-09-22",
+      "abs_err_model": 0.3503,
+      "abs_err_persistence": 1.2244,
+      "roll_abs_err_model": 0.4974,
+      "roll_abs_err_persistence": 0.52
+    },
+    {
+      "target_date": "2025-10-12",
+      "abs_err_model": 0.4529,
+      "abs_err_persistence": 0.2089,
+      "roll_abs_err_model": 0.4906,
+      "roll_abs_err_persistence": 0.5033
+    },
+    {
+      "target_date": "2025-10-26",
+      "abs_err_model": 0.3171,
+      "abs_err_persistence": 0.3194,
+      "roll_abs_err_model": 0.4921,
+      "roll_abs_err_persistence": 0.5134
+    },
+    {
+      "target_date": "2025-10-27",
+      "abs_err_model": 0.3965,
+      "abs_err_persistence": 0.4611,
+      "roll_abs_err_model": 0.4774,
+      "roll_abs_err_persistence": 0.5119
+    },
+    {
+      "target_date": "2025-11-02",
+      "abs_err_model": 0.2596,
+      "abs_err_persistence": 0.1172,
+      "roll_abs_err_model": 0.4503,
+      "roll_abs_err_persistence": 0.4829
+    },
+    {
+      "target_date": "2025-11-03",
+      "abs_err_model": 0.5976,
+      "abs_err_persistence": 0.4739,
+      "roll_abs_err_model": 0.4539,
+      "roll_abs_err_persistence": 0.4949
+    },
+    {
+      "target_date": "2025-11-04",
+      "abs_err_model": 0.9533,
+      "abs_err_persistence": 1.13,
+      "roll_abs_err_model": 0.488,
+      "roll_abs_err_persistence": 0.5385
+    },
+    {
+      "target_date": "2025-11-10",
+      "abs_err_model": 1.1986,
+      "abs_err_persistence": 1.1489,
+      "roll_abs_err_model": 0.5361,
+      "roll_abs_err_persistence": 0.5832
+    },
+    {
+      "target_date": "2025-12-08",
+      "abs_err_model": 0.3801,
+      "abs_err_persistence": 0.3707,
+      "roll_abs_err_model": 0.5422,
+      "roll_abs_err_persistence": 0.5895
+    },
+    {
+      "target_date": "2025-12-09",
+      "abs_err_model": 0.5027,
+      "abs_err_persistence": 0.5433,
+      "roll_abs_err_model": 0.555,
+      "roll_abs_err_persistence": 0.6051
+    },
+    {
+      "target_date": "2025-12-12",
+      "abs_err_model": 0.1804,
+      "abs_err_persistence": 0.2067,
+      "roll_abs_err_model": 0.5459,
+      "roll_abs_err_persistence": 0.6096
+    },
+    {
+      "target_date": "2025-12-28",
+      "abs_err_model": 0.2423,
+      "abs_err_persistence": 0.1911,
+      "roll_abs_err_model": 0.5408,
+      "roll_abs_err_persistence": 0.6043
+    },
+    {
+      "target_date": "2026-01-22",
+      "abs_err_model": 0.1557,
+      "abs_err_persistence": 0.1822,
+      "roll_abs_err_model": 0.5336,
+      "roll_abs_err_persistence": 0.6058
+    },
+    {
+      "target_date": "2026-02-05",
+      "abs_err_model": 0.6546,
+      "abs_err_persistence": 0.8115,
+      "roll_abs_err_model": 0.536,
+      "roll_abs_err_persistence": 0.6318
+    },
+    {
+      "target_date": "2026-02-06",
+      "abs_err_model": 0.6532,
+      "abs_err_persistence": 1.0433,
+      "roll_abs_err_model": 0.509,
+      "roll_abs_err_persistence": 0.609
+    },
+    {
+      "target_date": "2026-02-11",
+      "abs_err_model": 0.2957,
+      "abs_err_persistence": 0.18,
+      "roll_abs_err_model": 0.4752,
+      "roll_abs_err_persistence": 0.5598
+    },
+    {
+      "target_date": "2026-02-21",
+      "abs_err_model": 0.3531,
+      "abs_err_persistence": 0.467,
+      "roll_abs_err_model": 0.4741,
+      "roll_abs_err_persistence": 0.5355
+    },
+    {
+      "target_date": "2026-02-22",
+      "abs_err_model": 0.3203,
+      "abs_err_persistence": 0.3872,
+      "roll_abs_err_model": 0.4682,
+      "roll_abs_err_persistence": 0.5387
+    },
+    {
+      "target_date": "2026-02-23",
+      "abs_err_model": 0.1758,
+      "abs_err_persistence": 0.2389,
+      "roll_abs_err_model": 0.4515,
+      "roll_abs_err_persistence": 0.5279
+    },
+    {
+      "target_date": "2026-04-11",
+      "abs_err_model": 0.4763,
+      "abs_err_persistence": 0.1822,
+      "roll_abs_err_model": 0.4458,
+      "roll_abs_err_persistence": 0.4944
+    },
+    {
+      "target_date": "2026-04-21",
+      "abs_err_model": 0.2374,
+      "abs_err_persistence": 0.1689,
+      "roll_abs_err_model": 0.4402,
+      "roll_abs_err_persistence": 0.4416
+    },
+    {
+      "target_date": "2026-05-05",
+      "abs_err_model": 0.2088,
+      "abs_err_persistence": 0.1744,
+      "roll_abs_err_model": 0.428,
+      "roll_abs_err_persistence": 0.4399
+    },
+    {
+      "target_date": "2026-05-23",
+      "abs_err_model": 0.3756,
+      "abs_err_persistence": 0.5004,
+      "roll_abs_err_model": 0.4309,
+      "roll_abs_err_persistence": 0.449
+    },
+    {
+      "target_date": "2026-05-24",
+      "abs_err_model": 0.4727,
+      "abs_err_persistence": 0.5806,
+      "roll_abs_err_model": 0.4347,
+      "roll_abs_err_persistence": 0.4549
+    },
+    {
+      "target_date": "2026-05-26",
+      "abs_err_model": 0.2252,
+      "abs_err_persistence": 0.2389,
+      "roll_abs_err_model": 0.433,
+      "roll_abs_err_persistence": 0.461
+    },
+    {
+      "target_date": "2026-06-29",
+      "abs_err_model": 0.3575,
+      "abs_err_persistence": 0.2833,
+      "roll_abs_err_model": 0.421,
+      "roll_abs_err_persistence": 0.4515
+    },
+    {
+      "target_date": "2026-07-27",
+      "abs_err_model": 0.2383,
+      "abs_err_persistence": 0.1478,
+      "roll_abs_err_model": 0.3852,
+      "roll_abs_err_persistence": 0.4024
+    },
+    {
+      "target_date": "2026-08-06",
+      "abs_err_model": 1.8077,
+      "abs_err_persistence": 2.4,
+      "roll_abs_err_model": 0.4157,
+      "roll_abs_err_persistence": 0.4649
+    },
+    {
+      "target_date": "2026-08-07",
+      "abs_err_model": 1.3148,
+      "abs_err_persistence": 1.61,
+      "roll_abs_err_model": 0.4624,
+      "roll_abs_err_persistence": 0.5269
+    },
+    {
+      "target_date": "2026-08-08",
+      "abs_err_model": 0.4865,
+      "abs_err_persistence": 1.5822,
+      "roll_abs_err_model": 0.4616,
+      "roll_abs_err_persistence": 0.5788
+    }
+  ],
+  "scored_this_run": 0,
+  "drift_events_this_run": [],
+  "disclaimer": "Educational forecast, not an official warning. PAGASA and your local disaster risk reduction office are the authorities."
+}

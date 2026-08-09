@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pulso — Luzon dam levels & spill risk</title>
+<meta name="description" content="A self-improving forecast of reservoir water level and spill risk for the major Luzon dams, scored honestly against a naive baseline.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%230b0f14'/%3E%3Cpath d='M6 20c3-5 5 3 8-1s5 3 8-1 4 2 4 2' stroke='%234da3ff' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root {
+  --bg: #0b0f14;
+  --surface: rgba(255, 255, 255, 0.035);
+  --surface-solid: #121922;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.15);
+  --ink: #f2f5f8;
+  --ink-2: #b7c2cc;
+  --muted: #7d8894;
+  --grid: rgba(255, 255, 255, 0.06);
+  --actual: #4da3ff;
+  --predicted: #ffa14d;
+  --accent-grad: linear-gradient(92deg, #4da3ff, #7ec8ff 45%, #ffa14d);
+  --normal: #2ea05a;
+  --watch: #f5a35c;
+  --spill: #e66767;
+  --radius: 18px;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html { color-scheme: dark; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 15px;
+  background:
+    radial-gradient(1000px 560px at 12% -8%, rgba(45, 105, 255, 0.16), transparent 60%),
+    radial-gradient(800px 480px at 92% -4%, rgba(255, 145, 60, 0.09), transparent 55%),
+    radial-gradient(700px 700px at 50% 120%, rgba(45, 105, 255, 0.07), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.55;
+}
+
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px 72px; }
+
+/* ---------- nav ---------- */
+nav.top {
+  position: sticky; top: 0; z-index: 1200;
+  backdrop-filter: blur(14px);
+  background: rgba(11, 15, 20, 0.72);
+  border-bottom: 1px solid var(--border);
+}
+nav.top .inner {
+  max-width: 1120px; margin: 0 auto; padding: 12px 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+nav.top .brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-display); font-size: 19px; font-weight: 700;
+  color: var(--ink); text-decoration: none; letter-spacing: -0.01em;
+}
+nav.top .brand span { color: var(--actual); }
+nav.top .logo {
+  width: 32px; height: 32px; border-radius: 10px;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, #2d69ff40, #4da3ff20);
+  border: 1px solid var(--border-strong);
+}
+nav.top .spacer { flex: 1; }
+nav.top .stamp { color: var(--muted); font-size: 12px; }
+nav.top a.gh {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 13px; font-weight: 600; color: var(--ink);
+  text-decoration: none; padding: 8px 14px; min-height: 36px;
+  border-radius: 10px; border: 1px solid var(--border-strong);
+  background: rgba(255, 255, 255, 0.04);
+  transition: background 160ms ease, transform 120ms ease;
+}
+nav.top a.gh:hover { background: rgba(255, 255, 255, 0.09); }
+nav.top a.gh:active { transform: scale(0.97); }
+@media (max-width: 560px) { nav.top .stamp { display: none; } }
+
+/* ---------- hero ---------- */
+header.hero { padding: 44px 0 30px; }
+header.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 6vw, 54px);
+  margin: 0 0 12px; letter-spacing: -0.03em; line-height: 1.05;
+}
+header.hero h1 .grad {
+  background: var(--accent-grad);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+header.hero .tagline { color: var(--ink-2); font-size: 16.5px; margin: 0; max-width: 62ch; }
+header.hero .tagline em { color: var(--ink); font-style: normal; font-weight: 600; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+.chip {
+  font-size: 12.5px; font-weight: 550; color: var(--ink-2);
+  padding: 6px 12px; border-radius: 999px;
+  border: 1px solid var(--border); background: rgba(255, 255, 255, 0.03);
+}
+.chip b { color: var(--ink); font-weight: 650; }
+
+/* ---------- layout ---------- */
+.grid { display: grid; grid-template-columns: 350px 1fr; gap: 18px; align-items: start; }
+@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+.stack { display: grid; gap: 18px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+.card h2 {
+  font-family: var(--font-display);
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.14em; margin: 0 0 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.card h2::before {
+  content: ""; width: 18px; height: 2px; border-radius: 2px;
+  background: var(--accent-grad); flex: none;
+}
+.card .lede { color: var(--ink-2); font-size: 14px; margin: -6px 0 16px; }
+
+/* ---------- map ---------- */
+.mapsection { position: relative; width: 100%; margin-top: 6px; }
+.mapbox {
+  position: relative; overflow: hidden;
+  border-top: 1px solid var(--border-strong);
+  border-bottom: 1px solid var(--border-strong);
+  height: min(62vh, 620px);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.4);
+}
+@media (max-width: 700px) { .mapbox { height: 56vh; } }
+#map { height: 100%; width: 100%; }
+.mapbox.dead { height: auto; }
+.mapbox.dead #map { display: none; }
+.mapfallback {
+  display: none; padding: 18px 20px; color: var(--muted); font-size: 13.5px;
+}
+.mapbox.dead .mapfallback { display: block; }
+.mapbox.dead .maplegend { display: none; }
+.leaflet-container { height: 100%; width: 100%; background: #0b0f14; font: inherit; }
+.leaflet-control-attribution {
+  background: rgba(11, 15, 20, 0.75) !important;
+  color: var(--muted) !important; font-size: 9.5px !important;
+}
+.leaflet-control-attribution a { color: var(--ink-2) !important; }
+.leaflet-bar a { background: var(--surface-solid) !important; color: var(--ink) !important; border-color: var(--border) !important; }
+
+.dammarker {
+  display: grid; place-items: center;
+  width: 100%; height: 100%; border-radius: 50%;
+  font: 700 10.5px/1 var(--font-body); color: #0b0f14;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.3), 0 0 18px 3px var(--mk, rgba(77,163,255,.5));
+  background: var(--mk, #4da3ff);
+  cursor: pointer;
+  transition: transform 160ms ease;
+}
+.dammarker:hover { transform: scale(1.12); }
+.dammarker.active { outline: 3px solid rgba(255, 255, 255, 0.4); outline-offset: 2px; }
+
+.maplegend {
+  position: absolute; z-index: 1000; right: 12px; top: 12px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  background: rgba(11, 15, 20, 0.82); backdrop-filter: blur(8px);
+  border: 1px solid var(--border-strong); border-radius: 10px;
+  padding: 8px 12px; font-size: 11.5px; color: var(--ink-2);
+}
+.maplegend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: -1px; }
+
+/* ---------- dam picker ---------- */
+.damlist { display: flex; flex-direction: column; gap: 6px; }
+.damlist button {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  width: 100%; font: inherit; font-size: 14.5px; text-align: left;
+  padding: 10px 12px; min-height: 46px;
+  border-radius: 12px; border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.02); color: var(--ink); cursor: pointer;
+  transition: background 160ms ease;
+}
+.damlist button:hover { background: rgba(255, 255, 255, 0.06); }
+.damlist button.active {
+  background: linear-gradient(90deg, rgba(77, 163, 255, 0.16), rgba(77, 163, 255, 0.05));
+  border-color: rgba(77, 163, 255, 0.45);
+}
+.damlist button:focus-visible { outline: 2px solid var(--actual); outline-offset: 2px; }
+.pill {
+  font-size: 11.5px; font-weight: 700; letter-spacing: 0.02em;
+  border-radius: 999px; padding: 3px 10px; white-space: nowrap; color: #0b0f14;
+}
+
+/* ---------- now card ---------- */
+.nowrow { display: flex; gap: 18px; align-items: flex-start; }
+.riskbadge {
+  flex: none; width: 116px; min-height: 96px; border-radius: 16px;
+  display: grid; place-items: center; text-align: center; padding: 12px 10px;
+  color: #0b0f14; box-shadow: 0 0 34px -6px var(--glow, rgba(77,163,255,.6));
+}
+.riskbadge .num { font-family: var(--font-display); font-size: 27px; font-weight: 700; line-height: 1; }
+.riskbadge .lbl { font-size: 10.5px; font-weight: 650; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 6px; opacity: 0.78; }
+.nowmeta { flex: 1; min-width: 0; }
+.nowmeta .cat { font-family: var(--font-display); font-size: 21px; font-weight: 700; margin: 0 0 4px; }
+.nowmeta .advice { color: var(--ink-2); font-size: 14px; margin: 0 0 10px; }
+.nowmeta .sub { color: var(--muted); font-size: 12.5px; margin: 8px 0 0; }
+.wxchips { display: flex; gap: 6px; flex-wrap: wrap; }
+.wxchips .chip { font-size: 11.5px; padding: 4px 10px; }
+
+.warn {
+  margin-top: 16px; padding: 12px 14px; border-radius: 12px;
+  background: rgba(255, 161, 77, 0.08);
+  border: 1px dashed rgba(255, 161, 77, 0.45);
+  font-size: 13.5px; color: var(--ink-2); line-height: 1.6;
+}
+.warn b { color: var(--ink); }
+
+/* ---------- charts ---------- */
+.chartwrap svg { display: block; width: 100%; height: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; font-size: 12.5px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 16px; height: 2px; vertical-align: middle; margin-right: 7px; }
+
+/* ---------- table ---------- */
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: right; padding: 9px 8px; border-bottom: 1px solid var(--grid); }
+th:first-child, td:first-child { text-align: left; }
+thead th {
+  color: var(--muted); font-size: 10.5px; letter-spacing: 0.12em;
+  text-transform: uppercase; font-weight: 600;
+}
+tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+td.mono { font-variant-numeric: tabular-nums; }
+.verdict { font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+.v-win { background: rgba(46, 160, 90, 0.18); color: #6fd79b; }
+.v-loss { background: rgba(230, 103, 103, 0.16); color: #f09a9a; }
+
+/* ---------- disclaimer ---------- */
+.disclaimer { border-color: rgba(230, 103, 103, 0.35); }
+.disclaimer p { margin: 0; color: var(--ink-2); font-size: 14px; max-width: 80ch; }
+.disclaimer b { color: var(--ink); }
+
+footer.foot { margin-top: 28px; color: var(--muted); font-size: 12.5px; }
+footer.foot a { color: var(--ink-2); }
+
+.msg { color: var(--muted); font-size: 14px; padding: 8px 0; }
+.msg code { color: var(--ink); background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 6px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="inner">
+    <a class="brand" href="./">
+      <span class="logo" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4da3ff" stroke-width="2.2" stroke-linecap="round">
+          <path d="M3 15c2.5-4 4.5 2.5 7-1s4.5 2.5 7-1 3 1.5 4 1.5"/>
+        </svg>
+      </span>
+      Pul<span>so</span>
+    </a>
+    <div class="spacer"></div>
+    <div class="stamp" id="stamp"></div>
+    <a class="gh" href="https://github.com/Zeref538/pulso" target="_blank" rel="noopener">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+      Code
+    </a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <header class="hero">
+    <h1>Nine Luzon reservoirs,<br><span class="grad">seven days ahead.</span></h1>
+    <p class="tagline">
+      Pulso forecasts how full the major dams will get, from PAGASA's daily
+      bulletin and Open-Meteo rainfall. It learns from
+      <em>one observation at a time</em> — and publishes the horizons where a
+      naive baseline still beats it.
+    </p>
+    <div class="chips" id="chips"></div>
+  </header>
+</div>
+
+<section class="mapsection">
+  <div class="mapbox" id="mapbox">
+    <div id="map"></div>
+    <p class="mapfallback">
+      The map library didn't load, so the locator is hidden. Everything else on
+      this page still works — pick a dam from the list below.
+    </p>
+    <div class="maplegend">
+      <span><i style="background:#2ea05a"></i>Normal</span>
+      <span><i style="background:#f5a35c"></i>Watch</span>
+      <span><i style="background:#e66767"></i>Spill watch</span>
+      <span><i style="background:#7d8894"></i>Not rated</span>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <main id="main" style="padding-top:22px">
+    <div class="msg" id="msg">Loading dam telemetry…</div>
+  </main>
+
+  <section class="card disclaimer" style="margin-top:18px">
+    <h2>Not an official warning</h2>
+    <p>
+      Pulso is an <b>educational portfolio project</b>, not a flood warning and
+      not an operational advisory. <b>PAGASA</b> and your local disaster risk
+      reduction office are the authorities on dam releases and flooding —
+      follow them, not this page. These forecasts come from a small statistical
+      model that is often wrong, and its errors are published above so you can
+      judge for yourself.
+    </p>
+  </section>
+
+  <footer class="foot" id="foot"></footer>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const SVGNS = "http://www.w3.org/2000/svg";
+const mk = (n, a = {}) => { const e = document.createElementNS(SVGNS, n); for (const k in a) e.setAttribute(k, a[k]); return e; };
+const num = v => (v === null || v === undefined || Number.isNaN(v)) ? null : Number(v);
+const fmt = (v, d = 2) => v === null ? "—" : v.toFixed(d);
+
+const RISK = {
+  "Normal":      { color: "#2ea05a", word: "Normal",      plain: "The forecast level stays below the operating rule curve." },
+  "Watch":       { color: "#f5a35c", word: "Watch",       plain: "The level is forecast to cross the rule curve this week." },
+  "Spill Watch": { color: "#e66767", word: "Spill watch", plain: "The level is forecast to reach the normal high water mark — a gate release becomes likely." },
+  "Not rated":   { color: "#7d8894", word: "Not rated",   plain: "PAGASA publishes no reference elevation for this dam, so we don't rate it." },
+};
+const meta = r => RISK[r] || RISK["Not rated"];
+
+let DATA = null, selected = null, map = null, markers = {};
+
+/* ---------- charts ---------- */
+function chart(series, opts = {}) {
+  const W = 760, H = 260, L = 54, R = 18, T = 18, B = 34;
+  const svg = mk("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+  const pts = series.flatMap(s => s.points);
+  if (pts.length < 2) return svg;
+
+  const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+  const refs = (opts.refs || []).filter(r => r.value !== null).map(r => r.value);
+  let ylo = Math.min(...ys, ...refs), yhi = Math.max(...ys, ...refs);
+  const pad = ((yhi - ylo) || 1) * 0.16;
+  ylo -= pad; yhi += pad;
+  const xlo = Math.min(...xs), xhi = Math.max(...xs);
+  const X = v => L + (xhi === xlo ? 0 : (v - xlo) / (xhi - xlo)) * (W - L - R);
+  const Y = v => T + (yhi - v) / (yhi - ylo) * (H - T - B);
+
+  for (let i = 0; i <= 3; i++) {
+    const v = ylo + (yhi - ylo) * i / 3;
+    svg.appendChild(mk("line", { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: "rgba(255,255,255,0.06)", "stroke-width": 1 }));
+    const t = mk("text", { x: L - 9, y: Y(v) + 4, fill: "#7d8894", "font-size": 11, "text-anchor": "end" });
+    t.textContent = v.toFixed(opts.decimals ?? 2);
+    svg.appendChild(t);
+  }
+
+  (opts.refs || []).forEach(r => {
+    if (r.value === null) return;
+    svg.appendChild(mk("line", { x1: L, x2: W - R, y1: Y(r.value), y2: Y(r.value), stroke: r.color, "stroke-width": 1.5, "stroke-dasharray": r.dash || "none", opacity: 0.85 }));
+    const t = mk("text", { x: W - R, y: Y(r.value) - 6, fill: r.color, "font-size": 11, "text-anchor": "end", "font-weight": 600 });
+    t.textContent = r.label;
+    svg.appendChild(t);
+  });
+
+  series.forEach(s => {
+    if (s.points.length < 2) return;
+    if (s.band) {
+      const d = s.points.map((p, i) => `${i ? "L" : "M"}${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" ")
+        + ` L${X(s.points.at(-1).x).toFixed(1)},${Y(ylo).toFixed(1)} L${X(s.points[0].x).toFixed(1)},${Y(ylo).toFixed(1)} Z`;
+      svg.appendChild(mk("path", { d, fill: s.color, opacity: 0.1 }));
+    }
+    const d = s.points.map((p, i) => `${i ? "L" : "M"}${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" ");
+    svg.appendChild(mk("path", { d, fill: "none", stroke: s.color, "stroke-width": s.width || 2.2, "stroke-dasharray": s.dash || "none", "stroke-linejoin": "round", "stroke-linecap": "round" }));
+    if (s.dots) s.points.forEach(p => svg.appendChild(mk("circle", { cx: X(p.x), cy: Y(p.y), r: 3, fill: s.color })));
+  });
+
+  [xlo, xhi].forEach((v, i) => {
+    const t = mk("text", { x: X(v), y: H - 11, fill: "#7d8894", "font-size": 11, "text-anchor": i ? "end" : "start" });
+    t.textContent = opts.xLabel ? opts.xLabel(v) : v;
+    svg.appendChild(t);
+  });
+  return svg;
+}
+
+/* ---------- map ---------- */
+function initMap() {
+  // The map is a nicety served from a CDN. If it fails, the forecasts still
+  // have to render — so this never takes the page down with it.
+  if (typeof L === "undefined") {
+    document.getElementById("mapbox").classList.add("dead");
+    return;
+  }
+  map = L.map("map", { scrollWheelZoom: false, zoomControl: true }).setView([15.6, 121.0], 7);
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 18,
+  }).addTo(map);
+
+  DATA.dams.forEach(d => {
+    const c = meta(d.risk).color;
+    const icon = L.divIcon({
+      className: "", iconSize: [30, 30],
+      html: `<div class="dammarker" style="--mk:${c}" title="${d.dam}">${d.dam.slice(0, 2).toUpperCase()}</div>`,
+    });
+    const m = L.marker([d.lat, d.lon], { icon }).addTo(map);
+    m.on("click", () => { selected = d.dam; render(); });
+    m.bindTooltip(`<b>${d.dam}</b><br>${fmt(num(d.rwl_m))} m · ${meta(d.risk).word}`);
+    markers[d.dam] = m;
+  });
+}
+
+function paintMarkers() {
+  DATA.dams.forEach(d => {
+    const node = markers[d.dam]?.getElement()?.querySelector(".dammarker");
+    if (node) node.classList.toggle("active", d.dam === selected);
+  });
+}
+
+/* ---------- panels ---------- */
+function chipsRow() {
+  const dams = DATA.dams;
+  const spill = dams.filter(d => d.risk === "Spill Watch").length;
+  const watch = dams.filter(d => d.risk === "Watch").length;
+  const extra = dams.filter(d => d.extrapolating).length;
+  const wins = Object.values(DATA.metrics || {}).filter(m => m.beats_baseline).length;
+  document.getElementById("chips").innerHTML = `
+    <span class="chip"><b>${dams.length}</b> dams tracked</span>
+    <span class="chip"><b style="color:#e66767">${spill}</b> on spill watch</span>
+    <span class="chip"><b style="color:#f5a35c">${watch}</b> on watch</span>
+    <span class="chip">beats baseline at <b>${wins}</b> of ${Object.keys(DATA.metrics || {}).length} horizons</span>
+    <span class="chip"><b>${extra}</b> beyond training range</span>`;
+}
+
+function damList() {
+  const box = document.createElement("div");
+  box.className = "damlist";
+  [...DATA.dams].sort((a, b) => b.lat - a.lat).forEach(d => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = d.dam === selected ? "active" : "";
+    b.innerHTML = `<span>${d.dam}</span>
+      <span class="pill" style="background:${meta(d.risk).color}">${fmt(num(d.rwl_m), 1)} m</span>`;
+    b.onclick = () => { selected = d.dam; render(); };
+    box.appendChild(b);
+  });
+  return box;
+}
+
+function nowCard(d) {
+  const m = meta(d.risk);
+  const rwl = num(d.rwl_m), nhwl = num(d.nhwl_m), rule = num(d.rule_curve_m);
+  const head = nhwl === null ? null : nhwl - rwl;
+  const card = document.createElement("section");
+  card.className = "card";
+  card.innerHTML = `
+    <h2>${d.dam} right now</h2>
+    <div class="nowrow">
+      <div class="riskbadge" style="background:${m.color};--glow:${m.color}99">
+        <div>
+          <div class="num">${fmt(rwl, 1)}</div>
+          <div class="lbl">metres</div>
+        </div>
+      </div>
+      <div class="nowmeta">
+        <p class="cat" style="color:${m.color}">${m.word}</p>
+        <p class="advice">${m.plain}</p>
+        <div class="wxchips">
+          ${head === null ? "" : `<span class="chip"><b>${fmt(head, 2)} m</b> to spill level</span>`}
+          ${rule === null ? "" : `<span class="chip">rule curve <b>${fmt(rule, 2)} m</b></span>`}
+          ${d.rain_7d === null ? "" : `<span class="chip"><b>${d.rain_7d} mm</b> rain, last 7d</span>`}
+          ${d.rain_next_7d === null ? "" : `<span class="chip"><b>${d.rain_next_7d} mm</b> forecast, next 7d</span>`}
+        </div>
+        <p class="sub">Reading from PAGASA, ${d.issue_date}</p>
+      </div>
+    </div>`;
+
+  const beyond = d.forecasts.filter(f => f.beyond_observed_rise).map(f => "+" + f.horizon + "d");
+  if (d.extrapolating || beyond.length) {
+    const w = document.createElement("div");
+    w.className = "warn";
+    const bits = [];
+    if (d.extrapolating) bits.push("Rain on this catchment over the last week is <b>heavier than anything in the model's training history</b>.");
+    if (beyond.length) bits.push(`The rise predicted at ${beyond.join(", ")} is <b>larger than any rise ever recorded here</b>.`);
+    w.innerHTML = bits.join(" ") + " Read these numbers as extrapolation, not forecast.";
+    card.appendChild(w);
+  }
+  return card;
+}
+
+function forecastCard(d) {
+  const card = document.createElement("section");
+  card.className = "card chartwrap";
+  card.innerHTML = `<h2>Level, past and forecast</h2>
+    <p class="lede">Blue is what PAGASA measured. Orange is what Pulso expects over the next seven days.</p>`;
+
+  const t = s => new Date(s).getTime();
+  const obs = (d.observed || []).map(o => ({ x: t(o.date), y: o.rwl_m }));
+  const last = obs.at(-1) || { x: t(d.issue_date), y: num(d.rwl_m) };
+  const fc = [last].concat(d.forecasts.map(f => ({ x: t(f.target_date), y: num(f.pred_rwl_m) })).filter(p => p.y !== null));
+
+  card.appendChild(chart([
+    { points: obs, color: "#4da3ff", width: 2.2 },
+    { points: fc, color: "#ffa14d", width: 2.2, dash: "5 4", dots: true },
+  ], {
+    refs: [
+      { value: num(d.nhwl_m), color: "#e66767", label: "normal high water level" },
+      { value: num(d.rule_curve_m), color: "#f5a35c", label: "rule curve", dash: "5 4" },
+    ],
+    xLabel: v => new Date(v).toISOString().slice(5, 10),
+  }));
+
+  const l = document.createElement("div");
+  l.className = "legend";
+  l.innerHTML = `<span><i style="background:#4da3ff"></i>Measured</span>
+    <span><i style="background:#ffa14d"></i>Forecast</span>
+    <span><i style="background:#e66767"></i>Spill level</span>
+    <span><i style="background:#f5a35c"></i>Rule curve</span>`;
+  card.appendChild(l);
+  return card;
+}
+
+function curveCard() {
+  const card = document.createElement("section");
+  card.className = "card chartwrap";
+  card.innerHTML = `<h2>Is it actually learning?</h2>
+    <p class="lede">Rolling error over calendar time, against a baseline that simply assumes nothing changes. If the blue line doesn't sit below the grey one, the model isn't earning its keep.</p>`;
+
+  const rows = (DATA.learning_curve || []).filter(r => r.roll_abs_err_model != null);
+  if (rows.length < 2) {
+    const p = document.createElement("div");
+    p.className = "msg";
+    p.textContent = "The curve fills in once enough forecasts have been scored against what actually happened.";
+    card.appendChild(p);
+    return card;
+  }
+  const t = s => new Date(s).getTime();
+  card.appendChild(chart([
+    { points: rows.map(r => ({ x: t(r.target_date), y: r.roll_abs_err_model })), color: "#4da3ff" },
+    { points: rows.map(r => ({ x: t(r.target_date), y: r.roll_abs_err_persistence })), color: "#7d8894", width: 1.8, dash: "5 4" },
+  ], { xLabel: v => new Date(v).toISOString().slice(0, 10) }));
+
+  const l = document.createElement("div");
+  l.className = "legend";
+  l.innerHTML = `<span><i style="background:#4da3ff"></i>Pulso</span><span><i style="background:#7d8894"></i>Persistence baseline</span>`;
+  card.appendChild(l);
+  return card;
+}
+
+function scoreCard() {
+  const m = DATA.metrics || {};
+  const hs = Object.keys(m).sort((a, b) => a - b);
+  const card = document.createElement("section");
+  card.className = "card";
+  card.innerHTML = `<h2>Where it wins, where it loses</h2>
+    <p class="lede">Mean absolute error in metres, each observation predicted before the model learned from it. Every horizon is published, including the ones we lose.</p>`;
+  if (!hs.length) { card.insertAdjacentHTML("beforeend", `<div class="msg">No scored horizons yet.</div>`); return card; }
+
+  card.insertAdjacentHTML("beforeend", `<table>
+    <thead><tr><th>Horizon</th><th>Pulso</th><th>Persistence</th><th>Best baseline</th><th>n</th><th>Verdict</th></tr></thead>
+    <tbody>${hs.map(h => {
+      const r = m[h], won = r.beats_baseline;
+      return `<tr>
+        <td>+${h}d</td>
+        <td class="mono" style="color:${won ? "#6fd79b" : "var(--ink)"}">${r.mae_model.toFixed(3)}</td>
+        <td class="mono">${r.mae_persistence.toFixed(3)}</td>
+        <td class="mono">${r.mae_best_baseline.toFixed(3)} <span style="color:var(--muted)">${r.best_baseline}</span></td>
+        <td class="mono">${r.n}</td>
+        <td><span class="verdict ${won ? "v-win" : "v-loss"}">${won ? "Pulso" : "baseline"}</span></td>
+      </tr>`;
+    }).join("")}</tbody></table>`);
+  return card;
+}
+
+/* ---------- render ---------- */
+function render() {
+  const d = DATA.dams.find(x => x.dam === selected) || DATA.dams[0];
+  chipsRow();
+  paintMarkers();
+
+  const main = document.getElementById("main");
+  main.textContent = "";
+  const grid = document.createElement("div");
+  grid.className = "grid";
+
+  const left = document.createElement("div");
+  left.className = "stack";
+  const picker = document.createElement("section");
+  picker.className = "card";
+  picker.innerHTML = `<h2>The nine dams</h2>`;
+  picker.appendChild(damList());
+  left.appendChild(picker);
+
+  const right = document.createElement("div");
+  right.className = "stack";
+  right.append(nowCard(d), forecastCard(d), curveCard(), scoreCard());
+
+  grid.append(left, right);
+  main.appendChild(grid);
+}
+
+fetch("data/forecasts.json", { cache: "no-store" })
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(d => {
+    DATA = d;
+    selected = (d.dams.find(x => x.risk === "Spill Watch") || d.dams[0]).dam;
+    document.getElementById("stamp").textContent = "updated " + (d.generated_at || "").replace("T", " ");
+    document.getElementById("foot").innerHTML =
+      `Dam levels scraped from <a href="https://www.pagasa.dost.gov.ph/flood" target="_blank" rel="noopener">PAGASA</a> · ` +
+      `rainfall from <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> · ` +
+      `built by <a href="https://github.com/Zeref538" target="_blank" rel="noopener">Zeref538</a>`;
+    try { initMap(); } catch (e) { document.getElementById("mapbox").classList.add("dead"); }
+    render();
+  })
+  .catch(err => {
+    document.getElementById("msg").innerHTML =
+      `Couldn't load <code>data/forecasts.json</code> (${err.message}). Serve this folder over ` +
+      `HTTP — <code>python -m http.server</code> from <code>web/</code> — browsers block reads ` +
+      `from <code>file://</code>.`;
+  });
+</script>
+</body>
+</html>
