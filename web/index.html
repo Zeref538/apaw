@@ -3,636 +3,746 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pulso — Luzon dam levels & spill risk</title>
-<meta name="description" content="A self-improving forecast of reservoir water level and spill risk for the major Luzon dams, scored honestly against a naive baseline.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%230b0f14'/%3E%3Cpath d='M6 20c3-5 5 3 8-1s5 3 8-1 4 2 4 2' stroke='%234da3ff' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<title>Pulso — Luzon dam levels &amp; spill risk</title>
+<meta name="description" content="How full the major Luzon dams are, and how full they'll get this week. A self-improving forecast scored honestly against a naive baseline.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23103B4F'/%3E%3Cpath d='M4 21h24M4 25h24' stroke='%236FB3C9' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M6 16h20' stroke='%23CDE4EC' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M10 10h12' stroke='%23E8B44A' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 :root {
-  --bg: #0b0f14;
-  --surface: rgba(255, 255, 255, 0.035);
-  --surface-solid: #121922;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.15);
-  --ink: #f2f5f8;
-  --ink-2: #b7c2cc;
-  --muted: #7d8894;
-  --grid: rgba(255, 255, 255, 0.06);
-  --actual: #4da3ff;
-  --predicted: #ffa14d;
-  --accent-grad: linear-gradient(92deg, #4da3ff, #7ec8ff 45%, #ffa14d);
-  --normal: #2ea05a;
-  --watch: #f5a35c;
-  --spill: #e66767;
-  --radius: 18px;
-  --font-display: "Space Grotesk", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
+  /* bathymetric chart: pale shallows to deep water */
+  --paper:      #EDF1F3;
+  --paper-2:    #F7FAFB;
+  --card:       #FFFFFF;
+  --rule-line:  #D3DEE3;
+  --rule-soft:  #E4EBEE;
+
+  --ink:        #0E1B24;
+  --ink-2:      #3F535E;
+  --muted:      #788A94;
+
+  --d1: #D7E9F1;
+  --d2: #A6CEDD;
+  --d3: #6FB3C9;
+  --d4: #2E7C99;
+  --d5: #103B4F;
+
+  --measured:   #16506B;
+  --forecast:   #C2661B;
+  --normal:     #2F7D5B;
+  --watch:      #C2851B;
+  --spill:      #B4462F;
+
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --radius: 6px;
 }
 
 * { box-sizing: border-box; }
-html { color-scheme: dark; scroll-behavior: smooth; }
+html { color-scheme: light; scroll-behavior: smooth; }
 
 body {
   margin: 0;
-  font-family: var(--font-body);
-  font-size: 15px;
-  background:
-    radial-gradient(1000px 560px at 12% -8%, rgba(45, 105, 255, 0.16), transparent 60%),
-    radial-gradient(800px 480px at 92% -4%, rgba(255, 145, 60, 0.09), transparent 55%),
-    radial-gradient(700px 700px at 50% 120%, rgba(45, 105, 255, 0.07), transparent 60%),
-    var(--bg);
-  background-attachment: fixed;
+  background: var(--paper);
   color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  line-height: 1.55;
 }
 
-.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px 72px; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 22px; }
 
-/* ---------- nav ---------- */
-nav.top {
+/* ---------- masthead ---------- */
+.masthead {
+  border-bottom: 1px solid var(--rule-line);
+  background: var(--paper-2);
   position: sticky; top: 0; z-index: 1200;
-  backdrop-filter: blur(14px);
-  background: rgba(11, 15, 20, 0.72);
-  border-bottom: 1px solid var(--border);
 }
-nav.top .inner {
-  max-width: 1120px; margin: 0 auto; padding: 12px 20px;
-  display: flex; align-items: center; gap: 12px;
+.masthead .inner {
+  max-width: 1080px; margin: 0 auto; padding: 11px 22px;
+  display: flex; align-items: center; gap: 14px;
 }
-nav.top .brand {
-  display: flex; align-items: center; gap: 10px;
-  font-family: var(--font-display); font-size: 19px; font-weight: 700;
-  color: var(--ink); text-decoration: none; letter-spacing: -0.01em;
+.mark {
+  font-family: var(--font-display); font-weight: 800; font-size: 20px;
+  letter-spacing: -0.02em; color: var(--ink); text-decoration: none;
+  display: flex; align-items: center; gap: 9px;
 }
-nav.top .brand span { color: var(--actual); }
-nav.top .logo {
-  width: 32px; height: 32px; border-radius: 10px;
-  display: grid; place-items: center;
-  background: linear-gradient(135deg, #2d69ff40, #4da3ff20);
-  border: 1px solid var(--border-strong);
+.mark svg { display: block; }
+.masthead .sep { flex: 1; }
+.masthead .stamp {
+  font-family: var(--font-mono); font-size: 11.5px; color: var(--muted);
 }
-nav.top .spacer { flex: 1; }
-nav.top .stamp { color: var(--muted); font-size: 12px; }
-nav.top a.gh {
-  display: inline-flex; align-items: center; gap: 7px;
-  font-size: 13px; font-weight: 600; color: var(--ink);
-  text-decoration: none; padding: 8px 14px; min-height: 36px;
-  border-radius: 10px; border: 1px solid var(--border-strong);
-  background: rgba(255, 255, 255, 0.04);
-  transition: background 160ms ease, transform 120ms ease;
+.masthead .src {
+  font-size: 13px; font-weight: 500; color: var(--ink-2); text-decoration: none;
+  border-bottom: 1px solid var(--rule-line); padding-bottom: 1px;
 }
-nav.top a.gh:hover { background: rgba(255, 255, 255, 0.09); }
-nav.top a.gh:active { transform: scale(0.97); }
-@media (max-width: 560px) { nav.top .stamp { display: none; } }
+.masthead .src:hover { color: var(--ink); border-color: var(--ink); }
+@media (max-width: 620px) { .masthead .stamp { display: none; } }
 
 /* ---------- hero ---------- */
-header.hero { padding: 44px 0 30px; }
-header.hero h1 {
+.hero { padding: 54px 0 34px; }
+.hero .kicker {
+  font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--d4); margin-bottom: 14px;
+}
+.hero h1 {
   font-family: var(--font-display);
-  font-size: clamp(34px, 6vw, 54px);
-  margin: 0 0 12px; letter-spacing: -0.03em; line-height: 1.05;
+  font-size: clamp(34px, 5.6vw, 56px); font-weight: 700;
+  letter-spacing: -0.035em; line-height: 1.04; margin: 0 0 16px; max-width: 17ch;
 }
-header.hero h1 .grad {
-  background: var(--accent-grad);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-header.hero .tagline { color: var(--ink-2); font-size: 16.5px; margin: 0; max-width: 62ch; }
-header.hero .tagline em { color: var(--ink); font-style: normal; font-weight: 600; }
-.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
-.chip {
-  font-size: 12.5px; font-weight: 550; color: var(--ink-2);
-  padding: 6px 12px; border-radius: 999px;
-  border: 1px solid var(--border); background: rgba(255, 255, 255, 0.03);
-}
-.chip b { color: var(--ink); font-weight: 650; }
+.hero .lede { font-size: 17px; color: var(--ink-2); margin: 0; max-width: 60ch; }
+.hero .lede b { color: var(--ink); font-weight: 600; }
 
-/* ---------- layout ---------- */
-.grid { display: grid; grid-template-columns: 350px 1fr; gap: 18px; align-items: start; }
-@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
-.stack { display: grid; gap: 18px; }
+.readout {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 1px; margin-top: 32px;
+  background: var(--rule-line); border: 1px solid var(--rule-line);
+  border-radius: var(--radius); overflow: hidden;
+}
+.readout div { background: var(--paper-2); padding: 13px 15px; }
+.readout dt {
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted);
+}
+.readout dd {
+  margin: 3px 0 0; font-family: var(--font-display);
+  font-size: 25px; font-weight: 700; line-height: 1.1;
+}
+.readout dd small { font-size: 13px; font-weight: 500; color: var(--muted); }
 
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 22px;
-  backdrop-filter: blur(10px);
-  position: relative;
+/* ---------- sections ---------- */
+.sec { padding: 44px 0 0; }
+.sec > h2 {
+  font-family: var(--font-display); font-size: 24px; font-weight: 700;
+  letter-spacing: -0.02em; margin: 0 0 6px;
 }
-.card h2 {
-  font-family: var(--font-display);
-  font-size: 12px; font-weight: 600; color: var(--muted);
-  text-transform: uppercase; letter-spacing: 0.14em; margin: 0 0 16px;
-  display: flex; align-items: center; gap: 10px;
+.sec > .say { color: var(--ink-2); font-size: 15.5px; margin: 0 0 6px; max-width: 66ch; }
+.sec > .tech {
+  color: var(--muted); font-size: 13.5px; margin: 0 0 22px; max-width: 72ch;
+  font-family: var(--font-mono); line-height: 1.65;
 }
-.card h2::before {
-  content: ""; width: 18px; height: 2px; border-radius: 2px;
-  background: var(--accent-grad); flex: none;
+
+.panel {
+  background: var(--card); border: 1px solid var(--rule-line);
+  border-radius: var(--radius); padding: 20px 22px;
 }
-.card .lede { color: var(--ink-2); font-size: 14px; margin: -6px 0 16px; }
+
+/* ---------- nine-dam grid ---------- */
+.nine { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media (max-width: 860px) { .nine { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .nine { grid-template-columns: 1fr; } }
+
+.tile {
+  text-align: left; font: inherit; cursor: pointer;
+  background: var(--card); border: 1px solid var(--rule-line);
+  border-radius: var(--radius); padding: 14px 15px 12px;
+  transition: border-color 140ms ease, transform 140ms ease;
+}
+.tile:hover { border-color: var(--d3); transform: translateY(-1px); }
+.tile:focus-visible { outline: 2px solid var(--d4); outline-offset: 2px; }
+.tile.on { border-color: var(--d5); box-shadow: inset 0 0 0 1px var(--d5); }
+.tile .top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.tile .nm { font-family: var(--font-display); font-size: 16.5px; font-weight: 700; letter-spacing: -0.01em; }
+.tile .lv { font-family: var(--font-mono); font-size: 13px; color: var(--ink-2); }
+.tile .state {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em;
+  text-transform: uppercase; margin-top: 3px;
+}
+.tile .state i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.tile svg.spark { display: block; width: 100%; height: 40px; margin-top: 9px; }
+
+/* capacity bar */
+.cap { margin-top: 9px; }
+.cap .track {
+  position: relative; height: 7px; border-radius: 4px;
+  background: var(--rule-soft); overflow: hidden;
+}
+.cap .fill { position: absolute; inset: 0 auto 0 0; border-radius: 4px; }
+.cap .tick { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--watch); }
+.cap .scale {
+  display: flex; justify-content: space-between; margin-top: 4px;
+  font-family: var(--font-mono); font-size: 10px; color: var(--muted);
+}
 
 /* ---------- map ---------- */
-.mapsection { position: relative; width: 100%; margin-top: 6px; }
-.mapbox {
-  position: relative; overflow: hidden;
-  border-top: 1px solid var(--border-strong);
-  border-bottom: 1px solid var(--border-strong);
-  height: min(62vh, 620px);
-  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.4);
+.mapshell {
+  border: 1px solid var(--rule-line); border-radius: var(--radius);
+  overflow: hidden; position: relative; height: 460px; background: var(--paper-2);
 }
-@media (max-width: 700px) { .mapbox { height: 56vh; } }
+@media (max-width: 700px) { .mapshell { height: 380px; } }
 #map { height: 100%; width: 100%; }
-.mapbox.dead { height: auto; }
-.mapbox.dead #map { display: none; }
-.mapfallback {
-  display: none; padding: 18px 20px; color: var(--muted); font-size: 13.5px;
+.mapshell.dead { height: auto; }
+.mapshell.dead #map { display: none; }
+.mapfallback { display: none; padding: 18px 20px; color: var(--muted); font-size: 13.5px; }
+.mapshell.dead .mapfallback { display: block; }
+.leaflet-container { height: 100%; width: 100%; background: var(--paper-2); font: inherit; }
+.leaflet-control-attribution { font-size: 9.5px !important; }
+.dot {
+  display: grid; place-items: center; width: 100%; height: 100%;
+  border-radius: 50%; border: 2px solid #fff;
+  font: 600 10px/1 var(--font-mono); color: #fff;
+  box-shadow: 0 1px 6px rgba(14, 27, 36, 0.35); cursor: pointer;
+  transition: transform 140ms ease;
 }
-.mapbox.dead .mapfallback { display: block; }
-.mapbox.dead .maplegend { display: none; }
-.leaflet-container { height: 100%; width: 100%; background: #0b0f14; font: inherit; }
-.leaflet-control-attribution {
-  background: rgba(11, 15, 20, 0.75) !important;
-  color: var(--muted) !important; font-size: 9.5px !important;
+.dot:hover { transform: scale(1.14); }
+.dot.on { outline: 3px solid rgba(16, 59, 79, 0.28); outline-offset: 2px; }
+
+/* ---------- detail ---------- */
+.verdict {
+  font-family: var(--font-display); font-size: 27px; font-weight: 700;
+  letter-spacing: -0.02em; margin: 0 0 6px; line-height: 1.18;
 }
-.leaflet-control-attribution a { color: var(--ink-2) !important; }
-.leaflet-bar a { background: var(--surface-solid) !important; color: var(--ink) !important; border-color: var(--border) !important; }
-
-.dammarker {
-  display: grid; place-items: center;
-  width: 100%; height: 100%; border-radius: 50%;
-  font: 700 10.5px/1 var(--font-body); color: #0b0f14;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.3), 0 0 18px 3px var(--mk, rgba(77,163,255,.5));
-  background: var(--mk, #4da3ff);
-  cursor: pointer;
-  transition: transform 160ms ease;
+.detailsay { color: var(--ink-2); margin: 0 0 16px; max-width: 62ch; }
+.facts {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 14px 20px; margin: 0 0 18px; padding: 14px 0;
+  border-top: 1px solid var(--rule-soft); border-bottom: 1px solid var(--rule-soft);
 }
-.dammarker:hover { transform: scale(1.12); }
-.dammarker.active { outline: 3px solid rgba(255, 255, 255, 0.4); outline-offset: 2px; }
-
-.maplegend {
-  position: absolute; z-index: 1000; right: 12px; top: 12px;
-  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-  background: rgba(11, 15, 20, 0.82); backdrop-filter: blur(8px);
-  border: 1px solid var(--border-strong); border-radius: 10px;
-  padding: 8px 12px; font-size: 11.5px; color: var(--ink-2);
+.facts dt {
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--muted);
 }
-.maplegend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: -1px; }
+.facts dd { margin: 2px 0 0; font-family: var(--font-mono); font-size: 16px; font-weight: 500; }
 
-/* ---------- dam picker ---------- */
-.damlist { display: flex; flex-direction: column; gap: 6px; }
-.damlist button {
-  display: flex; justify-content: space-between; align-items: center; gap: 10px;
-  width: 100%; font: inherit; font-size: 14.5px; text-align: left;
-  padding: 10px 12px; min-height: 46px;
-  border-radius: 12px; border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.02); color: var(--ink); cursor: pointer;
-  transition: background 160ms ease;
+.flag {
+  border-left: 3px solid var(--watch); background: #FBF4E4;
+  padding: 12px 15px; border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 14px; color: var(--ink-2); margin-top: 16px;
 }
-.damlist button:hover { background: rgba(255, 255, 255, 0.06); }
-.damlist button.active {
-  background: linear-gradient(90deg, rgba(77, 163, 255, 0.16), rgba(77, 163, 255, 0.05));
-  border-color: rgba(77, 163, 255, 0.45);
+.flag b { color: var(--ink); }
+
+.chartbox svg { display: block; width: 100%; height: auto; }
+.key {
+  display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px;
+  font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-2);
 }
-.damlist button:focus-visible { outline: 2px solid var(--actual); outline-offset: 2px; }
-.pill {
-  font-size: 11.5px; font-weight: 700; letter-spacing: 0.02em;
-  border-radius: 999px; padding: 3px 10px; white-space: nowrap; color: #0b0f14;
+.key i { display: inline-block; width: 18px; height: 3px; margin-right: 7px; vertical-align: middle; border-radius: 2px; }
+
+/* ---------- skill bars ---------- */
+.skill { display: grid; gap: 3px; }
+.skillrow {
+  display: grid; grid-template-columns: 46px 1fr 120px; gap: 14px;
+  align-items: center; padding: 7px 0; border-bottom: 1px solid var(--rule-soft);
 }
-
-/* ---------- now card ---------- */
-.nowrow { display: flex; gap: 18px; align-items: flex-start; }
-.riskbadge {
-  flex: none; width: 116px; min-height: 96px; border-radius: 16px;
-  display: grid; place-items: center; text-align: center; padding: 12px 10px;
-  color: #0b0f14; box-shadow: 0 0 34px -6px var(--glow, rgba(77,163,255,.6));
+.skillrow:last-child { border-bottom: 0; }
+.skillrow .h { font-family: var(--font-mono); font-size: 13px; color: var(--ink-2); }
+.skillbar { position: relative; height: 22px; }
+.skillbar .mid { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--rule-line); }
+.skillbar .bar { position: absolute; top: 4px; height: 14px; border-radius: 2px; }
+.skillrow .val { font-family: var(--font-mono); font-size: 12px; color: var(--muted); text-align: right; }
+.skillhead {
+  display: grid; grid-template-columns: 46px 1fr 120px; gap: 14px;
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--muted); padding-bottom: 8px;
+  border-bottom: 1px solid var(--rule-line); margin-bottom: 4px;
 }
-.riskbadge .num { font-family: var(--font-display); font-size: 27px; font-weight: 700; line-height: 1; }
-.riskbadge .lbl { font-size: 10.5px; font-weight: 650; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 6px; opacity: 0.78; }
-.nowmeta { flex: 1; min-width: 0; }
-.nowmeta .cat { font-family: var(--font-display); font-size: 21px; font-weight: 700; margin: 0 0 4px; }
-.nowmeta .advice { color: var(--ink-2); font-size: 14px; margin: 0 0 10px; }
-.nowmeta .sub { color: var(--muted); font-size: 12.5px; margin: 8px 0 0; }
-.wxchips { display: flex; gap: 6px; flex-wrap: wrap; }
-.wxchips .chip { font-size: 11.5px; padding: 4px 10px; }
+.skillhead .split { display: flex; justify-content: space-between; }
 
-.warn {
-  margin-top: 16px; padding: 12px 14px; border-radius: 12px;
-  background: rgba(255, 161, 77, 0.08);
-  border: 1px dashed rgba(255, 161, 77, 0.45);
-  font-size: 13.5px; color: var(--ink-2); line-height: 1.6;
+/* ---------- notice ---------- */
+.notice {
+  margin: 44px 0 0; padding: 20px 22px;
+  border: 1px solid #E3C9C1; border-left: 3px solid var(--spill);
+  border-radius: 0 var(--radius) var(--radius) 0; background: #FBF1EE;
 }
-.warn b { color: var(--ink); }
-
-/* ---------- charts ---------- */
-.chartwrap svg { display: block; width: 100%; height: auto; }
-.legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; font-size: 12.5px; color: var(--ink-2); }
-.legend i { display: inline-block; width: 16px; height: 2px; vertical-align: middle; margin-right: 7px; }
-
-/* ---------- table ---------- */
-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-th, td { text-align: right; padding: 9px 8px; border-bottom: 1px solid var(--grid); }
-th:first-child, td:first-child { text-align: left; }
-thead th {
-  color: var(--muted); font-size: 10.5px; letter-spacing: 0.12em;
-  text-transform: uppercase; font-weight: 600;
+.notice h2 {
+  font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.13em;
+  text-transform: uppercase; color: var(--spill); margin: 0 0 8px;
 }
-tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
-td.mono { font-variant-numeric: tabular-nums; }
-.verdict { font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
-.v-win { background: rgba(46, 160, 90, 0.18); color: #6fd79b; }
-.v-loss { background: rgba(230, 103, 103, 0.16); color: #f09a9a; }
+.notice p { margin: 0; font-size: 14.5px; color: var(--ink-2); max-width: 80ch; }
+.notice b { color: var(--ink); }
 
-/* ---------- disclaimer ---------- */
-.disclaimer { border-color: rgba(230, 103, 103, 0.35); }
-.disclaimer p { margin: 0; color: var(--ink-2); font-size: 14px; max-width: 80ch; }
-.disclaimer b { color: var(--ink); }
+footer.end {
+  margin-top: 34px; padding: 22px 0 60px; border-top: 1px solid var(--rule-line);
+  font-family: var(--font-mono); font-size: 11.5px; color: var(--muted);
+}
+footer.end a { color: var(--ink-2); }
 
-footer.foot { margin-top: 28px; color: var(--muted); font-size: 12.5px; }
-footer.foot a { color: var(--ink-2); }
-
-.msg { color: var(--muted); font-size: 14px; padding: 8px 0; }
-.msg code { color: var(--ink); background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 6px; }
+.loading { padding: 40px 0; color: var(--muted); font-family: var(--font-mono); font-size: 13.5px; }
+.loading code { color: var(--ink); background: var(--rule-soft); padding: 2px 6px; border-radius: 3px; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
 
-<nav class="top">
+<div class="masthead">
   <div class="inner">
-    <a class="brand" href="./">
-      <span class="logo" aria-hidden="true">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4da3ff" stroke-width="2.2" stroke-linecap="round">
-          <path d="M3 15c2.5-4 4.5 2.5 7-1s4.5 2.5 7-1 3 1.5 4 1.5"/>
-        </svg>
-      </span>
-      Pul<span>so</span>
+    <a class="mark" href="../">
+      <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="8" fill="#103B4F"/>
+        <path d="M4 21h24M4 25h24" stroke="#6FB3C9" stroke-width="2" stroke-linecap="round"/>
+        <path d="M6 16h20" stroke="#CDE4EC" stroke-width="2" stroke-linecap="round"/>
+        <path d="M10 10h12" stroke="#E8B44A" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Pulso
     </a>
-    <div class="spacer"></div>
+    <div class="sep"></div>
     <div class="stamp" id="stamp"></div>
-    <a class="gh" href="https://github.com/Zeref538/pulso" target="_blank" rel="noopener">
-      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-      Code
-    </a>
+    <a class="src" href="https://github.com/Zeref538/pulso" target="_blank" rel="noopener">Source</a>
   </div>
-</nav>
+</div>
 
 <div class="wrap">
   <header class="hero">
-    <h1>Nine Luzon reservoirs,<br><span class="grad">seven days ahead.</span></h1>
-    <p class="tagline">
-      Pulso forecasts how full the major dams will get, from PAGASA's daily
-      bulletin and Open-Meteo rainfall. It learns from
-      <em>one observation at a time</em> — and publishes the horizons where a
-      naive baseline still beats it.
+    <div class="kicker">Luzon reservoir watch</div>
+    <h1>How full the dams are, and how full they'll get.</h1>
+    <p class="lede">
+      Nine major reservoirs, read from PAGASA's daily bulletin and forecast a
+      week out from the rain falling on their catchments. Pulso learns from
+      <b>every new reading</b> — and tells you which forecasts a dumb guess
+      still beats.
     </p>
-    <div class="chips" id="chips"></div>
+    <dl class="readout" id="readout"></dl>
   </header>
-</div>
 
-<section class="mapsection">
-  <div class="mapbox" id="mapbox">
-    <div id="map"></div>
-    <p class="mapfallback">
-      The map library didn't load, so the locator is hidden. Everything else on
-      this page still works — pick a dam from the list below.
-    </p>
-    <div class="maplegend">
-      <span><i style="background:#2ea05a"></i>Normal</span>
-      <span><i style="background:#f5a35c"></i>Watch</span>
-      <span><i style="background:#e66767"></i>Spill watch</span>
-      <span><i style="background:#7d8894"></i>Not rated</span>
-    </div>
-  </div>
-</section>
-
-<div class="wrap">
-  <main id="main" style="padding-top:22px">
-    <div class="msg" id="msg">Loading dam telemetry…</div>
+  <main id="main">
+    <div class="loading" id="loading">Reading the bulletin…</div>
   </main>
 
-  <section class="card disclaimer" style="margin-top:18px">
+  <section class="notice">
     <h2>Not an official warning</h2>
     <p>
-      Pulso is an <b>educational portfolio project</b>, not a flood warning and
-      not an operational advisory. <b>PAGASA</b> and your local disaster risk
-      reduction office are the authorities on dam releases and flooding —
-      follow them, not this page. These forecasts come from a small statistical
-      model that is often wrong, and its errors are published above so you can
-      judge for yourself.
+      Pulso is an <b>educational portfolio project</b>, not a flood advisory.
+      <b>PAGASA</b> and your local disaster risk reduction office decide what
+      counts as a warning and when water is released — follow them, not this
+      page. The forecasts here come from a small statistical model that is
+      often wrong, and every one of its errors is published above.
     </p>
   </section>
 
-  <footer class="foot" id="foot"></footer>
+  <footer class="end" id="end"></footer>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const SVGNS = "http://www.w3.org/2000/svg";
-const mk = (n, a = {}) => { const e = document.createElementNS(SVGNS, n); for (const k in a) e.setAttribute(k, a[k]); return e; };
-const num = v => (v === null || v === undefined || Number.isNaN(v)) ? null : Number(v);
-const fmt = (v, d = 2) => v === null ? "—" : v.toFixed(d);
+const NS = "http://www.w3.org/2000/svg";
+const svgEl = (n, a = {}) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); return e; };
+const N = v => (v === null || v === undefined || Number.isNaN(v)) ? null : Number(v);
+const f2 = (v, d = 2) => v === null ? "—" : v.toFixed(d);
 
-const RISK = {
-  "Normal":      { color: "#2ea05a", word: "Normal",      plain: "The forecast level stays below the operating rule curve." },
-  "Watch":       { color: "#f5a35c", word: "Watch",       plain: "The level is forecast to cross the rule curve this week." },
-  "Spill Watch": { color: "#e66767", word: "Spill watch", plain: "The level is forecast to reach the normal high water mark — a gate release becomes likely." },
-  "Not rated":   { color: "#7d8894", word: "Not rated",   plain: "PAGASA publishes no reference elevation for this dam, so we don't rate it." },
+const STATE = {
+  "Normal":      { c: "#2F7D5B", word: "Normal" },
+  "Watch":       { c: "#C2851B", word: "Watch" },
+  "Spill Watch": { c: "#B4462F", word: "Spill watch" },
+  "Not rated":   { c: "#788A94", word: "Not rated" },
 };
-const meta = r => RISK[r] || RISK["Not rated"];
+const st = r => STATE[r] || STATE["Not rated"];
 
-let DATA = null, selected = null, map = null, markers = {};
+/* Plain English first, the numbers second. */
+function saying(d) {
+  const rwl = N(d.rwl_m), nhwl = N(d.nhwl_m), rule = N(d.rule_curve_m);
+  const peak = Math.max(...d.forecasts.map(x => N(x.pred_rwl_m) ?? -Infinity));
+  const rising = peak > rwl + 0.05;
+  if (d.risk === "Spill Watch") {
+    return nhwl !== null && rwl >= nhwl
+      ? ["It's full.", `${d.dam} is at the top of its normal range. When dams sit here, operators start letting water out, and rivers downstream rise.`]
+      : ["It's about to be full.", `${d.dam} is forecast to reach the top of its normal range this week. That's the point where operators usually start releasing water.`];
+  }
+  if (d.risk === "Watch") return ["Filling fast.", `${d.dam} is heading above the level operators aim to keep it at for this time of year. Not an emergency — worth watching.`];
+  if (d.risk === "Not rated") return ["No published limits.", `PAGASA doesn't publish a target or a full mark for ${d.dam}, so there's nothing honest to measure it against. We show the level and stop there.`];
+  return rising
+    ? ["Room to spare.", `${d.dam} is rising, but stays well under the level operators aim for.`]
+    : ["Room to spare.", `${d.dam} is comfortably below the level operators aim for.`];
+}
 
-/* ---------- charts ---------- */
-function chart(series, opts = {}) {
-  const W = 760, H = 260, L = 54, R = 18, T = 18, B = 34;
-  const svg = mk("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
-  const pts = series.flatMap(s => s.points);
-  if (pts.length < 2) return svg;
+let DATA = null, pick = null, map = null, pins = {};
 
-  const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
-  const refs = (opts.refs || []).filter(r => r.value !== null).map(r => r.value);
-  let ylo = Math.min(...ys, ...refs), yhi = Math.max(...ys, ...refs);
-  const pad = ((yhi - ylo) || 1) * 0.16;
-  ylo -= pad; yhi += pad;
-  const xlo = Math.min(...xs), xhi = Math.max(...xs);
-  const X = v => L + (xhi === xlo ? 0 : (v - xlo) / (xhi - xlo)) * (W - L - R);
-  const Y = v => T + (yhi - v) / (yhi - ylo) * (H - T - B);
+/* ---------- bathymetric area chart ---------- */
+function depthChart(d) {
+  const W = 760, H = 300, L = 58, R = 74, T = 20, B = 34;
+  const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+  const ms = t => new Date(t).getTime();
 
+  const obs = (d.observed || []).map(o => ({ x: ms(o.date), y: o.rwl_m }));
+  const last = obs.at(-1) || { x: ms(d.issue_date), y: N(d.rwl_m) };
+  const fc = [last].concat(d.forecasts.map(x => ({ x: ms(x.target_date), y: N(x.pred_rwl_m) })).filter(p => p.y !== null));
+  const all = obs.concat(fc);
+  if (all.length < 2) return svg;
+
+  const nhwl = N(d.nhwl_m), rule = N(d.rule_curve_m);
+  const refs = [nhwl, rule].filter(v => v !== null);
+  const ys = all.map(p => p.y);
+  let lo = Math.min(...ys, ...refs), hi = Math.max(...ys, ...refs);
+  const pad = ((hi - lo) || 1) * 0.18;
+  lo -= pad * 1.6; hi += pad;
+  const xs = all.map(p => p.x);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs);
+  const X = v => L + (x1 === x0 ? 0 : (v - x0) / (x1 - x0)) * (W - L - R);
+  const Y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+
+  // Depth bands: the water column drawn as a bathymetric chart, shallow water
+  // pale at the surface and deepening toward the bed. The slabs must not
+  // overlap — stacked full-height rects just paint over each other.
+  const bands = ["#D7E9F1", "#A6CEDD", "#6FB3C9", "#2E7C99"];
+  const bed = Y(lo);
+  const area = obs.concat(fc.slice(1));
+  const clip = svgEl("clipPath", { id: "watercol" });
+  clip.appendChild(svgEl("path", {
+    d: area.map((p, j) => `${j ? "L" : "M"}${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" ")
+      + ` L${X(area.at(-1).x).toFixed(1)},${bed} L${X(area[0].x).toFixed(1)},${bed} Z`,
+  }));
+  svg.appendChild(clip);
+  const band = document.createElementNS(NS, "g");
+  band.setAttribute("clip-path", "url(#watercol)");
+  bands.forEach((c, i) => {
+    const yTop = T + (H - T - B) * (i / bands.length);
+    const yBot = T + (H - T - B) * ((i + 1) / bands.length);
+    band.appendChild(svgEl("rect", {
+      x: L, y: yTop, width: W - L - R, height: yBot - yTop, fill: c,
+    }));
+  });
+  svg.appendChild(band);
+
+  // gridlines
   for (let i = 0; i <= 3; i++) {
-    const v = ylo + (yhi - ylo) * i / 3;
-    svg.appendChild(mk("line", { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: "rgba(255,255,255,0.06)", "stroke-width": 1 }));
-    const t = mk("text", { x: L - 9, y: Y(v) + 4, fill: "#7d8894", "font-size": 11, "text-anchor": "end" });
-    t.textContent = v.toFixed(opts.decimals ?? 2);
+    const v = lo + (hi - lo) * i / 3;
+    svg.appendChild(svgEl("line", { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: "#D3DEE3", "stroke-width": 1, "stroke-dasharray": "2 3" }));
+    const t = svgEl("text", { x: L - 9, y: Y(v) + 4, fill: "#788A94", "font-size": 11, "text-anchor": "end", "font-family": "IBM Plex Mono, monospace" });
+    t.textContent = v.toFixed(1);
     svg.appendChild(t);
   }
 
-  (opts.refs || []).forEach(r => {
-    if (r.value === null) return;
-    svg.appendChild(mk("line", { x1: L, x2: W - R, y1: Y(r.value), y2: Y(r.value), stroke: r.color, "stroke-width": 1.5, "stroke-dasharray": r.dash || "none", opacity: 0.85 }));
-    const t = mk("text", { x: W - R, y: Y(r.value) - 6, fill: r.color, "font-size": 11, "text-anchor": "end", "font-weight": 600 });
-    t.textContent = r.label;
+  // thresholds, labelled in the right gutter
+  const ref = (v, color, label) => {
+    if (v === null) return;
+    svg.appendChild(svgEl("line", { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: color, "stroke-width": 1.6, "stroke-dasharray": "6 4" }));
+    const t = svgEl("text", { x: W - R + 7, y: Y(v) + 4, fill: color, "font-size": 10.5, "font-family": "IBM Plex Mono, monospace", "font-weight": 600 });
+    t.textContent = label;
     svg.appendChild(t);
-  });
+  };
+  ref(nhwl, "#B4462F", "full");
+  ref(rule, "#C2851B", "target");
 
-  series.forEach(s => {
-    if (s.points.length < 2) return;
-    if (s.band) {
-      const d = s.points.map((p, i) => `${i ? "L" : "M"}${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" ")
-        + ` L${X(s.points.at(-1).x).toFixed(1)},${Y(ylo).toFixed(1)} L${X(s.points[0].x).toFixed(1)},${Y(ylo).toFixed(1)} Z`;
-      svg.appendChild(mk("path", { d, fill: s.color, opacity: 0.1 }));
-    }
-    const d = s.points.map((p, i) => `${i ? "L" : "M"}${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" ");
-    svg.appendChild(mk("path", { d, fill: "none", stroke: s.color, "stroke-width": s.width || 2.2, "stroke-dasharray": s.dash || "none", "stroke-linejoin": "round", "stroke-linecap": "round" }));
-    if (s.dots) s.points.forEach(p => svg.appendChild(mk("circle", { cx: X(p.x), cy: Y(p.y), r: 3, fill: s.color })));
-  });
+  // measured + forecast lines
+  const line = (pts, color, dash) => {
+    if (pts.length < 2) return;
+    svg.appendChild(svgEl("path", {
+      d: pts.map((p, i) => `${i ? "L" : "M"}${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" "),
+      fill: "none", stroke: color, "stroke-width": 2.4, "stroke-dasharray": dash || "none",
+      "stroke-linejoin": "round", "stroke-linecap": "round",
+    }));
+  };
+  line(obs, "#16506B");
+  line(fc, "#C2661B", "6 4");
+  fc.slice(1).forEach(p => svg.appendChild(svgEl("circle", { cx: X(p.x), cy: Y(p.y), r: 3.2, fill: "#C2661B" })));
+  if (obs.length) svg.appendChild(svgEl("circle", { cx: X(last.x), cy: Y(last.y), r: 4, fill: "#16506B" }));
 
-  [xlo, xhi].forEach((v, i) => {
-    const t = mk("text", { x: X(v), y: H - 11, fill: "#7d8894", "font-size": 11, "text-anchor": i ? "end" : "start" });
-    t.textContent = opts.xLabel ? opts.xLabel(v) : v;
+  [x0, x1].forEach((v, i) => {
+    const t = svgEl("text", { x: X(v), y: H - 11, fill: "#788A94", "font-size": 11, "text-anchor": i ? "end" : "start", "font-family": "IBM Plex Mono, monospace" });
+    t.textContent = new Date(v).toISOString().slice(5, 10);
     svg.appendChild(t);
   });
   return svg;
 }
 
-/* ---------- map ---------- */
-function initMap() {
-  // The map is a nicety served from a CDN. If it fails, the forecasts still
-  // have to render — so this never takes the page down with it.
-  if (typeof L === "undefined") {
-    document.getElementById("mapbox").classList.add("dead");
-    return;
-  }
-  map = L.map("map", { scrollWheelZoom: false, zoomControl: true }).setView([15.6, 121.0], 7);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 18,
-  }).addTo(map);
+function sparkline(d) {
+  const W = 220, H = 40;
+  const svg = svgEl("svg", { class: "spark", viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: "none", "aria-hidden": "true" });
+  const ms = t => new Date(t).getTime();
+  const obs = (d.observed || []).map(o => ({ x: ms(o.date), y: o.rwl_m }));
+  const fc = d.forecasts.map(x => ({ x: ms(x.target_date), y: N(x.pred_rwl_m) })).filter(p => p.y !== null);
+  const all = obs.concat(fc);
+  if (all.length < 2) return svg;
+  const ys = all.map(p => p.y), xs = all.map(p => p.x);
+  let lo = Math.min(...ys), hi = Math.max(...ys);
+  if (hi - lo < 0.05) { hi += 0.05; lo -= 0.05; }
+  const x0 = Math.min(...xs), x1 = Math.max(...xs);
+  const X = v => ((v - x0) / (x1 - x0)) * W;
+  const Y = v => 4 + (hi - v) / (hi - lo) * (H - 8);
 
-  DATA.dams.forEach(d => {
-    const c = meta(d.risk).color;
-    const icon = L.divIcon({
-      className: "", iconSize: [30, 30],
-      html: `<div class="dammarker" style="--mk:${c}" title="${d.dam}">${d.dam.slice(0, 2).toUpperCase()}</div>`,
-    });
-    const m = L.marker([d.lat, d.lon], { icon }).addTo(map);
-    m.on("click", () => { selected = d.dam; render(); });
-    m.bindTooltip(`<b>${d.dam}</b><br>${fmt(num(d.rwl_m))} m · ${meta(d.risk).word}`);
-    markers[d.dam] = m;
-  });
+  const area = obs.concat(fc);
+  svg.appendChild(svgEl("path", {
+    d: area.map((p, i) => `${i ? "L" : "M"}${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" ") + ` L${W},${H} L0,${H} Z`,
+    fill: "#A6CEDD", opacity: 0.4,
+  }));
+  const seg = (pts, c, dash) => pts.length > 1 && svg.appendChild(svgEl("path", {
+    d: pts.map((p, i) => `${i ? "L" : "M"}${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" "),
+    fill: "none", stroke: c, "stroke-width": 1.8, "stroke-dasharray": dash || "none", "vector-effect": "non-scaling-stroke",
+  }));
+  seg(obs, "#16506B");
+  seg([obs.at(-1)].filter(Boolean).concat(fc), "#C2661B", "4 3");
+  return svg;
 }
 
-function paintMarkers() {
-  DATA.dams.forEach(d => {
-    const node = markers[d.dam]?.getElement()?.querySelector(".dammarker");
-    if (node) node.classList.toggle("active", d.dam === selected);
-  });
+/* how full, between the operating target and the full mark */
+function capacity(d) {
+  const rwl = N(d.rwl_m), nhwl = N(d.nhwl_m), rule = N(d.rule_curve_m);
+  if (nhwl === null) return null;
+  const floor = rule !== null ? Math.min(rule, rwl) - 2 : rwl - 6;
+  const pct = Math.max(0, Math.min(100, ((rwl - floor) / (nhwl - floor)) * 100));
+  const tick = rule !== null ? Math.max(0, Math.min(100, ((rule - floor) / (nhwl - floor)) * 100)) : null;
+  const el = document.createElement("div");
+  el.className = "cap";
+  el.innerHTML = `<div class="track">
+      <div class="fill" style="width:${pct.toFixed(1)}%;background:${st(d.risk).c}"></div>
+      ${tick === null ? "" : `<div class="tick" style="left:${tick.toFixed(1)}%"></div>`}
+    </div>
+    <div class="scale"><span>${f2(rwl, 1)} m</span><span>full at ${f2(nhwl, 1)} m</span></div>`;
+  return el;
 }
 
-/* ---------- panels ---------- */
-function chipsRow() {
+/* ---------- sections ---------- */
+function readout() {
   const dams = DATA.dams;
   const spill = dams.filter(d => d.risk === "Spill Watch").length;
   const watch = dams.filter(d => d.risk === "Watch").length;
   const extra = dams.filter(d => d.extrapolating).length;
-  const wins = Object.values(DATA.metrics || {}).filter(m => m.beats_baseline).length;
-  document.getElementById("chips").innerHTML = `
-    <span class="chip"><b>${dams.length}</b> dams tracked</span>
-    <span class="chip"><b style="color:#e66767">${spill}</b> on spill watch</span>
-    <span class="chip"><b style="color:#f5a35c">${watch}</b> on watch</span>
-    <span class="chip">beats baseline at <b>${wins}</b> of ${Object.keys(DATA.metrics || {}).length} horizons</span>
-    <span class="chip"><b>${extra}</b> beyond training range</span>`;
+  const m = DATA.metrics || {};
+  const wins = Object.values(m).filter(x => x.beats_baseline).length;
+  document.getElementById("readout").innerHTML = `
+    <div><dt>At or near full</dt><dd style="color:${STATE["Spill Watch"].c}">${spill}<small> of ${dams.length}</small></dd></div>
+    <div><dt>Above target</dt><dd style="color:${STATE["Watch"].c}">${watch}</dd></div>
+    <div><dt>Beats a dumb guess</dt><dd>${wins}<small> of ${Object.keys(m).length} horizons</small></dd></div>
+    <div><dt>Unfamiliar conditions</dt><dd>${extra}<small> of ${dams.length} dams</small></dd></div>`;
 }
 
-function damList() {
+function nineGrid() {
   const box = document.createElement("div");
-  box.className = "damlist";
+  box.className = "nine";
   [...DATA.dams].sort((a, b) => b.lat - a.lat).forEach(d => {
     const b = document.createElement("button");
     b.type = "button";
-    b.className = d.dam === selected ? "active" : "";
-    b.innerHTML = `<span>${d.dam}</span>
-      <span class="pill" style="background:${meta(d.risk).color}">${fmt(num(d.rwl_m), 1)} m</span>`;
-    b.onclick = () => { selected = d.dam; render(); };
+    b.className = "tile" + (d.dam === pick ? " on" : "");
+    b.setAttribute("aria-pressed", String(d.dam === pick));
+    b.innerHTML = `<div class="top">
+        <span class="nm">${d.dam}</span><span class="lv">${f2(N(d.rwl_m), 2)} m</span>
+      </div>
+      <span class="state" style="color:${st(d.risk).c}"><i style="background:${st(d.risk).c}"></i>${st(d.risk).word}</span>`;
+    b.appendChild(sparkline(d));
+    const cap = capacity(d);
+    if (cap) b.appendChild(cap);
+    b.onclick = () => { pick = d.dam; render(); };
     box.appendChild(b);
   });
   return box;
 }
 
-function nowCard(d) {
-  const m = meta(d.risk);
-  const rwl = num(d.rwl_m), nhwl = num(d.nhwl_m), rule = num(d.rule_curve_m);
-  const head = nhwl === null ? null : nhwl - rwl;
-  const card = document.createElement("section");
-  card.className = "card";
-  card.innerHTML = `
-    <h2>${d.dam} right now</h2>
-    <div class="nowrow">
-      <div class="riskbadge" style="background:${m.color};--glow:${m.color}99">
-        <div>
-          <div class="num">${fmt(rwl, 1)}</div>
-          <div class="lbl">metres</div>
-        </div>
-      </div>
-      <div class="nowmeta">
-        <p class="cat" style="color:${m.color}">${m.word}</p>
-        <p class="advice">${m.plain}</p>
-        <div class="wxchips">
-          ${head === null ? "" : `<span class="chip"><b>${fmt(head, 2)} m</b> to spill level</span>`}
-          ${rule === null ? "" : `<span class="chip">rule curve <b>${fmt(rule, 2)} m</b></span>`}
-          ${d.rain_7d === null ? "" : `<span class="chip"><b>${d.rain_7d} mm</b> rain, last 7d</span>`}
-          ${d.rain_next_7d === null ? "" : `<span class="chip"><b>${d.rain_next_7d} mm</b> forecast, next 7d</span>`}
-        </div>
-        <p class="sub">Reading from PAGASA, ${d.issue_date}</p>
-      </div>
-    </div>`;
+function detail(d) {
+  const [head, body] = saying(d);
+  const rwl = N(d.rwl_m), nhwl = N(d.nhwl_m), rule = N(d.rule_curve_m);
+  const sec = document.createElement("div");
+  sec.className = "panel";
+  sec.innerHTML = `
+    <p class="verdict" style="color:${st(d.risk).c}">${head}</p>
+    <p class="detailsay">${body}</p>
+    <dl class="facts">
+      <div><dt>Level now</dt><dd>${f2(rwl)} m</dd></div>
+      <div><dt>Full at</dt><dd>${f2(nhwl)} m</dd></div>
+      <div><dt>Operating target</dt><dd>${f2(rule)} m</dd></div>
+      <div><dt>Room left</dt><dd>${nhwl === null ? "—" : f2(nhwl - rwl) + " m"}</dd></div>
+      <div><dt>Rain, last 7 days</dt><dd>${d.rain_7d === null ? "—" : d.rain_7d + " mm"}</dd></div>
+      <div><dt>Rain, next 7 days</dt><dd>${d.rain_next_7d === null ? "—" : d.rain_next_7d + " mm"}</dd></div>
+    </dl>`;
 
-  const beyond = d.forecasts.filter(f => f.beyond_observed_rise).map(f => "+" + f.horizon + "d");
+  const chart = document.createElement("div");
+  chart.className = "chartbox";
+  chart.appendChild(depthChart(d));
+  const key = document.createElement("div");
+  key.className = "key";
+  key.innerHTML = `<span><i style="background:#16506B"></i>measured</span>
+    <span><i style="background:#C2661B"></i>forecast</span>
+    <span><i style="background:#B4462F"></i>full mark (NHWL)</span>
+    <span><i style="background:#C2851B"></i>operating target (rule curve)</span>`;
+  chart.appendChild(key);
+  sec.appendChild(chart);
+
+  const beyond = d.forecasts.filter(x => x.beyond_observed_rise).map(x => "+" + x.horizon + "d");
   if (d.extrapolating || beyond.length) {
     const w = document.createElement("div");
-    w.className = "warn";
+    w.className = "flag";
     const bits = [];
-    if (d.extrapolating) bits.push("Rain on this catchment over the last week is <b>heavier than anything in the model's training history</b>.");
-    if (beyond.length) bits.push(`The rise predicted at ${beyond.join(", ")} is <b>larger than any rise ever recorded here</b>.`);
-    w.innerHTML = bits.join(" ") + " Read these numbers as extrapolation, not forecast.";
-    card.appendChild(w);
+    if (d.extrapolating) bits.push("This catchment has taken <b>more rain this week than in any week the model has learned from</b>.");
+    if (beyond.length) bits.push(`The rise it predicts at ${beyond.join(", ")} is <b>bigger than any rise on record here</b>.`);
+    w.innerHTML = bits.join(" ") + " Read it as a guess outside known ground, not a forecast.";
+    sec.appendChild(w);
   }
-  return card;
+  return sec;
 }
 
-function forecastCard(d) {
-  const card = document.createElement("section");
-  card.className = "card chartwrap";
-  card.innerHTML = `<h2>Level, past and forecast</h2>
-    <p class="lede">Blue is what PAGASA measured. Orange is what Pulso expects over the next seven days.</p>`;
-
-  const t = s => new Date(s).getTime();
-  const obs = (d.observed || []).map(o => ({ x: t(o.date), y: o.rwl_m }));
-  const last = obs.at(-1) || { x: t(d.issue_date), y: num(d.rwl_m) };
-  const fc = [last].concat(d.forecasts.map(f => ({ x: t(f.target_date), y: num(f.pred_rwl_m) })).filter(p => p.y !== null));
-
-  card.appendChild(chart([
-    { points: obs, color: "#4da3ff", width: 2.2 },
-    { points: fc, color: "#ffa14d", width: 2.2, dash: "5 4", dots: true },
-  ], {
-    refs: [
-      { value: num(d.nhwl_m), color: "#e66767", label: "normal high water level" },
-      { value: num(d.rule_curve_m), color: "#f5a35c", label: "rule curve", dash: "5 4" },
-    ],
-    xLabel: v => new Date(v).toISOString().slice(5, 10),
-  }));
-
-  const l = document.createElement("div");
-  l.className = "legend";
-  l.innerHTML = `<span><i style="background:#4da3ff"></i>Measured</span>
-    <span><i style="background:#ffa14d"></i>Forecast</span>
-    <span><i style="background:#e66767"></i>Spill level</span>
-    <span><i style="background:#f5a35c"></i>Rule curve</span>`;
-  card.appendChild(l);
-  return card;
-}
-
-function curveCard() {
-  const card = document.createElement("section");
-  card.className = "card chartwrap";
-  card.innerHTML = `<h2>Is it actually learning?</h2>
-    <p class="lede">Rolling error over calendar time, against a baseline that simply assumes nothing changes. If the blue line doesn't sit below the grey one, the model isn't earning its keep.</p>`;
-
+function learning() {
   const rows = (DATA.learning_curve || []).filter(r => r.roll_abs_err_model != null);
+  const box = document.createElement("div");
+  box.className = "panel chartbox";
   if (rows.length < 2) {
-    const p = document.createElement("div");
-    p.className = "msg";
-    p.textContent = "The curve fills in once enough forecasts have been scored against what actually happened.";
-    card.appendChild(p);
-    return card;
+    box.innerHTML = `<div class="loading">Fills in once enough forecasts have been checked against what actually happened.</div>`;
+    return box;
   }
-  const t = s => new Date(s).getTime();
-  card.appendChild(chart([
-    { points: rows.map(r => ({ x: t(r.target_date), y: r.roll_abs_err_model })), color: "#4da3ff" },
-    { points: rows.map(r => ({ x: t(r.target_date), y: r.roll_abs_err_persistence })), color: "#7d8894", width: 1.8, dash: "5 4" },
-  ], { xLabel: v => new Date(v).toISOString().slice(0, 10) }));
-
-  const l = document.createElement("div");
-  l.className = "legend";
-  l.innerHTML = `<span><i style="background:#4da3ff"></i>Pulso</span><span><i style="background:#7d8894"></i>Persistence baseline</span>`;
-  card.appendChild(l);
-  return card;
+  const W = 760, H = 250, L = 58, R = 20, T = 18, B = 34;
+  const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" });
+  const ms = t => new Date(t).getTime();
+  const a = rows.map(r => ({ x: ms(r.target_date), y: r.roll_abs_err_model }));
+  const b = rows.map(r => ({ x: ms(r.target_date), y: r.roll_abs_err_persistence }));
+  const ys = a.concat(b).map(p => p.y), xs = a.map(p => p.x);
+  let lo = 0, hi = Math.max(...ys) * 1.12;
+  const x0 = Math.min(...xs), x1 = Math.max(...xs);
+  const X = v => L + (v - x0) / (x1 - x0) * (W - L - R);
+  const Y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+  for (let i = 0; i <= 3; i++) {
+    const v = lo + (hi - lo) * i / 3;
+    svg.appendChild(svgEl("line", { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: "#D3DEE3", "stroke-width": 1, "stroke-dasharray": "2 3" }));
+    const t = svgEl("text", { x: L - 9, y: Y(v) + 4, fill: "#788A94", "font-size": 11, "text-anchor": "end", "font-family": "IBM Plex Mono, monospace" });
+    t.textContent = v.toFixed(2);
+    svg.appendChild(t);
+  }
+  const draw = (pts, c, dash) => svg.appendChild(svgEl("path", {
+    d: pts.map((p, i) => `${i ? "L" : "M"}${X(p.x).toFixed(1)},${Y(p.y).toFixed(1)}`).join(" "),
+    fill: "none", stroke: c, "stroke-width": 2.2, "stroke-dasharray": dash || "none", "stroke-linejoin": "round",
+  }));
+  draw(b, "#788A94", "5 4");
+  draw(a, "#16506B");
+  [x0, x1].forEach((v, i) => {
+    const t = svgEl("text", { x: X(v), y: H - 11, fill: "#788A94", "font-size": 11, "text-anchor": i ? "end" : "start", "font-family": "IBM Plex Mono, monospace" });
+    t.textContent = new Date(v).toISOString().slice(0, 10);
+    svg.appendChild(t);
+  });
+  box.appendChild(svg);
+  const key = document.createElement("div");
+  key.className = "key";
+  key.innerHTML = `<span><i style="background:#16506B"></i>Pulso</span><span><i style="background:#788A94"></i>dumb guess (nothing changes)</span>`;
+  box.appendChild(key);
+  return box;
 }
 
-function scoreCard() {
+function skill() {
   const m = DATA.metrics || {};
-  const hs = Object.keys(m).sort((a, b) => a - b);
-  const card = document.createElement("section");
-  card.className = "card";
-  card.innerHTML = `<h2>Where it wins, where it loses</h2>
-    <p class="lede">Mean absolute error in metres, each observation predicted before the model learned from it. Every horizon is published, including the ones we lose.</p>`;
-  if (!hs.length) { card.insertAdjacentHTML("beforeend", `<div class="msg">No scored horizons yet.</div>`); return card; }
+  const hs = Object.keys(m).sort((x, y) => x - y);
+  const box = document.createElement("div");
+  box.className = "panel";
+  if (!hs.length) { box.innerHTML = `<div class="loading">Nothing scored yet.</div>`; return box; }
 
-  card.insertAdjacentHTML("beforeend", `<table>
-    <thead><tr><th>Horizon</th><th>Pulso</th><th>Persistence</th><th>Best baseline</th><th>n</th><th>Verdict</th></tr></thead>
-    <tbody>${hs.map(h => {
-      const r = m[h], won = r.beats_baseline;
-      return `<tr>
-        <td>+${h}d</td>
-        <td class="mono" style="color:${won ? "#6fd79b" : "var(--ink)"}">${r.mae_model.toFixed(3)}</td>
-        <td class="mono">${r.mae_persistence.toFixed(3)}</td>
-        <td class="mono">${r.mae_best_baseline.toFixed(3)} <span style="color:var(--muted)">${r.best_baseline}</span></td>
-        <td class="mono">${r.n}</td>
-        <td><span class="verdict ${won ? "v-win" : "v-loss"}">${won ? "Pulso" : "baseline"}</span></td>
-      </tr>`;
-    }).join("")}</tbody></table>`);
-  return card;
+  const worst = Math.max(...hs.map(h => Math.abs(m[h].mae_best_baseline - m[h].mae_model) / m[h].mae_best_baseline));
+  const scale = Math.max(worst, 0.35);
+
+  box.innerHTML = `<div class="skillhead">
+      <span>Days</span>
+      <span class="split"><span>← Pulso better</span><span>baseline better →</span></span>
+      <span style="text-align:right">error, metres</span>
+    </div>`;
+  const list = document.createElement("div");
+  list.className = "skill";
+  hs.forEach(h => {
+    const r = m[h];
+    const rel = (r.mae_best_baseline - r.mae_model) / r.mae_best_baseline; // >0 = we win
+    const w = Math.min(Math.abs(rel) / scale, 1) * 50;
+    const row = document.createElement("div");
+    row.className = "skillrow";
+    row.innerHTML = `<span class="h">+${h}d</span>
+      <span class="skillbar">
+        <span class="mid"></span>
+        <span class="bar" style="${rel >= 0
+          ? `right:50%;width:${w}%;background:#2F7D5B`
+          : `left:50%;width:${w}%;background:#B4462F`}"></span>
+      </span>
+      <span class="val">${r.mae_model.toFixed(3)} vs ${r.mae_best_baseline.toFixed(3)} · n=${r.n}</span>`;
+    list.appendChild(row);
+  });
+  box.appendChild(list);
+  return box;
 }
 
-/* ---------- render ---------- */
-function render() {
-  const d = DATA.dams.find(x => x.dam === selected) || DATA.dams[0];
-  chipsRow();
-  paintMarkers();
+function sect(title, say, tech, node) {
+  const s = document.createElement("section");
+  s.className = "sec";
+  const h = document.createElement("h2"); h.textContent = title;
+  const p = document.createElement("p"); p.className = "say"; p.textContent = say;
+  const t = document.createElement("p"); t.className = "tech"; t.textContent = tech;
+  s.append(h, p, t, node);
+  return s;
+}
 
+function paintPins() {
+  DATA.dams.forEach(d => {
+    const n = pins[d.dam]?.getElement()?.querySelector(".dot");
+    if (n) n.classList.toggle("on", d.dam === pick);
+  });
+}
+
+function initMap() {
+  if (typeof L === "undefined") { document.getElementById("mapshell").classList.add("dead"); return; }
+  map = L.map("map", { scrollWheelZoom: false }).setView([15.7, 121.0], 7);
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+    attribution: "&copy; OpenStreetMap &copy; CARTO", maxZoom: 18,
+  }).addTo(map);
+  DATA.dams.forEach(d => {
+    const icon = L.divIcon({ className: "", iconSize: [26, 26],
+      html: `<div class="dot" style="background:${st(d.risk).c}">${d.dam.slice(0, 2).toUpperCase()}</div>` });
+    const mk = L.marker([d.lat, d.lon], { icon }).addTo(map);
+    mk.bindTooltip(`<b>${d.dam}</b><br>${f2(N(d.rwl_m))} m · ${st(d.risk).word}`);
+    mk.on("click", () => { pick = d.dam; render(); });
+    pins[d.dam] = mk;
+  });
+}
+
+function render() {
+  const d = DATA.dams.find(x => x.dam === pick) || DATA.dams[0];
+  readout();
+  paintPins();
   const main = document.getElementById("main");
   main.textContent = "";
-  const grid = document.createElement("div");
-  grid.className = "grid";
 
-  const left = document.createElement("div");
-  left.className = "stack";
-  const picker = document.createElement("section");
-  picker.className = "card";
-  picker.innerHTML = `<h2>The nine dams</h2>`;
-  picker.appendChild(damList());
-  left.appendChild(picker);
+  main.appendChild(sect(
+    "The nine dams",
+    "Each reservoir, how full it is now, and where it's heading this week. Pick one to see it up close.",
+    "Blue is measured, orange is forecast. The bar shows the level between the operating target and the full mark; the notch is the target.",
+    nineGrid()
+  ));
 
-  const right = document.createElement("div");
-  right.className = "stack";
-  right.append(nowCard(d), forecastCard(d), curveCard(), scoreCard());
+  const mapWrap = document.createElement("div");
+  mapWrap.className = "mapshell";
+  mapWrap.id = "mapshell";
+  mapWrap.innerHTML = `<div id="map"></div>
+    <p class="mapfallback">The map didn't load, so it's hidden. Everything else on this page still works.</p>`;
+  main.appendChild(sect(
+    "Where they are",
+    "The dams sit along the mountains that feed Metro Manila, the Cagayan valley and the Agno river.",
+    "Coordinates from PAGASA's own placemark file. Colour is the risk level.",
+    mapWrap
+  ));
+  try { initMap(); } catch (e) { mapWrap.classList.add("dead"); }
 
-  grid.append(left, right);
-  main.appendChild(grid);
+  main.appendChild(sect(
+    d.dam,
+    "What the level has done lately, and what Pulso thinks it does next.",
+    "Target is the change in level over the horizon, not the level itself. Rainfall forecast for the days ahead is an input, so this is a real forecast rather than a projection of the past.",
+    detail(d)
+  ));
+
+  main.appendChild(sect(
+    "Is it actually learning?",
+    "Every forecast gets checked once the day it named arrives. This is the running error since then, against a baseline that just assumes nothing changes.",
+    "Prequential: each observation is predicted before the model learns from it, so nothing is ever rescored with hindsight.",
+    learning()
+  ));
+
+  main.appendChild(sect(
+    "Where it wins, where it loses",
+    "Green means Pulso beat the naive baseline at that range. Red means the baseline won, and we publish those too.",
+    "Bar length is the relative improvement in mean absolute error; n is the number of scored forecasts. A reservoir tomorrow is nearly a reservoir today, which is why short ranges are hard to beat.",
+    skill()
+  ));
 }
 
 fetch("data/forecasts.json", { cache: "no-store" })
   .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-  .then(d => {
-    DATA = d;
-    selected = (d.dams.find(x => x.risk === "Spill Watch") || d.dams[0]).dam;
-    document.getElementById("stamp").textContent = "updated " + (d.generated_at || "").replace("T", " ");
-    document.getElementById("foot").innerHTML =
-      `Dam levels scraped from <a href="https://www.pagasa.dost.gov.ph/flood" target="_blank" rel="noopener">PAGASA</a> · ` +
-      `rainfall from <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> · ` +
+  .then(j => {
+    DATA = j;
+    pick = (j.dams.find(x => x.risk === "Spill Watch") || j.dams[0]).dam;
+    document.getElementById("stamp").textContent = "read " + (j.generated_at || "").replace("T", " ");
+    document.getElementById("end").innerHTML =
+      `Levels from <a href="https://www.pagasa.dost.gov.ph/flood" target="_blank" rel="noopener">PAGASA</a> · ` +
+      `rain from <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> · ` +
       `built by <a href="https://github.com/Zeref538" target="_blank" rel="noopener">Zeref538</a>`;
-    try { initMap(); } catch (e) { document.getElementById("mapbox").classList.add("dead"); }
     render();
   })
   .catch(err => {
-    document.getElementById("msg").innerHTML =
-      `Couldn't load <code>data/forecasts.json</code> (${err.message}). Serve this folder over ` +
-      `HTTP — <code>python -m http.server</code> from <code>web/</code> — browsers block reads ` +
-      `from <code>file://</code>.`;
+    document.getElementById("loading").innerHTML =
+      `Couldn't read <code>data/forecasts.json</code> (${err.message}). Serve this folder over HTTP — ` +
+      `<code>python -m http.server</code> from <code>web/</code>.`;
   });
 </script>
 </body>
