@@ -5,6 +5,8 @@ Forecasts reservoir water level 1–7 days ahead for the nine major dams PAGASA
 publishes, learns from every new observation, and reports the horizons where a
 naive baseline still beats it.
 
+**[Live dashboard →](https://zeref538.github.io/pulso/)**
+
 Runs entirely on free infrastructure: GitHub Actions, open data, Open-Meteo,
 GitHub Pages. No API keys, no paid compute.
 
