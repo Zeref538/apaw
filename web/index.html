@@ -356,6 +356,7 @@ body {
   font-size: 13.5px; color: var(--muted);
 }
 .srcnote b { color: var(--ink-2); }
+.prov { color: var(--ink-3); font-style: italic; }
 
 /* ---------- notice ---------- */
 .notice {
@@ -1037,8 +1038,7 @@ function skill() {
   box.className = "panel";
   if (!hs.length) { box.innerHTML = `<div class="loading">Nothing scored yet.</div>`; return box; }
 
-  const ranked = hs.filter(h => m[h].enough_data !== false);
-  const worst = Math.max(0.01, ...ranked.map(h => Math.abs(m[h].mae_best_baseline - m[h].mae_model) / m[h].mae_best_baseline));
+  const worst = Math.max(0.01, ...hs.map(h => Math.abs(m[h].mae_best_baseline - m[h].mae_model) / m[h].mae_best_baseline));
   const scale = Math.max(worst, 0.35);
 
   box.innerHTML = `<div class="skillhead">
@@ -1055,23 +1055,29 @@ function skill() {
     const thin = r.enough_data === false;
     const row = document.createElement("div");
     row.className = "skillrow";
-    // Too few scored forecasts to rank: show the count, not a verdict.
+    // A horizon under MIN_SCORED is not *ranked*, but it still has a result.
+    // Drawing nothing there read as "no result", which is worse than wrong —
+    // the long horizons are where the margin is biggest. Provisional rows get
+    // a hatched bar and the same numbers, marked as not yet certified.
+    const col = rel >= 0 ? V("--normal") : V("--spill");
+    const fill = thin
+      ? `background:repeating-linear-gradient(135deg,${col} 0 3px,transparent 3px 7px)`
+      : `background:${col}`;
     row.innerHTML = `<span class="h">+${h}d</span>
-      <span class="skillbar">${thin ? "" : `
+      <span class="skillbar">
         <span class="mid"></span>
         <span class="bar" style="${rel >= 0
-          ? `right:50%;width:${w}%;background:${V("--normal")}`
-          : `left:50%;width:${w}%;background:${V("--spill")}`}"></span>`}
+          ? `right:50%;width:${w}%;` : `left:50%;width:${w}%;`}${fill}"></span>
       </span>
-      <span class="val">${thin
-        ? `only ${r.n} scored — too few to call`
-        : `${r.mae_model.toFixed(3)} vs ${r.mae_best_baseline.toFixed(3)} · n=${r.n}`}</span>`;
-    if (thin) row.style.opacity = "0.55";
+      <span class="val">${r.mae_model.toFixed(3)} vs ${r.mae_best_baseline.toFixed(3)} · n=${r.n}${
+        thin ? ` · <span class="prov">not ranked yet</span>` : ""}</span>`;
+    if (thin) row.style.opacity = "0.8";
     list.appendChild(row);
   });
   const src = DATA.metrics_by_rain_source;
+  let note = null;
   if (src && src.era5_proxy && src.forecast) {
-    const note = document.createElement("p");
+    note = document.createElement("p");
     note.className = "srcnote";
     note.innerHTML =
       `Forward rain comes from the <b>real archived forecast</b> where Open-Meteo's ` +
@@ -1082,9 +1088,9 @@ function skill() {
       `different rain sources, so whichever looks better, the gap is not a ` +
       `clean measure of what the shortcut is worth. It is published because ` +
       `the shortcut exists, not as a finding.`;
-    box.appendChild(note);
   }
   box.appendChild(list);
+  if (note) box.appendChild(note);
   return box;
 }
 
@@ -1171,8 +1177,8 @@ function render() {
 
   main.appendChild(sect(
     "Where it wins, where it loses",
-    "Green means APAW beat the naive baseline at that range. Red means the baseline won, and we publish those too.",
-    "Bar length is the relative improvement in mean absolute error; n is the number of scored forecasts. One Mondrian forest covers all nine dams and all seven ranges, with the dam and the horizon as inputs — pooling gives it roughly 1,750 rows to learn from instead of the 13–94 a separate model per dam and range would get. That change mattered far more than the choice of algorithm.",
+    "Green means APAW beat the naive guess at that range; red would mean the guess won. A striped bar means we believe it but haven't checked it enough times yet to call it — those ranges need 200 scored forecasts and are still counting.",
+    "Bar length is the relative improvement in mean absolute error; n is the number of scored forecasts. Striped bars are horizons under MIN_SCORED=200: the result is shown but not ranked, because a verdict on ~120 points is noise. Note the margin is widest at the long horizons, where persistence degrades and the model does not. One Mondrian forest covers all nine dams and all seven ranges, with the dam and the horizon as inputs — pooling gives it roughly 1,750 rows to learn from instead of the 13–94 a separate model per dam and range would get. That change mattered far more than the choice of algorithm.",
     skill()
   ));
 }
