@@ -195,4 +195,8 @@ web/      static dashboard (GitHub Pages)
   gut the tool exactly when it matters.
 
 Sibling project: [Hangin'](https://github.com/Zeref538/hangin), a PH air-quality
-forecaster, whose refresh-and-publish pattern APAW reuses.
+forecaster, whose refresh-and-publish pattern APAW reuses. Hangin' is a pooled
+batch model over 1.9 years of existing data; APAW is online, over a dataset that
+did not exist until it started collecting one.
+
+For the portfolio site: [PORTFOLIO_CARD.md](PORTFOLIO_CARD.md).
