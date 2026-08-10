@@ -107,6 +107,14 @@ the best baseline, beating both baselines at all seven horizons. The near-zero
 dev-to-holdout slippage is the evidence the result is real. It replaced a
 per-(dam, horizon) linear model that scored 0.991 and won 3 of 7.
 
+## The docs update themselves
+
+`eval/render_readme.py` writes the scoreboard into README.md between
+`<!-- APAW:SCOREBOARD:START/END -->` markers, and `pipeline/run.py` calls it
+every cycle. The verdict wording is derived from the counts, so when the last
+horizon crosses MIN_SCORED the README starts making the stronger claim on its
+own. Do not hand-edit inside those markers; edit the renderer.
+
 ## Where to take it next
 
 See PLAN.md §What's next. The short version: the biggest remaining constraint

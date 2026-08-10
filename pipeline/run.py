@@ -349,6 +349,12 @@ def main() -> int:
     save(model)
     publish(dashboard, scored, drift_rows)
 
+    # Keep the README's claim in step with the metrics it claims. Non-fatal:
+    # a docs problem must never cost an observation.
+    r = subprocess.run([sys.executable, str(ROOT / "eval" / "render_readme.py")],
+                       capture_output=True, text=True)
+    print((r.stdout or r.stderr).strip())
+
     print(f"scored {scored} due predictions; "
           f"issued forecasts for {len(dashboard)} dams; "
           f"{len(drift_rows)} drift events")
