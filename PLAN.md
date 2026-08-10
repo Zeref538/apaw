@@ -96,8 +96,9 @@ Ordered by value, not effort:
    found wanting, and replaced by a pooled Mondrian forest.
 4. **Inflow/outflow features.** PAGASA publishes both; they are collected and
    currently unused.
-5. **Portfolio card** in the house format, once a horizon clears MIN_SCORED
-   with a real win.
+5. ~~**Portfolio card**~~ — written: [PORTFOLIO_CARD.md](PORTFOLIO_CARD.md),
+   in the house format, ready to paste into the `Portfolio` repo's `data.js`.
+   Still needs four screenshots.
 
 ## Standing rules
 
