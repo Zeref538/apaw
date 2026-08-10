@@ -50,6 +50,10 @@ jobs:
         run: |
           if [ ! -f model/state/models.pkl ]; then
             echo "no cached state; replaying history"
+            # modeling_table.csv is derived and gitignored, so it has to be
+            # rebuilt from the committed source CSVs before the replay can
+            # read it. The loop rebuilds it again later; it is seconds.
+            uv run python data/build_table.py
             uv run python eval/backtest.py
           fi
 
