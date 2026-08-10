@@ -76,8 +76,10 @@ web/       static dashboard (GitHub Pages)
       dev only, the holdout is scored once by the winner
 - [x] Winner deployed: one pooled Mondrian forest, dam one-hot + horizon
       numeric, per-dam target scaling
-- [x] Beats both baselines at **all seven horizons**; +1d and +2d clear
-      MIN_SCORED and are ranked, the rest published unranked
+- [x] Beats both baselines at **all seven horizons**. Which of them clear
+      MIN_SCORED and are therefore *ranked* changes as the collector runs, so
+      that count is not written down here — `eval/render_readme.py` regenerates
+      it into README.md on every pipeline run.
 
 **Gate met:** dev 0.615 -> holdout 0.617, i.e. the search did not fit itself.
 
