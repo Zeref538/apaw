@@ -1,0 +1,129 @@
+1758 labeled rows | dev < 2025-11-01 <= holdout
+
+--- coarse sweep: 800 configurations ---
+  [50/800] 5s elapsed, ~79s left, 0 failed
+  [100/800] 10s elapsed, ~71s left, 0 failed
+  [150/800] 18s elapsed, ~76s left, 0 failed
+  [200/800] 26s elapsed, ~77s left, 0 failed
+  [250/800] 32s elapsed, ~70s left, 0 failed
+  [300/800] 40s elapsed, ~67s left, 0 failed
+  [350/800] 64s elapsed, ~82s left, 0 failed
+  [400/800] 70s elapsed, ~70s left, 0 failed
+  [450/800] 96s elapsed, ~75s left, 0 failed
+  [500/800] 139s elapsed, ~84s left, 0 failed
+  [550/800] 187s elapsed, ~85s left, 0 failed
+  [600/800] 244s elapsed, ~81s left, 0 failed
+  [650/800] 405s elapsed, ~93s left, 0 failed
+  [700/800] 1109s elapsed, ~158s left, 0 failed
+  [750/800] 1202s elapsed, ~80s left, 0 failed
+  [800/800] 1289s elapsed, ~0s left, 0 failed
+
+refining: ['amf', 'knn5', 'pa', 'knn20', 'ewa', 'htr_fast']
+
+--- fine sweep: 1824 configurations ---
+  [50/1824] 90s elapsed, ~3195s left, 0 failed
+  [100/1824] 172s elapsed, ~2968s left, 0 failed
+  [150/1824] 246s elapsed, ~2744s left, 0 failed
+  [200/1824] 315s elapsed, ~2556s left, 0 failed
+  [250/1824] 402s elapsed, ~2532s left, 0 failed
+  [300/1824] 519s elapsed, ~2638s left, 0 failed
+  [350/1824] 582s elapsed, ~2452s left, 0 failed
+  [400/1824] 659s elapsed, ~2348s left, 0 failed
+  [450/1824] 743s elapsed, ~2268s left, 0 failed
+  [500/1824] 786s elapsed, ~2081s left, 0 failed
+  [550/1824] 850s elapsed, ~1970s left, 0 failed
+  [600/1824] 933s elapsed, ~1902s left, 0 failed
+  [650/1824] 957s elapsed, ~1728s left, 0 failed
+  [700/1824] 960s elapsed, ~1541s left, 0 failed
+  [750/1824] 963s elapsed, ~1379s left, 0 failed
+  [800/1824] 966s elapsed, ~1236s left, 0 failed
+  [850/1824] 969s elapsed, ~1110s left, 0 failed
+  [900/1824] 973s elapsed, ~999s left, 0 failed
+  [950/1824] 1019s elapsed, ~938s left, 0 failed
+  [1000/1824] 1094s elapsed, ~902s left, 0 failed
+  [1050/1824] 1182s elapsed, ~871s left, 0 failed
+  [1100/1824] 1239s elapsed, ~815s left, 0 failed
+  [1150/1824] 1297s elapsed, ~760s left, 0 failed
+  [1200/1824] 1371s elapsed, ~713s left, 0 failed
+  [1250/1824] 1523s elapsed, ~699s left, 0 failed
+  [1300/1824] 1656s elapsed, ~668s left, 0 failed
+  [1350/1824] 1782s elapsed, ~626s left, 0 failed
+  [1400/1824] 1886s elapsed, ~571s left, 0 failed
+  [1450/1824] 1993s elapsed, ~514s left, 0 failed
+  [1500/1824] 2130s elapsed, ~460s left, 0 failed
+  [1550/1824] 2259s elapsed, ~399s left, 0 failed
+  [1600/1824] 2310s elapsed, ~323s left, 0 failed
+  [1650/1824] 2344s elapsed, ~247s left, 0 failed
+  [1700/1824] 2361s elapsed, ~172s left, 0 failed
+  [1750/1824] 2381s elapsed, ~101s left, 0 failed
+  [1800/1824] 2443s elapsed, ~33s left, 0 failed
+  [1824/1824] 2467s elapsed, ~0s left, 0 failed
+
+--- blend + baseline-stack sweep: 1152 configurations ---
+  [50/1152] 90s elapsed, ~1977s left, 0 failed
+  [100/1152] 204s elapsed, ~2149s left, 0 failed
+  [150/1152] 311s elapsed, ~2075s left, 0 failed
+  [200/1152] 394s elapsed, ~1875s left, 0 failed
+  [250/1152] 483s elapsed, ~1744s left, 0 failed
+  [300/1152] 524s elapsed, ~1489s left, 0 failed
+  [350/1152] 572s elapsed, ~1311s left, 0 failed
+  [400/1152] 662s elapsed, ~1245s left, 0 failed
+  [450/1152] 714s elapsed, ~1115s left, 0 failed
+  [500/1152] 770s elapsed, ~1004s left, 0 failed
+  [550/1152] 801s elapsed, ~877s left, 0 failed
+  [600/1152] 806s elapsed, ~742s left, 0 failed
+  [650/1152] 811s elapsed, ~626s left, 0 failed
+  [700/1152] 814s elapsed, ~526s left, 0 failed
+  [750/1152] 818s elapsed, ~438s left, 0 failed
+  [800/1152] 828s elapsed, ~364s left, 0 failed
+  [850/1152] 899s elapsed, ~319s left, 0 failed
+  [900/1152] 1007s elapsed, ~282s left, 0 failed
+  [950/1152] 1049s elapsed, ~223s left, 0 failed
+  [1000/1152] 1099s elapsed, ~167s left, 0 failed
+  [1050/1152] 1206s elapsed, ~117s left, 0 failed
+  [1100/1152] 1252s elapsed, ~59s left, 0 failed
+  [1150/1152] 1289s elapsed, ~2s left, 0 failed
+  [1152/1152] 1295s elapsed, ~0s left, 0 failed
+
+   model          feat  pool     sc  ix  shr   bl   st  wins   ratio   worst   dev MAE
+----------------------------------------------------------------------------------
+1  amf            base  horizon  y   n   1.0   0.0  n   6/7    0.703   1.129   0.4129
+2  amf            base  horizon  y   n   1.0   0.0  y   6/7    0.713   1.150   0.4189
+3  amf            base  horizon  y   y   1.0   0.0  n   6/7    0.719   1.100   0.4172
+4  amf            wide  horizon  y   y   1.0   0.0  n   6/7    0.734   1.140   0.4278
+5  amf            base  horizon  y   n   0.8   0.0  n   6/7    0.738   1.055   0.4221
+6  amf            wide  dam+h    y   n   1.0   0.0  n   6/7    0.740   1.059   0.4222
+7  amf            lean  horizon  y   n   1.0   0.0  n   6/7    0.744   1.173   0.4352
+8  amf            base  horizon  y   y   0.8   0.0  n   6/7    0.746   1.029   0.4232
+9  amf            base  dam+h    y   n   1.0   0.0  n   6/7    0.747   1.000   0.4205
+10 amf            base  dam+h    y   n   1.0   0.0  y   6/7    0.750   1.062   0.4276
+11 amf            wide  horizon  y   n   1.0   0.0  n   6/7    0.755   1.203   0.4422
+12 amf            base  horizon  n   n   1.0   0.0  n   6/7    0.756   1.034   0.4286
+13 amf            wide  dam+h    y   y   1.0   0.0  n   6/7    0.757   1.044   0.4287
+14 amf            wide  horizon  y   y   0.8   0.0  n   6/7    0.760   1.065   0.4329
+15 amf            base  horizon  n   n   1.0   0.0  y   6/7    0.762   1.046   0.4324
+16 amf            lean  horizon  y   y   1.0   0.0  n   6/7    0.763   1.131   0.4404
+17 amf            base  horizon  n   y   1.0   0.0  n   6/7    0.763   1.062   0.4338
+18 amf            base  dam+h    y   y   1.0   0.0  n   6/7    0.763   1.056   0.4331
+19 amf            lean  horizon  y   n   0.8   0.0  n   6/7    0.765   1.096   0.4382
+20 amf            lean  horizon  y   n   1.0   0.0  y   6/7    0.765   1.200   0.4473
+21 amf            wide  dam+h    n   n   1.0   0.0  n   7/7    0.768   0.943   0.4257
+22 amf            wide  dam+h    y   n   0.8   0.0  n   6/7    0.774   1.013   0.4338
+23 amf            wide  horizon  n   y   1.0   0.0  n   6/7    0.776   1.061   0.4401
+24 amf            base  dam+h    y   n   0.8   0.0  n   7/7    0.776   0.963   0.4305
+25 knn5           base  horizon  y   n   1.0   0.0  n   6/7    0.778   1.243   0.4569
+
+=== dev winner on the untouched holdout (>= 2025-11-01) ===
+  h=1  model 0.2962  baseline 0.3815  WIN   (n=198, unranked)
+  h=2  model 0.6144  baseline 1.0096  WIN   (n=54, unranked)
+  h=3  model 0.6601  baseline 0.6528  loss  (n=45, unranked)
+  h=4  model 0.3868  baseline 0.6015  WIN   (n=27, unranked)
+  h=5  model 0.4043  baseline 0.7583  WIN   (n=18, unranked)
+  h=6  model 0.6855  baseline 1.0000  WIN   (n=27, unranked)
+  h=7  model 0.8956  baseline 1.1478  WIN   (n=27, unranked)
+  mean ratio 0.720, 6/7 horizons
+  incumbent (lin_sgd0.01/base/per-dam): mean ratio 0.991, 3/7
+
+  dev mean ratio 0.703 -> holdout 0.720
+
+wrote C:\Users\johna\OneDrive\Documents\Portfolio\Pulso\eval\experiments.json

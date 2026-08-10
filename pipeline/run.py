@@ -32,7 +32,7 @@ from dams import DAMS  # noqa: E402
 from eval.baselines import BASELINES  # noqa: E402
 from eval.risk import DESCRIPTIONS, classify  # noqa: E402
 from model.online import (  # noqa: E402
-    load, new_detector, new_model, save, to_features,
+    load, new_detector, save,
 )
 
 LEDGER = ROOT / "eval" / "predictions.csv"
@@ -95,7 +95,7 @@ def refresh_sources() -> bool:
     return True
 
 
-def score_due(table: pd.DataFrame, models: dict, detectors: dict) -> tuple[int, list]:
+def score_due(table: pd.DataFrame, model, detectors: dict) -> tuple[int, list]:
     """Score every outstanding prediction whose target date now has an actual."""
     if not LEDGER.exists():
         return 0, []
@@ -135,10 +135,12 @@ def score_due(table: pd.DataFrame, models: dict, detectors: dict) -> tuple[int, 
                                          - actual_delta)
         error_rows.append(rec)
 
-        # Learn only now, from the label that just became available.
-        if key not in models:
-            models[key], detectors[key] = new_model(), new_detector()
-        models[key].learn_one(feats, actual_delta)
+        # Learn only now, from the label that just became available. The
+        # ledger stored the raw features this forecast actually saw, so the
+        # model relearns from those and not from anything discovered since.
+        if key not in detectors:
+            detectors[key] = new_detector()
+        model.learn(feats, row["dam"], actual_delta)
 
         detectors[key].update(err)
         if detectors[key].drift_detected:
@@ -156,12 +158,12 @@ def score_due(table: pd.DataFrame, models: dict, detectors: dict) -> tuple[int, 
     return len(scored_idx), drift_rows
 
 
-def issue_forecasts(table: pd.DataFrame, models: dict) -> list[dict]:
+def issue_forecasts(table: pd.DataFrame, model) -> list[dict]:
     """Predict 1-7 days ahead from each dam's most recent observation."""
     latest_date = table["date"].max()
     current = table[(table["date"] == latest_date) & (table["horizon"] == 1)]
 
-    # A linear model asked about conditions wetter than anything it has been
+    # A model asked about conditions wetter than anything it has been
     # trained on is extrapolating, and says so rather than being silently
     # trusted or clipped. Clipping would suppress exactly the extreme events
     # this is meant to catch.
@@ -175,18 +177,15 @@ def issue_forecasts(table: pd.DataFrame, models: dict) -> list[dict]:
         dam = row["dam"]
         if dam not in DAMS:
             continue
-        feats = to_features(row)
         issue_rwl = float(row["rwl_m"])
         issue_date = pd.Timestamp(row["date"]).strftime("%Y-%m-%d")
 
         levels, per_h = [], []
         for h in HORIZONS:
-            key = (dam, h)
-            model = models.get(key)
-            pred = 0.0
-            if model is not None:
-                raw = model.predict_one(feats)
-                pred = 0.0 if raw is None else float(raw)
+            # Horizon is a model input now, so the features are rebuilt for
+            # each one rather than shared across all seven.
+            feats = model.raw_features(row, h)
+            pred = model.predict(feats, dam)
             level = issue_rwl + pred
             levels.append(level)
             target_date = (pd.Timestamp(row["date"])
@@ -342,12 +341,12 @@ def main() -> int:
     subprocess.run([sys.executable, str(ROOT / "eval" / "basin_forecast.py")],
                    capture_output=True, text=True)
 
-    models = load()
-    detectors = {key: new_detector() for key in models}
+    model = load()
+    detectors: dict = {}
 
-    scored, drift_rows = score_due(table, models, detectors)
-    dashboard = issue_forecasts(table, models)
-    save(models)
+    scored, drift_rows = score_due(table, model, detectors)
+    dashboard = issue_forecasts(table, model)
+    save(model)
     publish(dashboard, scored, drift_rows)
 
     print(f"scored {scored} due predictions; "

@@ -1,0 +1,46 @@
+1758 labeled rows | dev < 2025-11-01 <= holdout
+
+--- coarse sweep: 40 configurations ---
+  [40/40] 342s elapsed, ~0s left, 0 failed
+
+   model          feat  pool     sc  ix  shr   bl   st  wins   ratio   worst   dev MAE
+----------------------------------------------------------------------------------
+1  amf50_noagg    base  dam+h    y   n   1.0   0.0  n   7/7    0.615   0.964   0.3590
+2  amf50_noagg    wide  dam+h    y   n   1.0   0.0  n   7/7    0.619   0.957   0.3602
+3  amf50_noagg    base  horizon  y   n   1.0   0.0  n   6/7    0.623   1.068   0.3713
+4  amf50_s3       base  horizon  y   n   1.0   0.0  n   6/7    0.647   1.052   0.3807
+5  amf25_s3       base  horizon  y   n   1.0   0.0  n   6/7    0.653   1.061   0.3842
+6  amf50_noagg    base  horizon  y   n   0.8   0.0  n   6/7    0.664   1.012   0.3847
+7  amf50_s3       wide  dam+h    y   n   1.0   0.0  n   7/7    0.670   0.954   0.3822
+8  amf100         base  horizon  y   n   1.0   0.0  n   6/7    0.676   1.030   0.3920
+9  amf50_s3       base  dam+h    y   n   1.0   0.0  n   7/7    0.677   0.942   0.3844
+10 amf25_s3       wide  dam+h    y   n   1.0   0.0  n   7/7    0.679   0.991   0.3892
+11 amf50          base  horizon  y   n   1.0   0.0  n   6/7    0.679   1.048   0.3946
+12 amf25          base  horizon  y   n   1.0   0.0  n   6/7    0.684   1.056   0.3978
+13 amf100         wide  dam+h    y   n   1.0   0.0  n   7/7    0.690   0.933   0.3893
+14 amf25_s3       base  dam+h    y   n   1.0   0.0  n   7/7    0.691   0.984   0.3943
+15 amf50_s3       base  horizon  y   n   0.8   0.0  n   6/7    0.691   1.002   0.3963
+16 amf25_s3       base  horizon  y   n   0.8   0.0  n   6/7    0.696   1.002   0.3983
+17 amf50          wide  dam+h    y   n   1.0   0.0  n   7/7    0.699   0.942   0.3942
+18 amf100         base  dam+h    y   n   1.0   0.0  n   7/7    0.702   0.923   0.3940
+19 amf            base  horizon  y   n   1.0   0.0  n   6/7    0.703   1.129   0.4129
+20 amf50          base  dam+h    y   n   1.0   0.0  n   7/7    0.706   0.932   0.3964
+21 amf25          wide  dam+h    y   n   1.0   0.0  n   7/7    0.708   0.977   0.4010
+22 amf25          base  dam+h    y   n   1.0   0.0  n   7/7    0.717   0.969   0.4044
+23 amf50_cap      base  horizon  y   n   1.0   0.0  n   6/7    0.720   1.059   0.4141
+24 amf100         base  horizon  y   n   0.8   0.0  n   7/7    0.720   0.982   0.4077
+25 amf50          base  horizon  y   n   0.8   0.0  n   7/7    0.721   0.999   0.4091
+
+=== dev winner on the untouched holdout (>= 2025-11-01) ===
+  h=1  model 0.2813  baseline 0.3815  WIN   (n=198, unranked)
+  h=2  model 0.5542  baseline 1.0096  WIN   (n=54, unranked)
+  h=3  model 0.5720  baseline 0.6528  WIN   (n=45, unranked)
+  h=4  model 0.2978  baseline 0.6015  WIN   (n=27, unranked)
+  h=5  model 0.3862  baseline 0.7583  WIN   (n=18, unranked)
+  h=6  model 0.5143  baseline 1.0000  WIN   (n=27, unranked)
+  h=7  model 0.7349  baseline 1.1478  WIN   (n=27, unranked)
+  mean ratio 0.617, 7/7 horizons
+
+  dev mean ratio 0.615 -> holdout 0.617
+
+wrote C:\Users\johna\OneDrive\Documents\Portfolio\Pulso\eval\experiments.json

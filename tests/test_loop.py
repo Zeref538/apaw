@@ -17,7 +17,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "data"))
 
 import pipeline.run as loop  # noqa: E402
-from model.online import new_detector, new_model  # noqa: E402
+from model.online import Nowcaster, new_detector  # noqa: E402
 
 
 @pytest.fixture
@@ -53,10 +53,9 @@ def _ledger_row(**over):
 
 def test_scores_against_the_named_target_date(isolated, table):
     pd.DataFrame([_ledger_row()]).to_csv(loop.LEDGER, index=False)
-    models = {("Angat", 1): new_model()}
     detectors = {("Angat", 1): new_detector()}
 
-    scored, _ = loop.score_due(table, models, detectors)
+    scored, _ = loop.score_due(table, Nowcaster(), detectors)
 
     assert scored == 1
     errors = pd.read_csv(loop.ERRORS)
@@ -69,11 +68,10 @@ def test_scores_against_the_named_target_date(isolated, table):
 
 def test_never_scores_twice(isolated, table):
     pd.DataFrame([_ledger_row()]).to_csv(loop.LEDGER, index=False)
-    models = {("Angat", 1): new_model()}
-    detectors = {("Angat", 1): new_detector()}
+    model, detectors = Nowcaster(), {("Angat", 1): new_detector()}
 
-    assert loop.score_due(table, models, detectors)[0] == 1
-    assert loop.score_due(table, models, detectors)[0] == 0
+    assert loop.score_due(table, model, detectors)[0] == 1
+    assert loop.score_due(table, model, detectors)[0] == 0
     assert len(pd.read_csv(loop.ERRORS)) == 1
 
 
@@ -81,21 +79,18 @@ def test_leaves_unlanded_predictions_open(isolated, table):
     """A forecast for a day PAGASA hasn't published yet must stay pending."""
     pd.DataFrame([_ledger_row(target_date="2026-01-09", horizon=8)]).to_csv(
         loop.LEDGER, index=False)
-    models, detectors = {}, {}
-
-    assert loop.score_due(table, models, detectors)[0] == 0
+    assert loop.score_due(table, Nowcaster(), {})[0] == 0
     assert not loop.ERRORS.exists()
     assert not pd.read_csv(loop.LEDGER).loc[0, "scored"]
 
 
 def test_learning_actually_moves_the_model(isolated, table):
-    """learn_one must be called on the newly-labeled row, not skipped."""
+    """learn must be called on the newly-labeled row, not skipped."""
     pd.DataFrame([_ledger_row()]).to_csv(loop.LEDGER, index=False)
-    model = new_model()
-    feats = {"rwl_m": 100.0, "rain_7d": 20.0}
-    before = model.predict_one(feats)
+    model = Nowcaster()
+    feats = {"rwl_m": 100.0, "rain_7d": 20.0, "horizon": 1.0}
+    before = model.predict(feats, "Angat")
 
-    loop.score_due(table, {("Angat", 1): model},
-                   {("Angat", 1): new_detector()})
+    loop.score_due(table, model, {("Angat", 1): new_detector()})
 
-    assert model.predict_one(feats) != before
+    assert model.predict(feats, "Angat") != before

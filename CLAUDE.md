@@ -11,7 +11,11 @@ Spec: [PRD.md](PRD.md) · phases: [PLAN.md](PLAN.md)
    a chronological split. Report losses. A horizon where persistence wins gets
    published saying so.
 3. **Incremental, never retrain-from-scratch.** River `learn_one`; model state
-   persists between runs.
+   persists between runs — via the Actions cache, not git. The forest reaches
+   ~88 MB, which cannot be committed twice a day. On a cache miss the state is
+   rebuilt by replaying the committed history in order with `learn_one`, which
+   is the same prequential pass, not a batch refit. The observation record is
+   the real state.
 4. **Educational framing.** Not an official warning. Disclaimer stays visible.
    PAGASA and the LGUs are the authorities; we are a portfolio project.
 
@@ -52,6 +56,8 @@ uv run python data/fetch_rain_forecast.py  # archived forecasts at real leads
 uv run python data/backfill_wayback.py  # one-shot; re-run retries failures
 uv run python data/build_table.py     # join into data/modeling_table.csv
 uv run python eval/backtest.py        # honest scoreboard + warm-start state
+uv run python eval/experiment.py      # model search; ranks on dev, holdout once
+uv run python eval/experiment.py --focus --family amf50,amf100   # tune one family
 uv run python eval/basin_forecast.py  # the second target
 uv run python pipeline/run.py         # one full cycle
 ```
@@ -73,3 +79,11 @@ uv run python pipeline/run.py         # one full cycle
 - Deliberate shortcuts get a `ponytail:` comment naming the ceiling and the
   upgrade path. One is live: the catchment cross is a stand-in for real
   watershed polygons.
+- **One pooled model, not one per (dam, horizon).** Dam is a one-hot feature
+  and horizon is numeric. Splitting them back out starves each model — it was
+  13-94 rows each before pooling, and it lost. Target is scaled per dam
+  because their movement differs 12x.
+- **Model changes go through `eval/experiment.py`, never a hunch.** It ranks
+  only on dates before `SPLIT` and touches the holdout once. If you widen the
+  search, do not also start reading the holdout to choose — that is how a
+  search starts reporting its own luck.

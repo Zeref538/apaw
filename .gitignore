@@ -14,3 +14,10 @@ data/modeling_table.csv
 *.png
 !web/public/*.png
 .playwright-mcp/
+
+# Model state: a Mondrian forest grows a node per observation, so this
+# reaches ~88 MB and keeps going. It is cached by the Action and rebuilt
+# from the committed history on a miss (eval/backtest.py), so nothing is
+# lost by keeping it out of git.
+model/state/*.pkl
+model/state/*.tmp

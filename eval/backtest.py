@@ -18,9 +18,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).parents[1]))
 from eval.baselines import BASELINES  # noqa: E402
-from model.online import (  # noqa: E402
-    new_detector, new_model, save, to_features,
-)
+from model.online import Nowcaster, new_detector, save  # noqa: E402
 
 TABLE = Path(__file__).parents[1] / "data" / "modeling_table.csv"
 
@@ -36,23 +34,23 @@ def run(table: pd.DataFrame) -> pd.DataFrame:
     labeled = table[table["target_delta"].notna()].copy()
     labeled = labeled.sort_values(["date", "dam", "horizon"])
 
-    models: dict = {}
+    # One pooled model for every dam and horizon; see model/online.py.
+    model = Nowcaster()
     detectors: dict = {}
     drift_events = []
     records = []
 
     for row in labeled.to_dict("records"):
-        key = (row["dam"], int(row["horizon"]))
-        if key not in models:
-            models[key] = new_model()
+        dam, horizon = row["dam"], int(row["horizon"])
+        key = (dam, horizon)
+        if key not in detectors:
             detectors[key] = new_detector()
 
-        feats = to_features(row)
+        feats = model.raw_features(row, horizon)
         actual = float(row["target_delta"])
 
         # Predict with a model that has seen only earlier rows.
-        pred = models[key].predict_one(feats)
-        pred = 0.0 if pred is None else float(pred)
+        pred = model.predict(feats, dam)
 
         rec = {
             "date": row["date"],
@@ -70,7 +68,7 @@ def run(table: pd.DataFrame) -> pd.DataFrame:
         records.append(rec)
 
         # Then learn from it.
-        models[key].learn_one(feats, actual)
+        model.learn(feats, dam, actual)
 
         detectors[key].update(rec["abs_err_model"])
         if detectors[key].drift_detected:
@@ -79,7 +77,7 @@ def run(table: pd.DataFrame) -> pd.DataFrame:
 
     results = pd.DataFrame(records)
     results.attrs["drift_events"] = drift_events
-    results.attrs["models"] = models
+    results.attrs["model"] = model
     return results
 
 
@@ -142,7 +140,7 @@ def main() -> int:
     # learned from it exactly as the loop would have, so the resulting state is
     # the legitimate starting point — otherwise the recovered Wayback history
     # is scored and then thrown away.
-    save(results.attrs["models"])
+    save(results.attrs["model"])
 
     print(summary["per_horizon_table"])
     print(f"\n{len(results)} predictions, "

@@ -32,8 +32,10 @@ bathymetric chart rather than Hangin's dark console.
    something needs paid compute or data, stop and re-scope.
 2. **Honest evaluation.** Every result against a naive baseline, prequentially.
    Horizons where the baseline wins are published as losses.
-3. **Incremental, not retrain-from-scratch.** River `learn_one`; state persists
-   between runs.
+3. **Incremental, not retrain-from-scratch.** River `learn_one`. State persists
+   in the **Actions cache**, not git — the forest is ~88 MB and growing, which
+   a twice-daily commit would turn into a dead repo. A cache miss replays the
+   committed history with `learn_one` to rebuild it.
 4. **Educational framing.** Not an official warning. PAGASA and the LGUs are
    the authorities.
 
@@ -65,12 +67,24 @@ These cost real debugging time to find. All are pinned by tests — keep them.
   spends the remaining budget on doomed requests; `fetch_weather.py` fails fast
   on 429 instead. It also writes to a temp file and swaps, so a failed rebuild
   can never leave `data/weather.csv` missing.
+- **One pooled model, not 63.** A separate model per (dam, horizon) starves
+  each one on 13-94 rows and loses to persistence. Dam is a one-hot feature,
+  horizon is numeric, and the target is scaled per dam because their movement
+  differs 12x. Splitting them back out will quietly undo the whole gain.
+- **Model changes go through `eval/experiment.py`.** It ranks only on dates
+  before `SPLIT` and reads the holdout once. Choosing on the holdout turns the
+  scoreboard into a report of the search's luck.
+- **Never commit `model/state/*.pkl`.** A Mondrian forest adds nodes forever;
+  it is already ~88 MB. It is gitignored, cached by the Action, and rebuilt
+  from the committed history on a miss. Capping the forest to fit in git costs
+  most of the accuracy (holdout mean ratio 0.64 uncapped vs 0.82 at 50 MB) —
+  that trade was measured, not assumed.
 - **`json.dump` writes bare `NaN`**, which is invalid JSON — one missing
   reference elevation blanked the whole dashboard until `_clean()` was added.
 
 ## First moves in a fresh session
 
-1. `uv sync --group dev && uv run pytest -q` — 26 tests; they encode the traps
+1. `uv sync --group dev && uv run pytest -q` — 32 tests; they encode the traps
    above.
 2. `uv run python pipeline/run.py` — one full cycle locally.
 3. Check the Action is still green. If the parser broke, PAGASA changed the
@@ -81,6 +95,17 @@ These cost real debugging time to find. All are pinned by tests — keep them.
 A live dashboard, a green twice-daily Action running unattended, an honest
 baseline comparison including losses, and a growing archive that PAGASA itself
 does not keep.
+
+## The model, in one paragraph
+
+One `AMFRegressor` (Mondrian forest, 50 trees, `use_aggregation=False`) for
+every dam and horizon, wrapped in `model/online.py:Nowcaster` along with the
+causal feature standardiser and per-dam target scale it needs. Chosen by a
+3,776-configuration search that ranked on dates before 2025-11-01 and scored
+the winner once on the dates after: dev 0.615 -> holdout 0.617 mean ratio to
+the best baseline, beating both baselines at all seven horizons. The near-zero
+dev-to-holdout slippage is the evidence the result is real. It replaced a
+per-(dam, horizon) linear model that scored 0.991 and won 3 of 7.
 
 ## Where to take it next
 
