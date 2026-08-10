@@ -13,9 +13,9 @@ data/      scrapers, the committed observation record, feature build
              backfill_wayback.py    one-shot history seed
              build_table.py         join into the modelling table
              dams.py                registry, aliases, catchment points
-model/     River models per (dam, horizon), pickled state
+model/     online.py — one pooled River model, pickled state
 eval/      baselines, prequential backtest, risk rules, basin forecaster,
-           prediction ledger, error log, metrics
+           experiment.py (model search), prediction ledger, error log, metrics
 pipeline/  run.py — the loop
 web/       static dashboard (GitHub Pages)
 .github/workflows/daily.yml
@@ -67,6 +67,20 @@ web/       static dashboard (GitHub Pages)
 - [x] Horizons under 200 scored forecasts published but not ranked
 - [x] Second target: basin flood watch, with its own persistence baseline
 
+## Phase 5 — Model search ✅
+
+- [x] `eval/experiment.py`: 3,776 configurations over 25 River estimators,
+      4 feature sets, 4 pooling schemes, target scaling, interactions,
+      shrinkage, and expert-blending against the baselines
+- [x] Dev/holdout calendar split declared before the search ran; ranking reads
+      dev only, the holdout is scored once by the winner
+- [x] Winner deployed: one pooled Mondrian forest, dam one-hot + horizon
+      numeric, per-dam target scaling
+- [x] Beats both baselines at **all seven horizons**; +1d and +2d clear
+      MIN_SCORED and are ranked, the rest published unranked
+
+**Gate met:** dev 0.615 -> holdout 0.617, i.e. the search did not fit itself.
+
 ## What's next
 
 Ordered by value, not effort:
@@ -76,8 +90,8 @@ Ordered by value, not effort:
 2. **Real catchment polygons.** The sampled cross is a stand-in; HydroSHEDS
    basin boundaries are free and would make the rainfall input physically
    correct.
-3. **Non-linear model** — but only once the linear one is measured and found
-   wanting. `tree.HoeffdingTreeRegressor` is the obvious next rung.
+3. ~~**Non-linear model**~~ — done in Phase 5. The linear model was measured,
+   found wanting, and replaced by a pooled Mondrian forest.
 4. **Inflow/outflow features.** PAGASA publishes both; they are collected and
    currently unused.
 5. **Portfolio card** in the house format, once a horizon clears MIN_SCORED
@@ -89,5 +103,5 @@ Ordered by value, not effort:
   pattern; only the fetcher, the online model, the drift detector and the
   dashboard visuals are genuinely new.
 - Repo-committed state is the free, versioned default.
-- One small model per (dam, horizon); no ensembles until the simple version is
-  proven insufficient.
+- One pooled model across dams and horizons. The per-(dam, horizon) split was
+  measured and lost; do not reintroduce it without rerunning the search.

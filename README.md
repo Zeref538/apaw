@@ -32,32 +32,63 @@ and **not ranked** — small-n verdicts are noise, not skill.
 
 | Horizon | APAW | Persistence | Best baseline | n | Verdict |
 |---|---|---|---|---|---|
-| +1d | 0.402 | **0.330** | 0.330 persistence | 844 | baseline wins |
-| +2d | **0.614** | 0.698 | 0.682 drift | 206 | **APAW** |
-| +3d | 0.723 | 0.794 | 0.707 drift | 178 | too few to call |
-| +4d | 1.173 | 0.649 | 0.649 persistence | 152 | too few to call |
-| +5d | 0.920 | 0.807 | 0.807 persistence | 117 | too few to call |
-| +6d | 1.133 | 0.981 | 0.981 persistence | 117 | too few to call |
-| +7d | 2.854 | 0.902 | 0.902 persistence | 144 | too few to call |
+| +1d | **0.305** | 0.330 | 0.330 persistence | 844 | **APAW** |
+| +2d | **0.417** | 0.698 | 0.682 drift | 206 | **APAW** |
+| +3d | **0.405** | 0.794 | 0.707 drift | 178 | ahead, but n<200 — unranked |
+| +4d | **0.353** | 0.649 | 0.649 persistence | 152 | ahead, but n<200 — unranked |
+| +5d | **0.435** | 0.807 | 0.807 persistence | 117 | ahead, but n<200 — unranked |
+| +6d | **0.539** | 0.981 | 0.981 persistence | 117 | ahead, but n<200 — unranked |
+| +7d | **0.528** | 0.902 | 0.902 persistence | 144 | ahead, but n<200 — unranked |
 
-**+2d is the only ranked win.** Persistence wins at +1d, which is expected — a
-reservoir tomorrow is very nearly a reservoir today. Everything past +2d is
-still below the sample gate and is published unranked rather than hidden; those
-horizons unlock themselves as the collector accrues history.
+**The model is now ahead of both baselines at every horizon**, including +1d,
+where persistence beat it for months. Only +1d and +2d clear the 200-forecast
+gate and are *ranked*; the rest are ahead but are published unranked, because
+a verdict on 117 points is not a verdict. They unlock themselves as the
+collector accrues history.
 
-These numbers are *worse* than an earlier version of this table, on purpose.
-Forward rain used to be observed reanalysis — perfect foresight the model would
-never have at issue time — and rainfall was read at the dam wall rather than
-averaged over the catchment. Removing both cost about 0.01 m at +1d and +2d.
-That is the size of the advantage the old scores were quietly enjoying.
+### How that happened, and how we know it isn't the search fitting itself
 
-Split by rain source, the MAE is 0.956 m for ERA5-proxy rows (n=1074) and
-0.580 m for real archived forecasts (n=684) — but the two groups differ by
-**era** as well as by source, since the proxy rows are the sparse 2021–2024
-Wayback seed where the model had learned far less. The split is confounded and
-is reported as a description, not a finding.
+The earlier model was one linear regressor per (dam, horizon). Given the
+history that exists, that gave each of the 63 models **13 to 94 rows** to fit
+15 coefficients — which is why it lost.
 
-Regenerate with `uv run python eval/backtest.py`.
+`eval/experiment.py` searched **3,776 configurations** (25 River estimators ×
+feature sets × pooling schemes × target scaling × shrinkage × baseline
+blending). Searching that hard against one evaluation set is a good way to
+find a number that means nothing, so the calendar was cut in two before
+anything ran: everything is **ranked only on dates before 2025-11-01**, and the
+winner met the later dates exactly once.
+
+| | dev (ranked on) | holdout (seen once) | horizons beaten |
+|---|---|---|---|
+| Winner | 0.615 | **0.617** | **7 / 7** |
+| Old linear model | — | 0.991 | 3 / 7 |
+
+*(mean ratio to the best baseline; below 1.0 beats it)*
+
+Dev 0.615 → holdout 0.617 is the number that matters. A search that slips by
+0.002 into data it was never allowed to see is measuring a real effect, not
+its own tuning.
+
+The winner is an **Aggregated Mondrian Forest** (50 trees, aggregation off) —
+but the estimator was the smaller half of it. **Pooling every dam and horizon
+into one model**, with the dam one-hot and the horizon as a numeric feature,
+turns ~94 training rows into ~1,750. Every strong configuration in the search
+pooled something. Per-dam target scaling is required to make that work, since
+the dams differ in how far their level moves by a factor of twelve (La Mesa
+0.16 m, San Roque 1.91 m); pooled raw, San Roque would write the model.
+
+Split by rain source, MAE is 0.352 m for ERA5-proxy rows (n=1074) and 0.410 m
+for real archived forecasts (n=684). Those groups differ by **era** as well as
+by rain source, so whichever looks better, the gap is not a clean measure of
+what the shortcut is worth. It is published because the shortcut exists.
+
+Regenerate with `uv run python eval/backtest.py`. That command also rebuilds
+the model state, by replaying the committed history in order — which is why
+the state itself is not in git. The forest reaches ~88 MB and grows with every
+observation, so it lives in the Actions cache and is rebuilt on a miss.
+Capping it small enough to commit was measured and costs most of the gain
+(holdout mean ratio 0.64 uncapped against 0.82 at 50 MB).
 
 ## How the loop works
 
@@ -68,7 +99,7 @@ Regenerate with `uv run python eval/backtest.py`.
   /flood table       actual just landed  →  learn_one
         │                     │                  │
    Open-Meteo            error log +         model state
-   rainfall            learning curve      (pickled, committed)
+   rainfall            learning curve      (cached, rebuildable)
         │                     │                  │
         └──────→ issue 1–7 day forecasts ────────┘
                           │
@@ -125,6 +156,7 @@ uv run python data/backfill_wayback.py  # one-shot seed; re-run retries failures
 uv run python data/build_table.py       # join into the modelling table
 
 uv run python eval/backtest.py          # honest scoreboard + warm-start state
+uv run python eval/experiment.py        # the model search (dev/holdout split)
 uv run python pipeline/run.py           # the full loop, one tick
 
 cd web && python -m http.server         # dashboard at localhost:8000
@@ -155,8 +187,10 @@ web/      static dashboard (GitHub Pages)
   count and **not ranked**. Small-n verdicts are noise.
 - A second target rides along: whether each river basin will be under flood
   watch, scored against the same persistence discipline.
-- The model is a plain scaler + linear regression. Trees and ensembles come
-  only if the simple version is measured and found wanting.
+- One pooled Mondrian forest covers all nine dams and all seven horizons, with
+  the dam and the horizon as features. The simple per-dam linear model came
+  first and was replaced only after being measured and found wanting — the
+  search that replaced it is in `eval/experiment.py` and is reproducible.
 - Predictions are never clipped. When conditions exceed anything in the
   training history the dashboard says so, because suppressing extremes would
   gut the tool exactly when it matters.

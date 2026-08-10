@@ -1,0 +1,702 @@
+{
+  "split": "2025-11-01",
+  "n_configs": 3,
+  "n_failed": 0,
+  "ranked_on": "dev only; holdout scored once by the winner",
+  "winner": {
+    "model_name": "amf",
+    "features": "base",
+    "pool_dam": false,
+    "pool_horizon": false,
+    "scale_target": false,
+    "interactions": false,
+    "shrink": 1.0,
+    "blend": 0.0,
+    "stack_baseline": true,
+    "dev": {
+      "1": {
+        "n": 646,
+        "mae": 0.3112,
+        "best_baseline": 0.3145,
+        "ratio": 0.9897,
+        "wins": true
+      },
+      "2": {
+        "n": 152,
+        "mae": 0.5532,
+        "best_baseline": 0.5824,
+        "ratio": 0.95,
+        "wins": true
+      },
+      "3": {
+        "n": 133,
+        "mae": 0.6531,
+        "best_baseline": 0.6526,
+        "ratio": 1.0008,
+        "wins": false
+      },
+      "4": {
+        "n": 125,
+        "mae": 0.6084,
+        "best_baseline": 0.6597,
+        "ratio": 0.9222,
+        "wins": true
+      },
+      "5": {
+        "n": 99,
+        "mae": 0.8906,
+        "best_baseline": 0.816,
+        "ratio": 1.0915,
+        "wins": false
+      },
+      "6": {
+        "n": 90,
+        "mae": 1.1323,
+        "best_baseline": 0.9752,
+        "ratio": 1.1611,
+        "wins": false
+      },
+      "7": {
+        "n": 117,
+        "mae": 0.8999,
+        "best_baseline": 0.8457,
+        "ratio": 1.0641,
+        "wins": false
+      },
+      "_overall": {
+        "mae": 0.5458,
+        "n_wins": 3,
+        "n_horizons": 7,
+        "mean_ratio": 1.0256,
+        "worst_ratio": 1.1611
+      }
+    },
+    "holdout": {
+      "1": {
+        "n": 198,
+        "mae": 0.3353,
+        "best_baseline": 0.3815,
+        "ratio": 0.879,
+        "wins": true
+      },
+      "2": {
+        "n": 54,
+        "mae": 0.8512,
+        "best_baseline": 1.0096,
+        "ratio": 0.8431,
+        "wins": true
+      },
+      "3": {
+        "n": 45,
+        "mae": 1.1436,
+        "best_baseline": 0.6528,
+        "ratio": 1.7519,
+        "wins": false
+      },
+      "4": {
+        "n": 27,
+        "mae": 0.615,
+        "best_baseline": 0.6015,
+        "ratio": 1.0224,
+        "wins": false
+      },
+      "5": {
+        "n": 18,
+        "mae": 0.7802,
+        "best_baseline": 0.7583,
+        "ratio": 1.0288,
+        "wins": false
+      },
+      "6": {
+        "n": 27,
+        "mae": 0.8991,
+        "best_baseline": 1.0,
+        "ratio": 0.8991,
+        "wins": true
+      },
+      "7": {
+        "n": 27,
+        "mae": 1.1479,
+        "best_baseline": 1.1478,
+        "ratio": 1.0001,
+        "wins": false
+      },
+      "_overall": {
+        "mae": 0.6306,
+        "n_wins": 3,
+        "n_horizons": 7,
+        "mean_ratio": 1.0606,
+        "worst_ratio": 1.7519
+      }
+    }
+  },
+  "winner_holdout": {
+    "1": {
+      "n": 198,
+      "mae": 0.3353,
+      "best_baseline": 0.3815,
+      "ratio": 0.879,
+      "wins": true
+    },
+    "2": {
+      "n": 54,
+      "mae": 0.8512,
+      "best_baseline": 1.0096,
+      "ratio": 0.8431,
+      "wins": true
+    },
+    "3": {
+      "n": 45,
+      "mae": 1.1436,
+      "best_baseline": 0.6528,
+      "ratio": 1.7519,
+      "wins": false
+    },
+    "4": {
+      "n": 27,
+      "mae": 0.615,
+      "best_baseline": 0.6015,
+      "ratio": 1.0224,
+      "wins": false
+    },
+    "5": {
+      "n": 18,
+      "mae": 0.7802,
+      "best_baseline": 0.7583,
+      "ratio": 1.0288,
+      "wins": false
+    },
+    "6": {
+      "n": 27,
+      "mae": 0.8991,
+      "best_baseline": 1.0,
+      "ratio": 0.8991,
+      "wins": true
+    },
+    "7": {
+      "n": 27,
+      "mae": 1.1479,
+      "best_baseline": 1.1478,
+      "ratio": 1.0001,
+      "wins": false
+    },
+    "_overall": {
+      "mae": 0.6306,
+      "n_wins": 3,
+      "n_horizons": 7,
+      "mean_ratio": 1.0606,
+      "worst_ratio": 1.7519
+    }
+  },
+  "incumbent_holdout": null,
+  "winner_by_wins": {
+    "model_name": "amf",
+    "features": "base",
+    "pool_dam": false,
+    "pool_horizon": false,
+    "scale_target": false,
+    "interactions": false,
+    "shrink": 1.0,
+    "blend": 0.0,
+    "stack_baseline": true,
+    "dev": {
+      "1": {
+        "n": 646,
+        "mae": 0.3112,
+        "best_baseline": 0.3145,
+        "ratio": 0.9897,
+        "wins": true
+      },
+      "2": {
+        "n": 152,
+        "mae": 0.5532,
+        "best_baseline": 0.5824,
+        "ratio": 0.95,
+        "wins": true
+      },
+      "3": {
+        "n": 133,
+        "mae": 0.6531,
+        "best_baseline": 0.6526,
+        "ratio": 1.0008,
+        "wins": false
+      },
+      "4": {
+        "n": 125,
+        "mae": 0.6084,
+        "best_baseline": 0.6597,
+        "ratio": 0.9222,
+        "wins": true
+      },
+      "5": {
+        "n": 99,
+        "mae": 0.8906,
+        "best_baseline": 0.816,
+        "ratio": 1.0915,
+        "wins": false
+      },
+      "6": {
+        "n": 90,
+        "mae": 1.1323,
+        "best_baseline": 0.9752,
+        "ratio": 1.1611,
+        "wins": false
+      },
+      "7": {
+        "n": 117,
+        "mae": 0.8999,
+        "best_baseline": 0.8457,
+        "ratio": 1.0641,
+        "wins": false
+      },
+      "_overall": {
+        "mae": 0.5458,
+        "n_wins": 3,
+        "n_horizons": 7,
+        "mean_ratio": 1.0256,
+        "worst_ratio": 1.1611
+      }
+    },
+    "holdout": {
+      "1": {
+        "n": 198,
+        "mae": 0.3353,
+        "best_baseline": 0.3815,
+        "ratio": 0.879,
+        "wins": true
+      },
+      "2": {
+        "n": 54,
+        "mae": 0.8512,
+        "best_baseline": 1.0096,
+        "ratio": 0.8431,
+        "wins": true
+      },
+      "3": {
+        "n": 45,
+        "mae": 1.1436,
+        "best_baseline": 0.6528,
+        "ratio": 1.7519,
+        "wins": false
+      },
+      "4": {
+        "n": 27,
+        "mae": 0.615,
+        "best_baseline": 0.6015,
+        "ratio": 1.0224,
+        "wins": false
+      },
+      "5": {
+        "n": 18,
+        "mae": 0.7802,
+        "best_baseline": 0.7583,
+        "ratio": 1.0288,
+        "wins": false
+      },
+      "6": {
+        "n": 27,
+        "mae": 0.8991,
+        "best_baseline": 1.0,
+        "ratio": 0.8991,
+        "wins": true
+      },
+      "7": {
+        "n": 27,
+        "mae": 1.1479,
+        "best_baseline": 1.1478,
+        "ratio": 1.0001,
+        "wins": false
+      },
+      "_overall": {
+        "mae": 0.6306,
+        "n_wins": 3,
+        "n_horizons": 7,
+        "mean_ratio": 1.0606,
+        "worst_ratio": 1.7519
+      }
+    }
+  },
+  "top20": [
+    {
+      "model_name": "amf",
+      "features": "base",
+      "pool_dam": false,
+      "pool_horizon": false,
+      "scale_target": false,
+      "interactions": false,
+      "shrink": 1.0,
+      "blend": 0.0,
+      "stack_baseline": true,
+      "dev": {
+        "1": {
+          "n": 646,
+          "mae": 0.3112,
+          "best_baseline": 0.3145,
+          "ratio": 0.9897,
+          "wins": true
+        },
+        "2": {
+          "n": 152,
+          "mae": 0.5532,
+          "best_baseline": 0.5824,
+          "ratio": 0.95,
+          "wins": true
+        },
+        "3": {
+          "n": 133,
+          "mae": 0.6531,
+          "best_baseline": 0.6526,
+          "ratio": 1.0008,
+          "wins": false
+        },
+        "4": {
+          "n": 125,
+          "mae": 0.6084,
+          "best_baseline": 0.6597,
+          "ratio": 0.9222,
+          "wins": true
+        },
+        "5": {
+          "n": 99,
+          "mae": 0.8906,
+          "best_baseline": 0.816,
+          "ratio": 1.0915,
+          "wins": false
+        },
+        "6": {
+          "n": 90,
+          "mae": 1.1323,
+          "best_baseline": 0.9752,
+          "ratio": 1.1611,
+          "wins": false
+        },
+        "7": {
+          "n": 117,
+          "mae": 0.8999,
+          "best_baseline": 0.8457,
+          "ratio": 1.0641,
+          "wins": false
+        },
+        "_overall": {
+          "mae": 0.5458,
+          "n_wins": 3,
+          "n_horizons": 7,
+          "mean_ratio": 1.0256,
+          "worst_ratio": 1.1611
+        }
+      },
+      "holdout": {
+        "1": {
+          "n": 198,
+          "mae": 0.3353,
+          "best_baseline": 0.3815,
+          "ratio": 0.879,
+          "wins": true
+        },
+        "2": {
+          "n": 54,
+          "mae": 0.8512,
+          "best_baseline": 1.0096,
+          "ratio": 0.8431,
+          "wins": true
+        },
+        "3": {
+          "n": 45,
+          "mae": 1.1436,
+          "best_baseline": 0.6528,
+          "ratio": 1.7519,
+          "wins": false
+        },
+        "4": {
+          "n": 27,
+          "mae": 0.615,
+          "best_baseline": 0.6015,
+          "ratio": 1.0224,
+          "wins": false
+        },
+        "5": {
+          "n": 18,
+          "mae": 0.7802,
+          "best_baseline": 0.7583,
+          "ratio": 1.0288,
+          "wins": false
+        },
+        "6": {
+          "n": 27,
+          "mae": 0.8991,
+          "best_baseline": 1.0,
+          "ratio": 0.8991,
+          "wins": true
+        },
+        "7": {
+          "n": 27,
+          "mae": 1.1479,
+          "best_baseline": 1.1478,
+          "ratio": 1.0001,
+          "wins": false
+        },
+        "_overall": {
+          "mae": 0.6306,
+          "n_wins": 3,
+          "n_horizons": 7,
+          "mean_ratio": 1.0606,
+          "worst_ratio": 1.7519
+        }
+      }
+    },
+    {
+      "model_name": "amf",
+      "features": "base",
+      "pool_dam": false,
+      "pool_horizon": false,
+      "scale_target": false,
+      "interactions": false,
+      "shrink": 1.0,
+      "blend": 0.0,
+      "stack_baseline": false,
+      "dev": {
+        "1": {
+          "n": 646,
+          "mae": 0.3075,
+          "best_baseline": 0.3145,
+          "ratio": 0.9777,
+          "wins": true
+        },
+        "2": {
+          "n": 152,
+          "mae": 0.5404,
+          "best_baseline": 0.5824,
+          "ratio": 0.9279,
+          "wins": true
+        },
+        "3": {
+          "n": 133,
+          "mae": 0.6783,
+          "best_baseline": 0.6526,
+          "ratio": 1.0394,
+          "wins": false
+        },
+        "4": {
+          "n": 125,
+          "mae": 0.6033,
+          "best_baseline": 0.6597,
+          "ratio": 0.9145,
+          "wins": true
+        },
+        "5": {
+          "n": 99,
+          "mae": 0.8727,
+          "best_baseline": 0.816,
+          "ratio": 1.0695,
+          "wins": false
+        },
+        "6": {
+          "n": 90,
+          "mae": 1.1534,
+          "best_baseline": 0.9752,
+          "ratio": 1.1827,
+          "wins": false
+        },
+        "7": {
+          "n": 117,
+          "mae": 0.9524,
+          "best_baseline": 0.8457,
+          "ratio": 1.1261,
+          "wins": false
+        },
+        "_overall": {
+          "mae": 0.5492,
+          "n_wins": 3,
+          "n_horizons": 7,
+          "mean_ratio": 1.034,
+          "worst_ratio": 1.1827
+        }
+      },
+      "holdout": {
+        "1": {
+          "n": 198,
+          "mae": 0.3474,
+          "best_baseline": 0.3815,
+          "ratio": 0.9108,
+          "wins": true
+        },
+        "2": {
+          "n": 54,
+          "mae": 0.8629,
+          "best_baseline": 1.0096,
+          "ratio": 0.8547,
+          "wins": true
+        },
+        "3": {
+          "n": 45,
+          "mae": 1.0637,
+          "best_baseline": 0.6528,
+          "ratio": 1.6295,
+          "wins": false
+        },
+        "4": {
+          "n": 27,
+          "mae": 0.6157,
+          "best_baseline": 0.6015,
+          "ratio": 1.0237,
+          "wins": false
+        },
+        "5": {
+          "n": 18,
+          "mae": 0.7516,
+          "best_baseline": 0.7583,
+          "ratio": 0.9911,
+          "wins": true
+        },
+        "6": {
+          "n": 27,
+          "mae": 0.9284,
+          "best_baseline": 1.0,
+          "ratio": 0.9284,
+          "wins": true
+        },
+        "7": {
+          "n": 27,
+          "mae": 1.1192,
+          "best_baseline": 1.1478,
+          "ratio": 0.9751,
+          "wins": true
+        },
+        "_overall": {
+          "mae": 0.628,
+          "n_wins": 5,
+          "n_horizons": 7,
+          "mean_ratio": 1.0448,
+          "worst_ratio": 1.6295
+        }
+      }
+    },
+    {
+      "model_name": "amf",
+      "features": "base",
+      "pool_dam": false,
+      "pool_horizon": false,
+      "scale_target": false,
+      "interactions": false,
+      "shrink": 1.0,
+      "blend": 0.6,
+      "stack_baseline": false,
+      "dev": {
+        "1": {
+          "n": 646,
+          "mae": NaN,
+          "best_baseline": 0.3145,
+          "ratio": 3.0,
+          "wins": false
+        },
+        "2": {
+          "n": 152,
+          "mae": NaN,
+          "best_baseline": 0.5824,
+          "ratio": 3.0,
+          "wins": false
+        },
+        "3": {
+          "n": 133,
+          "mae": 0.5258,
+          "best_baseline": 0.6526,
+          "ratio": 0.8057,
+          "wins": true
+        },
+        "4": {
+          "n": 125,
+          "mae": NaN,
+          "best_baseline": 0.6597,
+          "ratio": 3.0,
+          "wins": false
+        },
+        "5": {
+          "n": 99,
+          "mae": NaN,
+          "best_baseline": 0.816,
+          "ratio": 3.0,
+          "wins": false
+        },
+        "6": {
+          "n": 90,
+          "mae": 0.8589,
+          "best_baseline": 0.9752,
+          "ratio": 0.8807,
+          "wins": true
+        },
+        "7": {
+          "n": 117,
+          "mae": NaN,
+          "best_baseline": 0.8457,
+          "ratio": 3.0,
+          "wins": false
+        },
+        "_overall": {
+          "mae": 0.6368,
+          "n_wins": 2,
+          "n_horizons": 7,
+          "mean_ratio": 2.3838,
+          "worst_ratio": 3.0
+        }
+      },
+      "holdout": {
+        "1": {
+          "n": 198,
+          "mae": NaN,
+          "best_baseline": 0.3815,
+          "ratio": 3.0,
+          "wins": false
+        },
+        "2": {
+          "n": 54,
+          "mae": NaN,
+          "best_baseline": 1.0096,
+          "ratio": 3.0,
+          "wins": false
+        },
+        "3": {
+          "n": 45,
+          "mae": NaN,
+          "best_baseline": 0.6528,
+          "ratio": 3.0,
+          "wins": false
+        },
+        "4": {
+          "n": 27,
+          "mae": NaN,
+          "best_baseline": 0.6015,
+          "ratio": 3.0,
+          "wins": false
+        },
+        "5": {
+          "n": 18,
+          "mae": NaN,
+          "best_baseline": 0.7583,
+          "ratio": 3.0,
+          "wins": false
+        },
+        "6": {
+          "n": 27,
+          "mae": NaN,
+          "best_baseline": 1.0,
+          "ratio": 3.0,
+          "wins": false
+        },
+        "7": {
+          "n": 27,
+          "mae": NaN,
+          "best_baseline": 1.1478,
+          "ratio": 3.0,
+          "wins": false
+        },
+        "_overall": {
+          "mae": null,
+          "n_wins": 0,
+          "n_horizons": 7,
+          "mean_ratio": 3.0,
+          "worst_ratio": 3.0
+        }
+      }
+    }
+  ]
+}

@@ -1079,9 +1079,9 @@ function skill() {
       `(n=${src.forecast.n}). Older rows fall back to observed rain nobody could ` +
       `have known at the time: MAE ${src.era5_proxy.mae_model.toFixed(3)} m ` +
       `(n=${src.era5_proxy.n}). Those two groups are different eras as well as ` +
-      `different rain sources — the older rows are sparser and the model had ` +
-      `learned less by then — so this is not a clean measure of what the ` +
-      `shortcut was worth. It is published because the shortcut exists.`;
+      `different rain sources, so whichever looks better, the gap is not a ` +
+      `clean measure of what the shortcut is worth. It is published because ` +
+      `the shortcut exists, not as a finding.`;
     box.appendChild(note);
   }
   box.appendChild(list);
@@ -1172,7 +1172,7 @@ function render() {
   main.appendChild(sect(
     "Where it wins, where it loses",
     "Green means APAW beat the naive baseline at that range. Red means the baseline won, and we publish those too.",
-    "Bar length is the relative improvement in mean absolute error; n is the number of scored forecasts. A reservoir tomorrow is nearly a reservoir today, which is why short ranges are hard to beat.",
+    "Bar length is the relative improvement in mean absolute error; n is the number of scored forecasts. One Mondrian forest covers all nine dams and all seven ranges, with the dam and the horizon as inputs — pooling gives it roughly 1,750 rows to learn from instead of the 13–94 a separate model per dam and range would get. That change mattered far more than the choice of algorithm.",
     skill()
   ));
 }
