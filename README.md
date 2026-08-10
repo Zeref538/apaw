@@ -32,13 +32,16 @@ and **not ranked** — small-n verdicts are noise, not skill.
 
 | Horizon | APAW | Persistence | Best baseline | n | Verdict |
 |---|---|---|---|---|---|
-| +1d | **0.305** | 0.330 | 0.330 persistence | 844 | **APAW** |
-| +2d | **0.417** | 0.698 | 0.682 drift | 206 | **APAW** |
-| +3d | **0.405** | 0.794 | 0.707 drift | 178 | ahead, but n<200 — unranked |
-| +4d | **0.353** | 0.649 | 0.649 persistence | 152 | ahead, but n<200 — unranked |
+| +1d | **0.323** | 0.362 | 0.362 persistence | 853 | **APAW** |
+| +2d | **0.536** | 0.874 | 0.858 drift | 215 | **APAW** |
+| +3d | **0.546** | 1.083 | 1.012 drift | 187 | ahead, but n<200 — unranked |
+| +4d | **0.518** | 0.984 | 0.984 persistence | 161 | ahead, but n<200 — unranked |
 | +5d | **0.435** | 0.807 | 0.807 persistence | 117 | ahead, but n<200 — unranked |
 | +6d | **0.539** | 0.981 | 0.981 persistence | 117 | ahead, but n<200 — unranked |
 | +7d | **0.528** | 0.902 | 0.902 persistence | 144 | ahead, but n<200 — unranked |
+
+*As of 2026-08-10. These move as the collector accrues history — the
+[live dashboard](https://zeref538.github.io/apaw/) is always current.*
 
 **The model is now ahead of both baselines at every horizon**, including +1d,
 where persistence beat it for months. Only +1d and +2d clear the 200-forecast
