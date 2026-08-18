@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18T01:58:16",
+  "generated_at": "2026-08-18T07:16:48",
   "latest_observation": "2026-08-18",
   "data_age_days": 0,
   "dams": [
@@ -1528,7 +1528,7 @@
       "roll_abs_err_persistence": 2.6521
     }
   ],
-  "scored_this_run": 63,
+  "scored_this_run": 0,
   "drift_events_this_run": [],
   "disclaimer": "Educational forecast, not an official warning. PAGASA and your local disaster risk reduction office are the authorities."
 }
