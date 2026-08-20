@@ -10,7 +10,7 @@ Abra,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Abra,Non-Flood Watch,False,river_basin,2026-08-17,2026-08-17T07:32:49
 Abra,Non-Flood Watch,False,river_basin,2026-08-18,2026-08-18T07:16:34
 Abra,Non-Flood Watch,False,river_basin,2026-08-19,2026-08-19T07:20:29
-Abra,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T01:58:31
+Abra,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T07:23:12
 Agno,Flood Watch,True,river_basin,2026-08-09,2026-08-09T12:47:37
 Agno,Flood Watch,True,river_basin,2026-08-10,2026-08-10T09:41:09
 Agno,Flood Watch,True,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -22,7 +22,7 @@ Agno,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Agno,Flood Watch,True,river_basin,2026-08-17,2026-08-17T07:32:49
 Agno,Flood Watch,True,river_basin,2026-08-18,2026-08-18T07:16:34
 Agno,Flood Watch,True,river_basin,2026-08-19,2026-08-19T07:20:29
-Agno,Flood Watch,True,river_basin,2026-08-20,2026-08-20T01:58:31
+Agno,Flood Watch,True,river_basin,2026-08-20,2026-08-20T07:23:12
 Agus,Non-Flood Watch,False,river_basin,2026-08-09,2026-08-09T12:47:37
 Agus,Non-Flood Watch,False,river_basin,2026-08-10,2026-08-10T09:41:09
 Agus,Non-Flood Watch,False,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -34,7 +34,7 @@ Agus,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Agus,Non-Flood Watch,False,river_basin,2026-08-17,2026-08-17T07:32:49
 Agus,Non-Flood Watch,False,river_basin,2026-08-18,2026-08-18T07:16:34
 Agus,Non-Flood Watch,False,river_basin,2026-08-19,2026-08-19T07:20:29
-Agus,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T01:58:31
+Agus,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T07:23:12
 Agusan,Non-Flood Watch,False,river_basin,2026-08-09,2026-08-09T12:47:37
 Agusan,Non-Flood Watch,False,river_basin,2026-08-10,2026-08-10T09:41:09
 Agusan,Non-Flood Watch,False,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -46,7 +46,7 @@ Agusan,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Agusan,Non-Flood Watch,False,river_basin,2026-08-17,2026-08-17T07:32:49
 Agusan,Non-Flood Watch,False,river_basin,2026-08-18,2026-08-18T07:16:34
 Agusan,Non-Flood Watch,False,river_basin,2026-08-19,2026-08-19T07:20:29
-Agusan,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T01:58:31
+Agusan,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T07:23:12
 Ambuklao-Binga-San Roque Sub-basin,Flood Watch,True,dam_sub_basin,2026-08-09,2026-08-09T12:47:37
 Ambuklao-Binga-San Roque Sub-basin,Flood Watch,True,dam_sub_basin,2026-08-10,2026-08-10T09:41:09
 Ambuklao-Binga-San Roque Sub-basin,Flood Watch,True,dam_sub_basin,2026-08-11,2026-08-11T07:45:54
@@ -58,7 +58,7 @@ Ambuklao-Binga-San Roque Sub-basin,Flood Watch,True,dam_sub_basin,2026-08-16,202
 Ambuklao-Binga-San Roque Sub-basin,Flood Watch,True,dam_sub_basin,2026-08-17,2026-08-17T07:32:49
 Ambuklao-Binga-San Roque Sub-basin,Flood Watch,True,dam_sub_basin,2026-08-18,2026-08-18T07:16:34
 Ambuklao-Binga-San Roque Sub-basin,Flood Watch,True,dam_sub_basin,2026-08-19,2026-08-19T07:20:29
-Ambuklao-Binga-San Roque Sub-basin,Flood Watch,True,dam_sub_basin,2026-08-20,2026-08-20T01:58:31
+Ambuklao-Binga-San Roque Sub-basin,Flood Watch,True,dam_sub_basin,2026-08-20,2026-08-20T07:23:12
 Angat Sub-basin,Flood Watch,True,dam_sub_basin,2026-08-09,2026-08-09T12:47:37
 Angat Sub-basin,Flood Watch,True,dam_sub_basin,2026-08-10,2026-08-10T09:41:09
 Angat Sub-basin,Flood Watch,True,dam_sub_basin,2026-08-11,2026-08-11T07:45:54
@@ -70,7 +70,7 @@ Angat Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-16,2026-08-16T07:09:
 Angat Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-17,2026-08-17T07:32:49
 Angat Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-18,2026-08-18T07:16:34
 Angat Sub-basin,Flood Watch,True,dam_sub_basin,2026-08-19,2026-08-19T07:20:29
-Angat Sub-basin,Flood Watch,True,dam_sub_basin,2026-08-20,2026-08-20T01:58:31
+Angat Sub-basin,Flood Watch,True,dam_sub_basin,2026-08-20,2026-08-20T07:23:12
 Apayao-Abulug,Non-Flood Watch,False,river_basin,2026-08-09,2026-08-09T12:47:37
 Apayao-Abulug,Non-Flood Watch,False,river_basin,2026-08-10,2026-08-10T09:41:09
 Apayao-Abulug,Non-Flood Watch,False,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -82,7 +82,7 @@ Apayao-Abulug,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Apayao-Abulug,Non-Flood Watch,False,river_basin,2026-08-17,2026-08-17T07:32:49
 Apayao-Abulug,Non-Flood Watch,False,river_basin,2026-08-18,2026-08-18T07:16:34
 Apayao-Abulug,Non-Flood Watch,False,river_basin,2026-08-19,2026-08-19T07:20:29
-Apayao-Abulug,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T01:58:31
+Apayao-Abulug,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T07:23:12
 Bicol,Non-Flood Watch,False,river_basin,2026-08-09,2026-08-09T12:47:37
 Bicol,Non-Flood Watch,False,river_basin,2026-08-10,2026-08-10T09:41:09
 Bicol,Non-Flood Watch,False,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -94,7 +94,7 @@ Bicol,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Bicol,Non-Flood Watch,False,river_basin,2026-08-17,2026-08-17T07:32:49
 Bicol,Non-Flood Watch,False,river_basin,2026-08-18,2026-08-18T07:16:34
 Bicol,Non-Flood Watch,False,river_basin,2026-08-19,2026-08-19T07:20:29
-Bicol,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T01:58:31
+Bicol,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T07:23:12
 Buayan-Malungon,Non-Flood Watch,False,river_basin,2026-08-09,2026-08-09T12:47:37
 Buayan-Malungon,Non-Flood Watch,False,river_basin,2026-08-10,2026-08-10T09:41:09
 Buayan-Malungon,Non-Flood Watch,False,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -106,7 +106,7 @@ Buayan-Malungon,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Buayan-Malungon,Non-Flood Watch,False,river_basin,2026-08-17,2026-08-17T07:32:49
 Buayan-Malungon,Non-Flood Watch,False,river_basin,2026-08-18,2026-08-18T07:16:34
 Buayan-Malungon,Non-Flood Watch,False,river_basin,2026-08-19,2026-08-19T07:20:29
-Buayan-Malungon,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T01:58:31
+Buayan-Malungon,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T07:23:12
 Cagayan,Non-Flood Watch,False,river_basin,2026-08-09,2026-08-09T12:47:37
 Cagayan,Non-Flood Watch,False,river_basin,2026-08-10,2026-08-10T09:41:09
 Cagayan,Non-Flood Watch,False,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -118,7 +118,7 @@ Cagayan,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Cagayan,Non-Flood Watch,False,river_basin,2026-08-17,2026-08-17T07:32:49
 Cagayan,Non-Flood Watch,False,river_basin,2026-08-18,2026-08-18T07:16:34
 Cagayan,Non-Flood Watch,False,river_basin,2026-08-19,2026-08-19T07:20:29
-Cagayan,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T01:58:31
+Cagayan,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T07:23:12
 Cagayan De Oro,Non-Flood Watch,False,river_basin,2026-08-09,2026-08-09T12:47:37
 Cagayan De Oro,Non-Flood Watch,False,river_basin,2026-08-10,2026-08-10T09:41:09
 Cagayan De Oro,Non-Flood Watch,False,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -130,7 +130,7 @@ Cagayan De Oro,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Cagayan De Oro,Non-Flood Watch,False,river_basin,2026-08-17,2026-08-17T07:32:49
 Cagayan De Oro,Non-Flood Watch,False,river_basin,2026-08-18,2026-08-18T07:16:34
 Cagayan De Oro,Non-Flood Watch,False,river_basin,2026-08-19,2026-08-19T07:20:29
-Cagayan De Oro,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T01:58:31
+Cagayan De Oro,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T07:23:12
 Davao,Non-Flood Watch,False,river_basin,2026-08-09,2026-08-09T12:47:37
 Davao,Non-Flood Watch,False,river_basin,2026-08-10,2026-08-10T09:41:09
 Davao,Non-Flood Watch,False,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -142,7 +142,7 @@ Davao,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Davao,Non-Flood Watch,False,river_basin,2026-08-17,2026-08-17T07:32:49
 Davao,Non-Flood Watch,False,river_basin,2026-08-18,2026-08-18T07:16:34
 Davao,Non-Flood Watch,False,river_basin,2026-08-19,2026-08-19T07:20:29
-Davao,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T01:58:31
+Davao,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T07:23:12
 Ilog-Hilabangan,Non-Flood Watch,False,river_basin,2026-08-09,2026-08-09T12:47:37
 Ilog-Hilabangan,Non-Flood Watch,False,river_basin,2026-08-10,2026-08-10T09:41:09
 Ilog-Hilabangan,Non-Flood Watch,False,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -154,7 +154,7 @@ Ilog-Hilabangan,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Ilog-Hilabangan,Non-Flood Watch,False,river_basin,2026-08-17,2026-08-17T07:32:49
 Ilog-Hilabangan,Non-Flood Watch,False,river_basin,2026-08-18,2026-08-18T07:16:34
 Ilog-Hilabangan,Non-Flood Watch,False,river_basin,2026-08-19,2026-08-19T07:20:29
-Ilog-Hilabangan,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T01:58:31
+Ilog-Hilabangan,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T07:23:12
 Jalaur,Non-Flood Watch,False,river_basin,2026-08-09,2026-08-09T12:47:37
 Jalaur,Non-Flood Watch,False,river_basin,2026-08-10,2026-08-10T09:41:09
 Jalaur,Non-Flood Watch,False,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -166,7 +166,7 @@ Jalaur,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Jalaur,Non-Flood Watch,False,river_basin,2026-08-17,2026-08-17T07:32:49
 Jalaur,Non-Flood Watch,False,river_basin,2026-08-18,2026-08-18T07:16:34
 Jalaur,Non-Flood Watch,False,river_basin,2026-08-19,2026-08-19T07:20:29
-Jalaur,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T01:58:31
+Jalaur,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T07:23:12
 Magat Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-09,2026-08-09T12:47:37
 Magat Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-10,2026-08-10T09:41:09
 Magat Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-11,2026-08-11T07:45:54
@@ -178,7 +178,7 @@ Magat Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-16,2026-08-16T07:09:
 Magat Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-17,2026-08-17T07:32:49
 Magat Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-18,2026-08-18T07:16:34
 Magat Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-19,2026-08-19T07:20:29
-Magat Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-20,2026-08-20T01:58:31
+Magat Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-20,2026-08-20T07:23:12
 Mindanao,Non-Flood Watch,False,river_basin,2026-08-09,2026-08-09T12:47:37
 Mindanao,Non-Flood Watch,False,river_basin,2026-08-10,2026-08-10T09:41:09
 Mindanao,Non-Flood Watch,False,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -190,7 +190,7 @@ Mindanao,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Mindanao,Non-Flood Watch,False,river_basin,2026-08-17,2026-08-17T07:32:49
 Mindanao,Non-Flood Watch,False,river_basin,2026-08-18,2026-08-18T07:16:34
 Mindanao,Non-Flood Watch,False,river_basin,2026-08-19,2026-08-19T07:20:29
-Mindanao,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T01:58:31
+Mindanao,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T07:23:12
 NCR/Pasig Marikina Laguna de Bay,Flood Watch,True,river_basin,2026-08-09,2026-08-09T12:47:37
 NCR/Pasig Marikina Laguna de Bay,Flood Watch,True,river_basin,2026-08-10,2026-08-10T09:41:09
 NCR/Pasig Marikina Laguna de Bay,Flood Watch,True,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -202,7 +202,7 @@ NCR/Pasig Marikina Laguna de Bay,Non-Flood Watch,False,river_basin,2026-08-16,20
 NCR/Pasig Marikina Laguna de Bay,Flood Watch,True,river_basin,2026-08-17,2026-08-17T07:32:49
 NCR/Pasig Marikina Laguna de Bay,Flood Watch,True,river_basin,2026-08-18,2026-08-18T07:16:34
 NCR/Pasig Marikina Laguna de Bay,Flood Watch,True,river_basin,2026-08-19,2026-08-19T07:20:29
-NCR/Pasig Marikina Laguna de Bay,Flood Watch,True,river_basin,2026-08-20,2026-08-20T01:58:31
+NCR/Pasig Marikina Laguna de Bay,Flood Watch,True,river_basin,2026-08-20,2026-08-20T07:23:12
 Pampanga,Flood Watch,True,river_basin,2026-08-09,2026-08-09T12:47:37
 Pampanga,Flood Watch,True,river_basin,2026-08-10,2026-08-10T09:41:09
 Pampanga,Flood Watch,True,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -214,7 +214,7 @@ Pampanga,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Pampanga,Flood Watch,True,river_basin,2026-08-17,2026-08-17T07:32:49
 Pampanga,Flood Watch,True,river_basin,2026-08-18,2026-08-18T07:16:34
 Pampanga,Flood Watch,True,river_basin,2026-08-19,2026-08-19T07:20:29
-Pampanga,Flood Watch,True,river_basin,2026-08-20,2026-08-20T01:58:31
+Pampanga,Flood Watch,True,river_basin,2026-08-20,2026-08-20T07:23:12
 Panay,Non-Flood Watch,False,river_basin,2026-08-09,2026-08-09T12:47:37
 Panay,Non-Flood Watch,False,river_basin,2026-08-10,2026-08-10T09:41:09
 Panay,Non-Flood Watch,False,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -226,7 +226,7 @@ Panay,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Panay,Non-Flood Watch,False,river_basin,2026-08-17,2026-08-17T07:32:49
 Panay,Non-Flood Watch,False,river_basin,2026-08-18,2026-08-18T07:16:34
 Panay,Non-Flood Watch,False,river_basin,2026-08-19,2026-08-19T07:20:29
-Panay,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T01:58:31
+Panay,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T07:23:12
 Pantabangan Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-09,2026-08-09T12:47:37
 Pantabangan Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-10,2026-08-10T09:41:09
 Pantabangan Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-11,2026-08-11T07:45:54
@@ -238,7 +238,7 @@ Pantabangan Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-16,2026-08-16T
 Pantabangan Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-17,2026-08-17T07:32:49
 Pantabangan Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-18,2026-08-18T07:16:34
 Pantabangan Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-19,2026-08-19T07:20:29
-Pantabangan Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-20,2026-08-20T01:58:31
+Pantabangan Sub-basin,Non-Flood Watch,False,dam_sub_basin,2026-08-20,2026-08-20T07:23:12
 Tagoloan,Non-Flood Watch,False,river_basin,2026-08-09,2026-08-09T12:47:37
 Tagoloan,Non-Flood Watch,False,river_basin,2026-08-10,2026-08-10T09:41:09
 Tagoloan,Non-Flood Watch,False,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -250,7 +250,7 @@ Tagoloan,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Tagoloan,Non-Flood Watch,False,river_basin,2026-08-17,2026-08-17T07:32:49
 Tagoloan,Non-Flood Watch,False,river_basin,2026-08-18,2026-08-18T07:16:34
 Tagoloan,Non-Flood Watch,False,river_basin,2026-08-19,2026-08-19T07:20:29
-Tagoloan,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T01:58:31
+Tagoloan,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T07:23:12
 Tagum-Libuganon,Non-Flood Watch,False,river_basin,2026-08-09,2026-08-09T12:47:37
 Tagum-Libuganon,Non-Flood Watch,False,river_basin,2026-08-10,2026-08-10T09:41:09
 Tagum-Libuganon,Non-Flood Watch,False,river_basin,2026-08-11,2026-08-11T07:45:54
@@ -262,4 +262,4 @@ Tagum-Libuganon,Non-Flood Watch,False,river_basin,2026-08-16,2026-08-16T07:09:28
 Tagum-Libuganon,Non-Flood Watch,False,river_basin,2026-08-17,2026-08-17T07:32:49
 Tagum-Libuganon,Non-Flood Watch,False,river_basin,2026-08-18,2026-08-18T07:16:34
 Tagum-Libuganon,Non-Flood Watch,False,river_basin,2026-08-19,2026-08-19T07:20:29
-Tagum-Libuganon,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T01:58:31
+Tagum-Libuganon,Non-Flood Watch,False,river_basin,2026-08-20,2026-08-20T07:23:12
