@@ -1,0 +1,1332 @@
+<!doctype html>
+<html lang="en" data-view="plain">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>APAW: A Dam Forecaster That Keeps Score</title>
+<meta name="description" content="Case study: an online forecaster for nine Luzon dams that saves PAGASA readings before they vanish, learns from every new one, and publishes its live score against a naive guess. Not an official warning.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23103B4F'/%3E%3Cpath d='M4 21h24M4 25h24' stroke='%236FB3C9' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M6 16h20' stroke='%23CDE4EC' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M10 10h12' stroke='%23E8B44A' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<!-- case-study.html is built from case-study.template.html by web/build_case_study.py. -->
+<style>
+  /* Self-hosted (SIL OFL, fonts/OFL.txt): no request to Google Fonts. */
+  @font-face { font-family: "Schibsted Grotesk"; font-weight: 400; font-display: swap;
+    src: url("fonts/schibsted-grotesk-latin-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Schibsted Grotesk"; font-weight: 500; font-display: swap;
+    src: url("fonts/schibsted-grotesk-latin-500-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Newsreader"; font-style: italic; font-weight: 400; font-display: swap;
+    src: url("fonts/newsreader-latin-400-italic.woff2") format("woff2"); }
+  @font-face { font-family: "Schibsted Grotesk"; font-weight: 600; font-display: swap;
+    src: url("fonts/schibsted-grotesk-latin-600-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Sora"; font-weight: 700; font-display: swap;
+    src: url("fonts/sora-latin-700-normal.woff2") format("woff2"); } /* logo only, SIL OFL */
+  @font-face { font-family: "Schibsted Grotesk"; font-weight: 700; font-display: swap;
+    src: url("fonts/schibsted-grotesk-latin-700-normal.woff2") format("woff2"); }
+  /* APAW: stone neutrals plus one project colour, deep reservoir teal.
+     proj = APAW's forecast, tide = the naive guess it is scored against.
+     Nothing else in the chrome gets a colour. */
+  :root {
+    color-scheme: light;
+    --paper: #f5f5f4; --card: #fafaf9; --sunk: #e7e5e4;
+    --ink: #1c1917; --ink-2: #57534e; --ink-3: #6b645f;
+    --rule: #d6d3d1; --rule-2: #a8a29e;
+    --proj: #00587c; --tide: #808080; --switch: #000000;
+    --ash: #00587c; --good: #000000; --track: #ececec;
+    --clay-w: #dbeaf0; --tide-w: #ececec; --sw-w: #e5e5e5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+    --paper: #000000; --card: #141414; --sunk: #1c1c1c;
+    --ink: #ffffff; --ink-2: #c8c8c8; --ink-3: #8f8f8f;
+    --rule: #262626; --rule-2: #3a3a3a;
+    --proj: #5fd0e0; --tide: #8a8a8a; --switch: #ffffff;
+    --ash: #5fd0e0; --good: #ffffff; --track: #222222;
+    --clay-w: #0c3440; --tide-w: #262626; --sw-w: #262626;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #000000; --card: #141414; --sunk: #1c1c1c;
+    --ink: #ffffff; --ink-2: #c8c8c8; --ink-3: #8f8f8f;
+    --rule: #262626; --rule-2: #3a3a3a;
+    --proj: #5fd0e0; --tide: #8a8a8a; --switch: #ffffff;
+    --ash: #5fd0e0; --good: #ffffff; --track: #222222;
+    --clay-w: #0c3440; --tide-w: #262626; --sw-w: #262626;
+  }
+
+  :root {
+    --sans: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--sans); font-size: 16.5px; line-height: 1.66;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 800px; margin: 0 auto; padding: 0 26px; }
+  @media (max-width: 560px) { .wrap { padding: 0 17px; } }
+
+  a { color: var(--switch); text-underline-offset: 2px; }
+  a:focus-visible, button:focus-visible, [contenteditable]:focus-visible {
+    outline: 2px solid var(--switch); outline-offset: 2px; border-radius: 3px;
+  }
+
+  /* ---------------- sticky bar ---------------- */
+  .bar {
+    position: sticky; top: 0; z-index: 40;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .bar .wrap { display: flex; align-items: center; gap: 12px; height: 54px; }
+  .brand {
+    font-weight: 800; letter-spacing: -.02em; margin-right: auto;
+    font-size: 15.5px;
+  }
+  .brand span { color: var(--switch); }
+  .seg {
+    display: inline-flex; border: 1px solid var(--rule-2); border-radius: 999px;
+    overflow: hidden; background: var(--card);
+  }
+  .seg button {
+    font: inherit; font-size: 12.5px; font-weight: 600;
+    padding: 5px 12px; border: 0; background: transparent; color: var(--ink-3);
+    cursor: pointer; white-space: nowrap;
+  }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .iconbtn {
+    font: inherit; width: 32px; height: 32px; border-radius: 999px;
+    border: 1px solid var(--rule-2); background: var(--card); color: var(--ink-2);
+    cursor: pointer; line-height: 1;
+  }
+  @media (max-width: 480px) { .seg button { padding: 5px 9px; font-size: 11.5px; } }
+
+  /* ---------------- type ---------------- */
+  h1 {
+    font-size: clamp(30px, 6.2vw, 47px); line-height: 1.06;
+    letter-spacing: -.033em; font-weight: 830; margin: 0 0 14px;
+  }
+  h2 {
+    font-size: clamp(21px, 3.4vw, 27px); line-height: 1.2;
+    letter-spacing: -.022em; font-weight: 780; margin: 0 0 16px;
+  }
+  h3 {
+    font-size: 16px; font-weight: 730; letter-spacing: -.008em;
+    margin: 32px 0 8px;
+  }
+  p { margin: 0 0 16px; }
+  .kicker {
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: .15em; text-transform: uppercase; color: var(--ink-3);
+    margin: 0 0 8px;
+  }
+  .lede { font-size: 18.5px; color: var(--ink-2); }
+  section { padding: 64px 0; border-top: 1px solid var(--rule); }
+  @media (max-width: 620px) { section { padding: 48px 0; } }
+  section:first-of-type { border-top: 0; }
+  .muted { color: var(--ink-3); }
+  .small { font-size: 14px; }
+  b, strong { font-weight: 700; }
+
+  /* ---------------- hero ---------------- */
+  .hero { padding: 64px 0 48px; }
+
+  /* ---------------- the scorer widget ---------------- */
+  .scorer {
+    background: var(--card); border: 2px solid var(--ink);
+    border-radius: 13px; overflow: hidden;
+  }
+  .scorer-head {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 12px 16px; border-bottom: 1px solid var(--rule);
+    background: var(--sunk);
+  }
+  .scorer-head .kicker { margin: 0; }
+  .chips { margin-left: 0; display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    font: inherit; font-size: 11.5px; font-weight: 600; cursor: pointer;
+    padding: 3px 9px; border-radius: 999px;
+    border: 1px solid var(--rule-2); background: var(--card); color: var(--ink-2);
+  }
+  .chip:hover { border-color: var(--switch); color: var(--switch); }
+  #text {
+    padding: 17px 16px; font-size: 17px; line-height: 1.85; min-height: 92px;
+    outline: none;
+  }
+  #text w { border-radius: 3px; padding: 1px 2px; }
+  #text w.tl { background: var(--clay-w); color: var(--proj); font-weight: 600; }
+  #text w.en { background: var(--tide-w); color: var(--ink-2); font-weight: 600; }
+  .readout {
+    border-top: 1px solid var(--rule); padding: 13px 16px;
+    display: grid; grid-template-columns: 1fr 1fr auto; gap: 14px; align-items: center;
+  }
+  @media (max-width: 560px) {
+    .readout { grid-template-columns: 1fr 1fr; }
+    .readout .verdict { grid-column: 1 / -1; }
+  }
+  .meter .lbl {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .06em;
+    display: flex; justify-content: space-between; margin-bottom: 5px;
+  }
+  .meter .lbl b { font-weight: 700; }
+  .bar-track { height: 7px; background: var(--track); border-radius: 999px; overflow: hidden; }
+  .bar-fill { height: 100%; width: 0; border-radius: 999px; transition: width .18s ease; }
+  .m-tl .bar-fill { background: var(--proj); } .m-tl .lbl { color: var(--proj); }
+  .m-en .bar-fill { background: var(--tide); } .m-en .lbl { color: var(--tide); }
+  .verdict {
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    padding: 7px 13px; border-radius: 999px; text-align: center; white-space: nowrap;
+  }
+  .verdict.keep { background: var(--sw-w); color: var(--switch); }
+  .verdict.drop { background: var(--sunk); color: var(--ink-3); }
+
+  /* ---------------- blocks ---------------- */
+  .card {
+    background: var(--card); border: 1px solid var(--rule-2);
+    border-radius: 12px; padding: 16px 24px; margin: 24px 0;
+  }
+  .note {
+    border-left: 3px solid var(--switch); background: var(--card);
+    padding: 16px 24px; margin: 24px 0; border-radius: 0 8px 8px 0;
+  }
+  .note.warn { border-left-color: var(--ash); }
+  .note .kicker { color: var(--switch); }
+  .note.warn .kicker { color: var(--ash); }
+
+  table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--rule); }
+  th { font-family: var(--mono); font-size: 11px; letter-spacing: .08em;
+       text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+  td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .tw { overflow-x: auto; }
+
+  code {
+    font-family: var(--mono); font-size: .88em;
+    background: var(--sunk); padding: 1.5px 5px; border-radius: 4px;
+  }
+  pre {
+    font-family: var(--mono); font-size: 13px; line-height: 1.6;
+    background: var(--card); border: 1px solid var(--rule-2);
+    border-radius: 10px; padding: 14px 16px; overflow-x: auto;
+  }
+  pre code { background: none; padding: 0; }
+
+  blockquote {
+    margin: 0 0 16px; padding: 12px 16px; border-radius: 0 8px 8px 0;
+    background: var(--card); border-left: 3px solid var(--rule-2);
+    font-size: 15.5px;
+  }
+  blockquote.clay { border-left-color: var(--proj); }
+  blockquote.tide { border-left-color: var(--tide); }
+  blockquote.fail { border-left-color: var(--ash); color: var(--ink-2); }
+  .gen-tag {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-3);
+    display: block; margin-bottom: 6px;
+  }
+  .gen-tag em { color: var(--proj); font-style: normal; }
+  .gen-tag i  { color: var(--tide); font-style: normal; }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 620px) { .two { grid-template-columns: 1fr; } }
+
+  .big {
+    font-family: var(--mono); font-size: clamp(30px, 7vw, 42px);
+    font-weight: 700; letter-spacing: -.03em; line-height: 1;
+  }
+  .big.clay { color: var(--proj); } .big.tide { color: var(--tide); }
+
+  figure { margin: 32px 0; }
+  figcaption { font-size: 13px; color: var(--ink-3); margin-top: 9px; }
+  svg { display: block; max-width: 100%; height: auto; }
+  .legend {
+    display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px;
+    font-family: var(--mono); color: var(--ink-3); margin-bottom: 8px;
+  }
+  .legend i { width: 11px; height: 3px; border-radius: 2px; display: inline-block;
+              vertical-align: middle; margin-right: 6px; }
+
+  ul { margin: 0 0 15px; padding-left: 21px; }
+  li { margin-bottom: 7px; }
+
+  footer { padding: 40px 0 64px; border-top: 1px solid var(--rule); color: var(--ink-3); font-size: 14px; }
+
+  /* ---------------- plain / technical ---------------- */
+  [data-mode] { display: none; }
+  html[data-view="plain"] [data-mode="plain"],
+  html[data-view="expert"] [data-mode="expert"] { display: block; }
+  html[data-view="plain"] span[data-mode="plain"],
+  html[data-view="expert"] span[data-mode="expert"] { display: inline; }
+  html[data-view="plain"] li[data-mode="plain"],
+  html[data-view="expert"] li[data-mode="expert"] { display: list-item; }
+
+
+  .kicker {
+    font-family: var(--sans); font-size: 13.5px; font-weight: 600;
+    letter-spacing: 0; text-transform: none; color: var(--proj);
+  }
+
+
+  .headline-num {
+    display: flex; align-items: baseline; gap: 22px; flex-wrap: wrap;
+    margin: 24px 0 32px;
+  }
+  .headline-num .x {
+    font-size: clamp(60px, 9vw, 104px); font-weight: 700; line-height: .85;
+    letter-spacing: -.05em; color: var(--proj);
+  }
+  .headline-num p { font-size: 18px; color: var(--ink-2); max-width: 30ch; margin: 0; }
+  .pair { gap: 22px; margin-top: 8px; }
+  .pair > div { display: flex; flex-direction: column; }
+  .pair blockquote { flex: 1; }
+
+  /* Failures: hanging numerals, because it is a counted list. */
+  #broke { counter-reset: fail; }
+  #broke h3 { counter-increment: fail; position: relative; margin-top: 38px; }
+  #broke h3::before {
+    content: counter(fail); position: absolute; right: calc(100% + 18px); top: -.28em;
+    font-size: 40px; font-weight: 700; line-height: 1; color: var(--ash); opacity: .85;
+  }
+  @media (max-width: 960px) {
+    #broke h3::before { position: static; display: block; font-size: 30px; margin-bottom: 4px; }
+  }
+
+
+  /* ---------------- brand mark, stats, about, footer ---------------- */
+  .mark { font-family: "Sora", var(--sans); font-weight: 700; font-size: 17px;
+          color: var(--ink); text-decoration: none; letter-spacing: -.01em; }
+  .mark span { color: var(--proj); } /* the dot takes each project's colour */
+  .brand { margin-right: auto; font-weight: 700; }
+  .brand .sep { color: var(--rule-2); margin: 0 6px 0 2px; font-weight: 400; }
+
+
+
+  .site-foot { border-top: 2px solid var(--ink); padding: 48px 0 32px; margin-top: 0; }
+  .site-foot a { color: var(--ink); }
+  .site-foot code { background: transparent; color: inherit; padding: 0; }
+  .foot-grid { max-width: 1040px; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px; }
+  .foot-grid nav a { display: block; margin: 0 0 8px; text-decoration: none; opacity: .85; }
+  .foot-grid nav a:hover { opacity: 1; text-decoration: underline; }
+  .foot-h { font-weight: 700; margin-bottom: 12px; }
+  .foot-base { max-width: 1040px; margin-top: 36px; padding-top: 18px; opacity: .6;
+               border-top: 1px solid var(--rule); }
+  @media (max-width: 700px) { .foot-grid { grid-template-columns: 1fr 1fr; }
+                              .foot-grid > div:first-child { grid-column: 1 / -1; } }
+
+  /* ---------------- console layout (after LiquidAI's LFM2.5 demo) ---------------- */
+  :root { --grid: rgba(28, 25, 23, .045); --serif: "Newsreader", Georgia, serif; }
+  :root[data-theme="dark"] { --grid: rgba(255, 255, 255, .04); }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) { --grid: rgba(255, 255, 255, .04); }
+  }
+  body {
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px),
+                      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  h1, h2, .display { font-weight: 500; letter-spacing: -.05em; }
+  h2 { font-size: clamp(28px, 4vw, 40px); line-height: 1.02; }
+  .it { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: 0; }
+  .caps { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+          color: var(--ink-3); margin: 0; }
+  .kicker { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+            color: var(--ink-3); display: flex; align-items: center; gap: 12px; }
+  .kicker::before { content: ""; width: 32px; height: 1px; background: var(--ink); }
+
+  .hero { padding: 32px 24px 64px; }
+  .console { max-width: 1360px; margin: 0 auto; border: 1px solid var(--ink); border-radius: 16px;
+             background: color-mix(in srgb, var(--paper) 88%, transparent); overflow: hidden; }
+  .console-head { display: flex; align-items: center; gap: 12px; padding: 20px 32px;
+                  border-bottom: 1px solid var(--rule); }
+  .step-no { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 999px;
+             border: 1px solid var(--rule-2); font-size: 11px; font-weight: 700; color: var(--ink-3); }
+  .status { margin-left: auto; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+  .status i { width: 6px; height: 6px; border-radius: 99px; background: var(--ink); }
+  .console-body { display: grid; grid-template-columns: minmax(300px, 1fr) 2fr; }
+  .console-side { padding: 32px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; }
+  .console-main { padding: 32px; min-width: 0; }
+  .lined { display: flex; align-items: center; gap: 12px; color: var(--ink); }
+  .lined::before { content: ""; width: 32px; height: 1px; background: var(--ink); }
+  .console h1 { font-size: clamp(56px, 7vw, 80px); line-height: .86; margin: 32px 0 12px; }
+  .spec { font-size: 24px; margin: 0 0 24px; }
+  .side-lede { font-size: 17px; color: var(--ink-2); margin-bottom: 24px; }
+  .specs { margin: 0 0 32px; border-top: 1px solid var(--rule); }
+  .specs div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0;
+               border-bottom: 1px solid var(--rule); font-size: 14px; }
+  .specs dt { color: var(--ink-3); }
+  .specs dd { margin: 0; font-weight: 700; text-align: right; }
+  .side-cta { margin-top: auto; }
+  .pill { display: inline-flex; align-items: center; min-height: 48px; padding: 0 24px;
+          border-radius: 999px; background: var(--ink); color: var(--paper); font-weight: 700;
+          letter-spacing: -.01em; text-decoration: none; }
+  .pill:hover { opacity: .88; }
+  .side-cta p { margin: 12px 0 0; }
+  .display { font-size: clamp(28px, 3.4vw, 44px); line-height: 1; margin: 12px 0 32px; max-width: 18ch; }
+  .display .it { letter-spacing: -.01em; }
+  .steps { list-style: none; padding: 0; margin: 0 0 32px; display: grid; grid-template-columns: repeat(3, 1fr);
+           border: 1px solid var(--rule-2); border-radius: 12px; overflow: hidden; }
+  .steps li { margin: 0; padding: 20px; font-size: 14px; color: var(--ink-3); line-height: 1.55; position: relative; }
+  .steps li + li { border-left: 1px solid var(--rule-2); }
+  .steps .it { position: absolute; top: 16px; right: 20px; color: var(--ink-3); }
+  .steps b { display: block; margin: 24px 0 6px; font-size: 17px; color: var(--ink); }
+  .try { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+  .try .it { text-transform: none; font-size: 16px; }
+  .console .scorer { border: 1px solid var(--rule-2); border-radius: 12px; }
+
+  .closing { border-top: 0; padding: 96px 24px 64px; max-width: 1360px; margin: 0 auto; }
+  .display.closing-line { font-size: clamp(36px, 4.8vw, 60px); max-width: 16ch; margin: 0; }
+  .foot-strip { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+                max-width: 1360px; margin: 40px auto 0; padding: 20px 24px 0; border-top: 1px solid var(--rule); }
+  .rail a span { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 15px; }
+
+  @media (max-width: 900px) {
+    .console-body { grid-template-columns: 1fr; }
+    .console-side { border-right: 0; border-bottom: 1px solid var(--rule); }
+    .steps { grid-template-columns: 1fr; }
+    .steps li + li { border-left: 0; border-top: 1px solid var(--rule-2); }
+    .console-head, .console-side, .console-main { padding-left: 20px; padding-right: 20px; }
+    .hero { padding: 16px 12px 48px; }
+  }
+  .bar .wrap { max-width: 1408px; padding: 0 57px; }
+  @media (max-width: 900px) { .bar .wrap { padding: 0 32px; } }
+  .foot-grid, .foot-base { max-width: 1408px; padding-left: 57px; padding-right: 57px; }
+  .foot-strip { max-width: 1408px; padding-left: 57px; padding-right: 57px; }
+  @media (max-width: 900px) { .foot-grid, .foot-base, .foot-strip { padding-left: 20px; padding-right: 20px; } }
+  @media (max-width: 560px) {
+    .bar .brand { display: none; }
+    .bar .wrap { padding: 0 12px; gap: 8px; }
+    .console-head .status { display: none; }
+  }
+
+  /* ---------------- every section is a console panel ---------------- */
+  .panel-sec { padding: 0 0 24px; border-top: 0; }
+  .panel-sec .console-side { display: block; }
+  .side-stick { position: sticky; top: 88px; }
+  .panel-sec .console-side h2 { font-size: clamp(28px, 3vw, 40px); line-height: 1.02; margin: 0; }
+  .console-main > p, .console-main > ul, .console-main > h3, .console-main > .note,
+  .console-main > blockquote { max-width: 68ch; }
+  .console-main > h3:first-child, .console-main > p:first-child { margin-top: 0; }
+
+  /* cards: notes, quotes, tables and code share the steps' bordered look */
+  .note, blockquote, .card, pre, .tw, .doc-fig img {
+    background: var(--card); border: 1px solid var(--rule-2); border-radius: 12px; }
+  .note { border-left: 1px solid var(--rule-2); padding: 20px 24px; }
+  blockquote { border-left: 3px solid var(--rule-2); border-radius: 0 12px 12px 0; }
+  blockquote.clay { border-left-color: var(--proj); }
+  blockquote.tide { border-left-color: var(--tide); }
+  .tw { padding: 4px 16px; }
+  .tw table { margin: 0; }
+  .doc-fig img { display: block; width: 100%; height: auto; padding: 12px; }
+
+  #broke h3::before { position: static; display: block; margin-bottom: 4px; font-size: 32px;
+    font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--ink-3); }
+
+  @media (max-width: 900px) {
+    .panel-sec { padding: 0 12px 16px; }
+    .side-stick { position: static; }
+  }
+
+  /* ---------------- two columns: contents rail | panels ---------------- */
+  .page-grid { max-width: 1408px; margin: 0 auto; padding: 0 24px; }
+  @media (min-width: 1100px) {
+    .page-grid { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 32px; }
+    .page-grid > .rail {
+      display: block; position: sticky; top: 88px; align-self: start; left: auto; width: auto;
+      opacity: 1 !important; pointer-events: auto !important; font-size: 13px; line-height: 1.35;
+    }
+    .page-grid > .rail a { display: flex; gap: 12px; padding: 8px 0 8px 14px; color: var(--ink-3);
+      text-decoration: none; border-left: 1px solid var(--rule); }
+    .page-grid > .rail a:hover { color: var(--ink); }
+    .page-grid > .rail a[aria-current="true"] { color: var(--ink); font-weight: 600;
+      border-left: 2px solid var(--ink); padding-left: 13px; }
+    .page-grid > .rail a span { min-width: 1.6em; }
+  }
+  .rail-h { margin: 0 0 12px 14px; }
+  @media (max-width: 1099px) { .page-grid > .rail { display: none; } .page-grid { padding: 0 12px; } }
+
+  /* background: fine dots instead of grid lines */
+  body { background-image: radial-gradient(var(--dot) 1px, transparent 1.2px); background-size: 22px 22px; }
+  :root { --dot: rgba(28, 25, 23, .13); }
+  :root[data-theme="dark"] { --dot: rgba(255, 255, 255, .09); }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) { --dot: rgba(255, 255, 255, .09); } }
+
+  /* inside each section card: title band on top, content gets the full width */
+  .panel-sec .console-body { display: block; }
+  .panel-sec .console-side { border-right: 0; border-bottom: 1px solid var(--rule); padding: 40px 48px 32px; }
+  .panel-sec .side-stick { position: static; }
+  .panel-sec .console-side h2 { font-size: clamp(26px, 2.8vw, 38px); max-width: 28ch; }
+  .panel-sec .console-main { padding: 40px 48px 48px; }
+  @media (max-width: 900px) {
+    .panel-sec .console-side { padding: 24px 20px; }
+    .panel-sec .console-main { padding: 24px 20px 32px; }
+  }
+
+
+  /* hero: open on the page, no frame. Oversized title, statement beside the story, then the live filter. */
+  .hero { max-width: 1408px; margin: 0 auto; padding: 48px 24px 64px; }
+  .hero .console { max-width: none; }
+  .hero .console-body { padding: 48px 48px 48px; }
+  .hero .console-head { display: none; }
+  .hero .console-body { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: 64px;
+    align-items: start;
+    grid-template-areas: "kick spec" "title title" "show lede" "steps steps" "try try" "tool specs" "tool cta"; }
+  .hero .console-side, .hero .console-main { display: contents; }
+  .hero .console-main > .caps:first-child { display: none; }
+  .hero .hero-kick { grid-area: kick; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; }
+  .hero .spec { grid-area: spec; justify-self: end; margin: 0; }
+  .hero h1 { grid-area: title; font-size: clamp(72px, 10vw, 144px); line-height: .82; letter-spacing: -.07em;
+    margin: 24px 0 40px; }
+  .hero .display { grid-area: show; margin: 0; max-width: 16ch; }
+  .hero .side-lede { grid-area: lede; max-width: none; margin: 8px 0 0; }
+  .hero .steps { grid-area: steps; margin: 48px 0; border: 0; border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--rule); border-radius: 0; background: none; }
+  .hero .steps li { padding: 20px 24px 24px 0; }
+  .hero .steps li + li { border-left: 0; padding-left: 24px; }
+  .hero .steps .it { position: static; font-size: 28px; color: var(--proj); }
+  .hero .steps b { margin: 8px 0 4px; }
+  .hero .try { grid-area: try; }
+  .hero .scorer { grid-area: tool; }
+  .hero .specs { grid-area: specs; margin: 0 0 32px; }
+  .hero .side-cta { grid-area: cta; margin: 0; }
+  @media (max-width: 900px) {
+    .hero { padding: 16px 12px 48px; }
+    .hero .console-body { padding: 24px 20px 32px; }
+    .hero .console-body { grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "kick" "spec" "title" "show" "lede" "steps" "specs" "cta" "try" "tool"; }
+    .hero .spec { justify-self: start; margin-top: 8px; }
+    .hero .side-lede { margin-top: 24px; }
+    .hero .steps li, .hero .steps li + li { padding: 16px 0; }
+    .hero .side-cta { margin-bottom: 40px; }
+  }
+
+  /* footer: a plain full-width band, not a card */
+  .closing { max-width: 1408px; margin: 0 auto; padding: 96px 24px 64px; }
+  .site-foot { background: var(--paper); border-top: 1px solid var(--ink); padding: 48px 0 24px; }
+  .site-foot .foot-grid, .site-foot .foot-strip, .site-foot .foot-base {
+    max-width: 1408px; margin-left: auto; margin-right: auto; padding-left: 24px; padding-right: 24px; }
+  .site-foot .foot-strip { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--rule); }
+  .site-foot .foot-base { margin-top: 16px; padding-top: 0; }
+  @media (max-width: 900px) {
+    .closing { padding: 64px 16px 48px; }
+    .site-foot .foot-grid, .site-foot .foot-strip, .site-foot .foot-base { padding-left: 16px; padding-right: 16px; }
+  }
+
+  /* hero, compact: fits one laptop screen. Title beside the headline, story beside the live filter. */
+  .hero { padding: 16px 24px 48px; }
+  .hero .console-body { padding: 32px 40px 0; column-gap: 56px; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-rows: none;
+    grid-template-areas: "kick spec" "title show" "lede try" "lede tool" "specs tool" "cta tool" "steps steps"; }
+  .hero .spec { font-size: 18px; }
+  .hero h1 { font-size: clamp(60px, 7vw, 104px); margin: 8px 0 16px; align-self: end; }
+  .hero .display { align-self: end; margin: 0 0 16px; max-width: 22ch; }
+  .hero .side-lede { font-size: 15.5px; line-height: 1.6; margin: 0 0 20px; border-top: 1px solid var(--rule); padding-top: 20px; }
+  .hero .try { margin: 0 0 12px; border-top: 1px solid var(--rule); padding-top: 20px; }
+  .hero .specs { display: grid; grid-template-columns: 1fr 1fr; column-gap: 24px; margin: 0 0 20px; }
+  .hero .specs div { padding: 8px 0; }
+  .hero .side-cta .pill { min-height: 44px; }
+  .hero .side-cta p { margin-top: 8px; }
+  .hero .steps { margin: 20px -40px 0; border-top: 1px solid var(--rule); border-bottom: 0; }
+  .hero .steps li { padding: 14px 24px 16px 40px; font-size: 13.5px; }
+  .hero .steps li + li { padding-left: 24px; border-left: 1px solid var(--rule); }
+  .hero .steps .it { font-size: 18px; margin-right: 8px; }
+  .hero .steps b { display: inline; margin: 0 0 0 0; font-size: 15px; }
+  .hero .steps b::after { content: ""; display: block; height: 4px; }
+  @media (max-width: 900px) {
+    .hero { padding: 16px 12px 40px; }
+    .hero .console-body { padding: 24px 20px 0; grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "kick" "spec" "title" "show" "lede" "specs" "cta" "try" "tool" "steps"; }
+    .hero .side-cta { margin-bottom: 28px; }
+    .hero .steps { margin: 28px -20px 0; }
+    .hero .steps li, .hero .steps li + li { padding: 14px 20px; border-left: 0; }
+  }
+
+  /* border glow, ported from the portfolio's BorderGlow: the edge nearest the pointer lights up.
+     --edge (0-100) = how close the pointer is to the edge; --angle = which side it is on. */
+  .console { position: relative; isolation: isolate; overflow: visible; --edge: 0; --angle: 45deg; }
+  .console::before, .console > .edge-light {
+    content: ""; position: absolute; border-radius: inherit; pointer-events: none;
+    opacity: calc((var(--edge) - 30) / 70); transition: opacity .25s ease-out; }
+  .console:not(:hover)::before, .console:not(:hover) > .edge-light { opacity: 0; transition: opacity .75s ease-in-out; }
+  /* the lit border: a clay mesh, cut to a 2px ring, then to a wedge facing the pointer */
+  .console::before { inset: -1px; padding: 2px; z-index: 2;
+    background: radial-gradient(at 80% 55%, #5fd0e0, transparent 50%), radial-gradient(at 8% 6%, #9fe3ee, transparent 50%),
+                radial-gradient(at 51% 4%, #00587c, transparent 50%), var(--proj);
+    mask: conic-gradient(from var(--angle), #000 25%, transparent 40%, transparent 60%, #000 75%),
+          linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: intersect, exclude; }
+  /* the soft halo outside the border, same wedge */
+  .console > .edge-light { inset: -40px; z-index: 1;
+    mask: conic-gradient(from var(--angle), #000 2.5%, transparent 10%, transparent 90%, #000 97.5%); }
+  .console > .edge-light::before { content: ""; position: absolute; inset: 40px; border-radius: inherit;
+    box-shadow: 0 0 2px 0 rgb(0 88 124 / 60%), 0 0 8px 0 rgb(0 88 124 / 35%),
+                0 0 24px 2px rgb(0 88 124 / 20%), 0 0 48px 4px rgb(0 88 124 / 10%); }
+  @media (hover: none) { .console::before, .console > .edge-light { display: none; } }
+
+  /* the card halos reach 40px past the cards; never let that widen the page */
+  html, body { overflow-x: clip; }
+  /* interactive dot field (ported from the portfolio's ParticleField) replaces the CSS dots */
+  body { background-image: none; }
+  .dot-field { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+
+  .fig-open { display: block; }
+  @media (max-width: 700px) { .fig-open::after { content: "Tap to open full size"; display: block;
+    font-size: 12.5px; color: var(--ink-3); margin-top: 6px; } }
+  @media (max-width: 560px) { .hero .specs { grid-template-columns: 1fr; } }
+
+  /* softer glow: lights up only close to the edge, narrower wedge, fainter halo */
+  .console::before, .console > .edge-light { opacity: calc((var(--edge) - 55) / 45 * .7); }
+  .console::before { padding: 1.5px;
+    mask: conic-gradient(from var(--angle), #000 12%, transparent 26%, transparent 74%, #000 88%),
+          linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: intersect, exclude; }
+  .console > .edge-light { inset: -24px;
+    mask: conic-gradient(from var(--angle), #000 1.5%, transparent 7%, transparent 93%, #000 98.5%); }
+  .console > .edge-light::before { inset: 24px;
+    box-shadow: 0 0 2px 0 rgb(0 88 124 / 35%), 0 0 8px 0 rgb(0 88 124 / 18%), 0 0 18px 1px rgb(0 88 124 / 8%); }
+
+  /* footer author block: photo beside name, one line about him, one link */
+  .author { display: flex; gap: 16px; align-items: flex-start; max-width: 420px; }
+  .author img { width: 56px; height: 56px; border-radius: 999px; object-fit: cover; flex: none;
+                border: 1px solid var(--rule-2); }
+  .author p { margin: 0; }
+  .author-name { font-weight: 700; font-size: 16px; color: var(--ink); }
+  .author-role { font-size: 14px; color: var(--ink-3); margin: 4px 0 10px !important; line-height: 1.5; }
+  .site-foot a.author-link { font-size: 14px; font-weight: 600; color: var(--ink);
+    text-decoration: underline; text-decoration-color: var(--proj); text-underline-offset: 4px; }
+  .site-foot a.author-link:hover { text-decoration-thickness: 2px; }
+  /* APAW additions, same card language */
+  .dam-chart { padding: 12px 16px 4px; }
+  .readout .stat .lbl { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--ink-3); }
+  .readout .stat b { display: block; font-family: var(--mono); font-size: 17px; }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .warnline { font-size: 13px; color: var(--ink-2); margin: 10px 0 0; }
+</style>
+<script>
+  // Before paint: saved theme and reading level, so neither flashes.
+  (function () {
+    try {
+      var t = localStorage.getItem("apaw-cs-theme"); if (t) document.documentElement.dataset.theme = t;
+      var v = localStorage.getItem("apaw-cs-view"); if (v) document.documentElement.dataset.view = v;
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<canvas class="dot-field" aria-hidden="true"></canvas>
+
+<div class="bar">
+  <div class="wrap">
+    <a class="mark" href="https://johnandrei.vercel.app" aria-label="zeref. portfolio home">zeref<span>.</span></a>
+    <div class="brand"><span class="sep">/</span> APAW</div>
+    <div class="seg" role="group" aria-label="Reading level">
+      <button type="button" id="m-plain" aria-pressed="true">Simple</button>
+      <button type="button" id="m-expert" aria-pressed="false">Technical</button>
+    </div>
+    <button type="button" class="iconbtn" id="theme" aria-label="Switch colour theme">&#9680;</button>
+  </div>
+</div>
+
+<header class="hero">
+<div class="console">
+  <div class="console-head">
+    <span class="step-no">01</span><span class="caps">Case study</span>
+  </div>
+  <div class="console-body">
+    <div class="console-side">
+      <div class="hero-kick">
+        <p class="caps lined">Dam level forecaster</p>
+      </div>
+      <h1>APAW</h1>
+      <p class="spec it">9 Luzon dams &middot; 1 to 7 days ahead &middot; twice a day</p>
+  <p class="lede side-lede" data-mode="plain">
+    PAGASA posts how full the big Luzon dams are each morning, then deletes it. APAW
+    saves every reading, forecasts each dam a week ahead, and learns from each new one.
+    Every forecast is checked against the simplest guess: tomorrow looks like today.
+  </p>
+  <p class="lede side-lede" data-mode="expert">
+    Online nowcaster for &Delta;RWL 1 to 7 days out: one pooled River Mondrian forest,
+    <code>learn_one</code> per observation, catchment rain from archived forecasts.
+    Scored prequentially against persistence, ranked only past 200 forecasts.
+  </p>
+
+      <dl class="specs">
+        <div><dt>Ranges ahead, live</dt><dd>7 of 7</dd></div>
+        <div><dt>Live forecasts checked</dt><dd>3,024</dd></div>
+        <div><dt>Dam readings saved</dt><dd>1,994</dd></div>
+        <div><dt>Running cost</dt><dd>&#8369;0</dd></div>
+      </dl>
+      <div class="side-cta">
+        <a class="pill" href="./">Open the live dashboard</a>
+        <p class="small muted">Not an official warning. Not for evacuation decisions.</p>
+      </div>
+    </div>
+    <div class="console-main">
+      <p class="caps">What this project shows</p>
+      <p class="display">A forecaster that keeps score in public. <span class="it">Live, it beats the naive guess by 6 to 22%.</span></p>
+      <ol class="steps">
+        <li><span class="it">01</span><b>Collect</b>Save PAGASA's dam readings twice a day, before they vanish.</li>
+        <li><span class="it">02</span><b>Forecast</b>Predict each dam 1 to 7 days ahead from rain forecasts.</li>
+        <li><span class="it">03</span><b>Score</b>Check every forecast when its day arrives, then learn from it.</li>
+      </ol>
+      <p class="caps try">Forecasts from 2026-09-29 <span class="it">pick a dam</span></p>
+  <div class="scorer">
+    <div class="scorer-head">
+      <div class="chips" id="dam-chips"></div>
+    </div>
+    <div class="dam-chart" id="dam-chart"></div>
+    <div class="readout">
+      <div class="stat"><span class="lbl">LEVEL NOW</span><b id="r-now"></b></div>
+      <div class="stat"><span class="lbl">IN 7 DAYS</span><b id="r-7"></b></div>
+      <div class="verdict drop" id="r-risk"></div>
+    </div>
+  </div>
+    </div>
+  </div>
+</div>
+</header>
+
+<div class="page-grid">
+<nav class="rail" aria-label="Chapters"><p class="caps rail-h">Contents</p></nav>
+<main>
+
+<section class="panel-sec" id="result">
+<div class="console">
+  <div class="console-head"><span class="step-no">01</span><span class="caps">The result</span></div>
+  <div class="console-body">
+    <div class="console-side"><div class="side-stick">
+    <h2 data-mode="plain">Ahead of the naive guess at every range, by less than the backtest said</h2>
+    <h2 data-mode="expert">Live MAE below persistence at 7/7 horizons, 7 of them past the 200-forecast gate</h2>
+    </div></div>
+    <div class="console-main">
+
+  <div class="headline-num">
+    <span class="x">7/7</span>
+    <p>forecast ranges where APAW's real, made-in-advance forecasts beat "tomorrow looks like today".</p>
+  </div>
+
+  <p data-mode="plain">
+    Every forecast is saved the moment it is made, with the exact inputs it saw, and
+    only checked once its day actually arrives. Nothing is ever re-scored with
+    hindsight. The comparison is always the same dumb guess: the level will not move.
+  </p>
+  <p data-mode="expert">
+    Each forecast is written to <code>eval/predictions.csv</code> at issue time and
+    scored into <code>eval/error_log.csv</code> once the target date is observed. The
+    baseline is persistence (&Delta;RWL = 0); drift is scored too and is never the
+    stronger baseline here.
+  </p>
+
+  <figure>
+    <div class="legend">
+      <span><i style="background:var(--proj)"></i>APAW</span>
+      <span><i style="background:var(--tide)"></i>Naive guess (no change)</span>
+    </div>
+    <div id="chart-live"></div>
+    <figcaption>Average error in metres per forecast range, live forecasts only. Each dot is one range; lower is better. n under each range is how many forecasts were checked.</figcaption>
+  </figure>
+
+  <p>
+    The gap is smallest one day ahead: <b>0.548 m</b> against <b>0.585 m</b>,
+    about 6% better, on 459 forecasts. One day out, a reservoir mostly
+    moves because operators open or close the gates, and nothing APAW can see tells it
+    when that will happen.
+  </p>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="panel-sec" id="premise">
+<div class="console">
+  <div class="console-head"><span class="step-no">02</span><span class="caps">The data that did not exist</span></div>
+  <div class="console-body">
+    <div class="console-side"><div class="side-stick">
+    <h2 data-mode="plain">PAGASA shows today and yesterday, then the reading is gone</h2>
+    <h2 data-mode="expert">No archive upstream, so the collector is the dataset</h2>
+    </div></div>
+    <div class="console-main">
+  <p data-mode="plain">
+    There was no history to download. PAGASA's flood page lists each dam's level for
+    today and yesterday only. So the first thing APAW does, twice a day on GitHub's free
+    servers, is save that table. A missed run is a reading lost for good, which is why
+    saving happens before any forecasting, and the save runs even if the model crashes.
+  </p>
+  <p data-mode="expert">
+    The <code>/flood</code> page is the only source and keeps no archive. A GitHub
+    Actions cron runs at 08:30 and 14:30 PHT; the scrape step runs before the model and
+    the commit step runs <code>if: always()</code>, so a modelling bug can never cost the
+    one input that cannot be re-fetched. A sparse seed came from Wayback snapshots
+    (166 dates over five years).
+  </p>
+  <div class="two">
+    <div class="card"><div class="big clay" style="color:var(--proj)">1,994</div>
+      <p class="small muted" style="margin:6px 0 0">dam readings saved so far, across 9 dams</p></div>
+    <div class="card"><div class="big clay" style="color:var(--proj)">2&times;</div>
+      <p class="small muted" style="margin:6px 0 0">collector runs a day, so one failure does not lose a day</p></div>
+  </div>
+  <div class="note">
+    <p class="kicker">Nine dams, not eight</p>
+    <p style="margin:0">
+      San Roque sits in the table beside the seven usual ones, and Magat appears as both
+      "Magat" and "Magat Dam" across the history. Every name goes through one function on
+      the way in, or the same dam becomes two short series.
+    </p>
+  </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="panel-sec" id="learn">
+<div class="console">
+  <div class="console-head"><span class="step-no">03</span><span class="caps">How it learns</span></div>
+  <div class="console-body">
+    <div class="console-side"><div class="side-stick">
+    <h2 data-mode="plain">Predict, wait, check, learn, in that order, forever</h2>
+    <h2 data-mode="expert">Prequential evaluation: predict_one, then learn_one, in strict date order</h2>
+    </div></div>
+    <div class="console-main">
+  <p data-mode="plain">
+    Most models are trained once and frozen. APAW never stops training. When a day's
+    real level arrives, it first checks the forecasts it made for that day, and only then
+    learns from the answer. It can never peek.
+  </p>
+  <p data-mode="expert">
+    The model state is never refit from scratch. On a cache miss it is rebuilt by
+    replaying the committed history through the same predict-then-learn pass, so the
+    rebuilt state equals the live one. Features at issue time use observations up to
+    <i>t</i> and the rain forecast archived at the lead time that would have been
+    available; tests pin that no backward window reads <i>t</i>+1.
+  </p>
+  <figure>
+    <div class="legend">
+      <span><i style="background:var(--proj)"></i>APAW</span>
+      <span><i style="background:var(--tide)"></i>Naive guess</span>
+    </div>
+    <div id="chart-curve"></div>
+    <figcaption>Running average error in metres (20-day window) of the live forecasts, by the day they were checked.</figcaption>
+  </figure>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="panel-sec" id="search">
+<div class="console">
+  <div class="console-head"><span class="step-no">04</span><span class="caps">Choosing the model</span></div>
+  <div class="console-body">
+    <div class="console-side"><div class="side-stick">
+    <h2 data-mode="plain">3,776 designs tried, with the last months locked away</h2>
+    <h2 data-mode="expert">Ranked on dev only; the holdout after 2025-11-01 was scored once</h2>
+    </div></div>
+    <div class="console-main">
+  <p data-mode="plain">
+    Try enough designs against the same test and one will look great by luck. So the
+    calendar was cut in two before the search started. Designs were only compared on
+    the older dates, and the single winner met the newer dates exactly once.
+  </p>
+  <p data-mode="expert">
+    <code>eval/experiment.py</code> ran three sweeps (800 + 1,824 + 1,152 = 3,776
+    configurations) over River estimators, feature sets, pooling, target scaling,
+    shrinkage and baseline blending. The ranking key is the mean ratio of model MAE to
+    the best baseline across horizons, on dates before 2025-11-01 only.
+  </p>
+  <div class="tw"><table>
+    <thead><tr><th>&nbsp;</th><th class="num">Older dates (ranked on)</th><th class="num">Newer dates (seen once)</th></tr></thead>
+    <tbody><tr><td>Winner: error as a share of the naive guess's</td><td class="num">0.615</td><td class="num">0.617</td></tr></tbody>
+  </table></div>
+  <p>
+    It barely moved on dates it had never been allowed to see. That small gap, not the
+    win itself, is the evidence that the search found something real.
+  </p>
+  <h3>The finding was about data, not algorithms</h3>
+  <p>
+    The first design was one small model per dam per range: 63 models with 13 to 94
+    rows each. Pooling them into one model, with the dam and the range as inputs,
+    gave it roughly 1,750 rows to learn from. That change did more than any choice of
+    algorithm. Each dam's changes are rescaled first, because some dams move twelve
+    times as much as others and would otherwise drown them out.
+  </p>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="panel-sec" id="gap">
+<div class="console">
+  <div class="console-head"><span class="step-no">05</span><span class="caps">Backtest versus live</span></div>
+  <div class="console-body">
+    <div class="console-side"><div class="side-stick">
+    <h2 data-mode="plain">The practice test flattered it</h2>
+    <h2 data-mode="expert">Backtest margins of 11 to 47% shrink to 6 to 22% live</h2>
+    </div></div>
+    <div class="console-main">
+  <p data-mode="plain">
+    Before going live, APAW was tested by replaying the history it could recover. That
+    replay said it beat the naive guess by up to 47%. The real, day-by-day
+    forecasts since then beat it by 6 to 22%. Still ahead
+    everywhere, by less. For weeks the README kept showing only the replay, because
+    that file only updates when the replay re-runs. It now shows both.
+  </p>
+  <p data-mode="expert">
+    <code>eval/metrics.json</code> comes from <code>backtest.py</code>, which only runs on
+    a model-state cache miss, so the published scoreboard sat still while the live
+    ledger grew. The live period is also a different era: wet-season September, with
+    errors several times larger than the recovered history. Both tables are now
+    rendered on every run, labelled.
+  </p>
+  <figure>
+    <div class="legend">
+      <span><i style="background:var(--tide)"></i>Backtest (replayed history)</span>
+      <span><i style="background:var(--proj)"></i>Live forecasts</span>
+    </div>
+    <div id="chart-gap"></div>
+    <figcaption>How much lower APAW's error is than the naive guess's, per forecast range, in percent. Longer bar is better.</figcaption>
+  </figure>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="panel-sec" id="attempt">
+<div class="console">
+  <div class="console-head"><span class="step-no">06</span><span class="caps">An attempt that did not ship</span></div>
+  <div class="console-body">
+    <div class="console-side"><div class="side-stick">
+    <h2 data-mode="plain">Three fixes for the weak one-day forecast, none good enough</h2>
+    <h2 data-mode="expert">Pre-registered, 5 seeds each; best was 2.3% against a 3% bar</h2>
+    </div></div>
+    <div class="console-main">
+  <p data-mode="plain">
+    Before running anything, I wrote down what would count as a win: the one-day error
+    had to drop at least 3%, on at least 4 of 5 repeat runs. Then I tried more trees,
+    inputs describing how the level had trended over the last 3 and 7 days, and both.
+    All three helped a little. None cleared the bar, so none shipped.
+  </p>
+  <p data-mode="expert">
+    Rule fixed in <code>docs/ATTEMPT_NEXT.md</code> before the run: dev +1d MAE mean over
+    seeds 1 to 5 at least 3% below the incumbent's, and lower on at least 4 of 5 seeds;
+    only then open the holdout once. Candidates: 100 trees, 3 and 7 day level-trend
+    features, both. None qualified, so the holdout stayed closed.
+  </p>
+  <figure>
+    <div id="chart-seeds"></div>
+    <figcaption>One-day error in metres on the older dates, for each design over 5 repeat runs. The line spans the lowest to highest run; the dot is the average.</figcaption>
+  </figure>
+  <div class="note">
+    <p class="kicker">It also found that the published score was a lucky run</p>
+    <p style="margin:0">
+      The search used one random seed throughout. Re-run on five others, the same
+      winning model scores 0.618 to 0.628, and the published
+      0.615 sits at the lucky end of that range. The seed moves the score about as
+      much as the ideas did.
+    </p>
+  </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="panel-sec" id="limits">
+<div class="console">
+  <div class="console-head"><span class="step-no">07</span><span class="caps">What it cannot do</span></div>
+  <div class="console-body">
+    <div class="console-side"><div class="side-stick">
+    <h2 data-mode="plain">It is not a warning system</h2>
+    <h2 data-mode="expert">Known ceilings, and why the disclaimer is permanent</h2>
+    </div></div>
+    <div class="console-main">
+  <div class="note warn">
+    <p class="kicker">Not an official warning</p>
+    <p style="margin:0">
+      APAW is an educational portfolio project. Do not use it to decide whether to
+      evacuate. PAGASA and your local disaster risk reduction office decide what counts
+      as a warning and when water is released.
+    </p>
+  </div>
+  <ul>
+    <li><b>It cannot see the gates.</b> Release decisions are made by people, and they
+      are what moves a dam most in a single day.</li>
+    <li data-mode="plain"><b>Rain is estimated around the dam, not across its whole
+      watershed.</b> A few sample points stand in for the real catchment shape.</li>
+    <li data-mode="expert"><b>Catchment rain is a sampled cross of points</b>, a stand-in
+      for real watershed polygons, marked as a deliberate shortcut in the code.</li>
+    <li><b>Older rows use rain that really fell, not rain that was forecast.</b> The
+      forecast archive only starts in 2025, so those rows are scored separately.</li>
+    <li><b>It says when it is guessing.</b> Forecasts beyond anything in its history are
+      flagged on the dashboard, not clipped, because hiding extremes would gut it
+      exactly when it matters.</li>
+  </ul>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="panel-sec" id="broke">
+<div class="console">
+  <div class="console-head"><span class="step-no">08</span><span class="caps">What broke</span></div>
+  <div class="console-body">
+    <div class="console-side"><div class="side-stick">
+    <h2 data-mode="plain">Bugs that looked like good results</h2>
+    <h2 data-mode="expert">Failures that produced plausible output instead of an error</h2>
+    </div></div>
+    <div class="console-main">
+  <h3>A number that leaked tomorrow</h3>
+  <p>
+    PAGASA prints one "24-hour change" per snapshot and shows it on both the today and
+    yesterday rows. On the yesterday row it is the change into tomorrow. Taken at face
+    value, a naive guess "predicted" the next day to within 5 cm. It is now recomputed
+    from APAW's own series, and a test keeps it that way.
+  </p>
+  <h3>"Non-Flood Watch" contains "Flood Watch"</h3>
+  <p>
+    A simple text match turned every quiet river basin into an alarm. The negative is
+    now tested first.
+  </p>
+  <h3>Zero meant "not published"</h3>
+  <p>
+    Some dams have no official full mark or target level, and PAGASA writes those as
+    0.00. Left as zero, every spill rule fired. They are now treated as missing.
+  </p>
+  <h3>One missing number blanked the dashboard</h3>
+  <p>
+    Python's JSON writer outputs a bare <code>NaN</code> for a missing value, which is
+    not valid JSON, so the browser refused the whole file. Values are cleaned before
+    writing now.
+  </p>
+  <h3>A theme switch that silently did nothing</h3>
+  <p>
+    When a visitor's system flipped between light and dark, the dashboard called code
+    for a map that had been removed, crashed, and left every chart in the old colours.
+    No visible error, just wrong colours. Found while building this page.
+  </p>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="panel-sec" id="repro">
+<div class="console">
+  <div class="console-head"><span class="step-no">09</span><span class="caps">Reproduce it</span></div>
+  <div class="console-body">
+    <div class="console-side"><div class="side-stick">
+    <h2>Run it yourself</h2>
+    </div></div>
+    <div class="console-main">
+  <p>
+    No accounts or keys. The data sources are public, the forecasts come from
+    Open-Meteo's free API, and the whole loop runs on GitHub Actions' free minutes.
+  </p>
+  <pre><code>git clone https://github.com/Zeref538/apaw &amp;&amp; cd apaw
+uv sync --group dev
+uv run python -m pytest -q
+
+uv run python data/fetch_dams.py      # today's readings
+uv run python data/build_table.py     # join readings and rain
+uv run python eval/backtest.py        # replay history, rebuild the model
+uv run python pipeline/run.py         # one full tick of the loop
+uv run python web/build_case_study.py # rebuild this page from the results</code></pre>
+  <p class="small muted">
+    <b>Stack:</b> Python, River (online learning), pandas, GitHub Actions twice daily,
+    GitHub Pages. The collector last ran on 2026-09-29.
+  </p>
+    </div>
+  </div>
+</div>
+</section>
+
+</main>
+</div>
+
+<section class="closing">
+  <p class="display closing-line">Built from a page that forgets. <span class="it">Scored in public, losses included.</span></p>
+</section>
+
+<footer class="site-foot">
+  <div class="wrap foot-grid">
+    <div>
+      <div class="author">
+        <img src="img/john.jpg" alt="" width="56" height="56">
+        <div>
+          <p class="author-name">John Andrei Martinez</p>
+          <p class="author-role">Builds and measures machine learning systems. This page is one of his case studies.</p>
+          <a class="author-link" href="https://johnandrei.vercel.app">Visit my portfolio</a>
+        </div>
+      </div>
+    </div>
+    <nav aria-label="More">
+      <p class="foot-h">This project</p>
+      <a href="./">Live dashboard</a>
+      <a href="https://github.com/Zeref538/apaw">Source code</a>
+      <a href="https://www.pagasa.dost.gov.ph/flood">PAGASA flood page</a>
+    </nav>
+    <nav aria-label="Elsewhere">
+      <p class="foot-h">More work</p>
+      <a href="https://johnandrei.vercel.app">Portfolio</a>
+      <a href="https://github.com/Zeref538/hangin">Hangin', the sister forecaster</a>
+      <a href="https://github.com/Zeref538">GitHub</a>
+    </nav>
+  </div>
+  <div class="foot-strip caps">
+    <span>APAW case study</span><span>River &middot; GitHub Actions &middot; &#8369;0</span><span>Not an official warning</span>
+  </div>
+  <div class="wrap foot-base small">
+    Dam levels: PAGASA. Rain: Open-Meteo (CC BY 4.0). Fonts: Schibsted Grotesk, Newsreader and Sora, SIL OFL.
+  </div>
+</footer>
+
+<script>
+const D = {"live":{"1":{"n":459,"model":0.548,"persistence":0.585,"gain":6.4},"2":{"n":450,"model":0.721,"persistence":0.915,"gain":21.2},"3":{"n":441,"model":0.934,"persistence":1.192,"gain":21.7},"4":{"n":432,"model":1.181,"persistence":1.449,"gain":18.5},"5":{"n":423,"model":1.339,"persistence":1.68,"gain":20.3},"6":{"n":414,"model":1.56,"persistence":1.905,"gain":18.1},"7":{"n":405,"model":1.74,"persistence":2.132,"gain":18.4}},"backtest":{"1":{"n":853,"model":0.323,"persistence":0.362,"gain":10.9},"2":{"n":215,"model":0.536,"persistence":0.858,"gain":37.5},"3":{"n":187,"model":0.546,"persistence":1.012,"gain":46.0},"4":{"n":161,"model":0.518,"persistence":0.984,"gain":47.3},"5":{"n":117,"model":0.435,"persistence":0.807,"gain":46.1},"6":{"n":117,"model":0.539,"persistence":0.981,"gain":45.1},"7":{"n":144,"model":0.528,"persistence":0.902,"gain":41.4}},"search":{"sweeps":[800,1824,1152],"total":3776,"split":"2025-11-01","dev":0.615,"holdout":0.617,"hold_h":{"1":{"n":198,"mae":0.2813,"best_baseline":0.3815,"ratio":0.7374,"wins":true},"2":{"n":54,"mae":0.5542,"best_baseline":1.0096,"ratio":0.5489,"wins":true},"3":{"n":45,"mae":0.572,"best_baseline":0.6528,"ratio":0.8763,"wins":true},"4":{"n":27,"mae":0.2978,"best_baseline":0.6015,"ratio":0.4951,"wins":true},"5":{"n":18,"mae":0.3862,"best_baseline":0.7583,"ratio":0.5093,"wins":true},"6":{"n":27,"mae":0.5143,"best_baseline":1.0,"ratio":0.5143,"wins":true},"7":{"n":27,"mae":0.7349,"best_baseline":1.1478,"ratio":0.6403,"wins":true}}},"attempt":{"h1":{"incumbent":{"mean":0.3051,"min":0.3009,"max":0.3094,"per_seed":[0.3009,0.3094,0.3064,0.304,0.305]},"A_amf100_noagg":{"mean":0.3014,"min":0.2978,"max":0.3045,"per_seed":[0.2983,0.3018,0.3045,0.2978,0.3044]},"B_trend":{"mean":0.3022,"min":0.2986,"max":0.3068,"per_seed":[0.2986,0.2994,0.3025,0.3068,0.3037]},"C_both":{"mean":0.298,"min":0.2944,"max":0.3007,"per_seed":[0.2967,0.2944,0.2994,0.3007,0.299]}},"rule":{"A_amf100_noagg":{"pct_vs_incumbent":-1.24,"seeds_better":5,"qualifies":false},"B_trend":{"pct_vs_incumbent":-0.96,"seeds_better":4,"qualifies":false},"C_both":{"pct_vs_incumbent":-2.33,"seeds_better":5,"qualifies":false}},"ratio":{"incumbent":{"mean":0.6227,"min":0.6177,"max":0.6282,"per_seed":[0.618,0.6227,0.6282,0.6268,0.6177]},"A_amf100_noagg":{"mean":0.6169,"min":0.6141,"max":0.6195,"per_seed":[0.6141,0.6171,0.6189,0.6195,0.6147]},"B_trend":{"mean":0.6211,"min":0.6174,"max":0.6289,"per_seed":[0.6178,0.6225,0.6289,0.6174,0.6191]},"C_both":{"mean":0.615,"min":0.611,"max":0.6211,"per_seed":[0.6128,0.6158,0.6211,0.611,0.6142]}},"chosen":null,"seeds":[1,2,3,4,5]},"dams":[{"dam":"Ambuklao","risk":"Watch","rwl":751.3,"nhwl":752.0,"rule":745.0,"obs":[["2026-08-31",750.7],["2026-09-01",750.26],["2026-09-02",750.22],["2026-09-03",751.59],["2026-09-04",751.29],["2026-09-05",751.06],["2026-09-06",751.33],["2026-09-07",751.41],["2026-09-08",750.96],["2026-09-09",750.98],["2026-09-10",751.94],["2026-09-11",751.19],["2026-09-12",751.4],["2026-09-13",751.53],["2026-09-14",751.48],["2026-09-15",751.59],["2026-09-16",751.89],["2026-09-17",751.25],["2026-09-18",751.13],["2026-09-19",751.64],["2026-09-20",751.38],["2026-09-21",751.03],["2026-09-22",751.03],["2026-09-23",751.55],["2026-09-24",751.74],["2026-09-25",751.45],["2026-09-26",751.31],["2026-09-27",751.17],["2026-09-28",750.8],["2026-09-29",751.3]],"fc":[["2026-09-30",751.428],["2026-10-01",751.319],["2026-10-02",751.394],["2026-10-03",751.375],["2026-10-04",751.274],["2026-10-05",751.318],["2026-10-06",751.434]]},{"dam":"Angat","risk":"Watch","rwl":208.77,"nhwl":210.0,"rule":185.72,"obs":[["2026-08-31",200.2],["2026-09-01",201.33],["2026-09-02",201.91],["2026-09-03",203.0],["2026-09-04",204.17],["2026-09-05",205.08],["2026-09-06",205.81],["2026-09-07",206.3],["2026-09-08",206.74],["2026-09-09",207.01],["2026-09-10",207.21],["2026-09-11",207.62],["2026-09-12",207.83],["2026-09-13",208.0],["2026-09-14",208.13],["2026-09-15",208.16],["2026-09-16",208.11],["2026-09-17",208.02],["2026-09-18",208.1],["2026-09-19",208.2],["2026-09-20",208.29],["2026-09-21",208.23],["2026-09-22",208.46],["2026-09-23",208.6],["2026-09-24",208.79],["2026-09-25",208.82],["2026-09-26",208.87],["2026-09-27",208.88],["2026-09-28",208.84],["2026-09-29",208.77]],"fc":[["2026-09-30",208.814],["2026-10-01",208.861],["2026-10-02",208.89],["2026-10-03",208.965],["2026-10-04",209.142],["2026-10-05",209.293],["2026-10-06",209.38]]},{"dam":"Binga","risk":"Watch","rwl":574.6,"nhwl":575.0,"rule":565.0,"obs":[["2026-08-31",574.37],["2026-09-01",573.37],["2026-09-02",573.16],["2026-09-03",574.08],["2026-09-04",573.95],["2026-09-05",573.75],["2026-09-06",573.4],["2026-09-07",573.9],["2026-09-08",574.41],["2026-09-09",574.53],["2026-09-10",574.38],["2026-09-11",573.66],["2026-09-12",574.06],["2026-09-13",574.42],["2026-09-14",574.85],["2026-09-15",574.4],["2026-09-16",574.21],["2026-09-17",574.12],["2026-09-18",573.81],["2026-09-19",573.97],["2026-09-20",575.0],["2026-09-21",574.61],["2026-09-22",574.48],["2026-09-23",574.24],["2026-09-24",574.25],["2026-09-25",574.12],["2026-09-26",574.59],["2026-09-27",574.13],["2026-09-28",574.52],["2026-09-29",574.6]],"fc":[["2026-09-30",574.709],["2026-10-01",574.631],["2026-10-02",574.606],["2026-10-03",574.664],["2026-10-04",574.705],["2026-10-05",574.705],["2026-10-06",574.736]]},{"dam":"Caliraya","risk":"Not rated","rwl":286.35,"nhwl":null,"rule":null,"obs":[["2026-08-31",287.05],["2026-09-01",287.15],["2026-09-02",286.89],["2026-09-03",286.58],["2026-09-04",286.51],["2026-09-05",286.5],["2026-09-06",286.79],["2026-09-07",287.11],["2026-09-08",287.0],["2026-09-09",286.75],["2026-09-10",286.61],["2026-09-11",286.5],["2026-09-12",286.3],["2026-09-13",286.44],["2026-09-14",286.7],["2026-09-15",286.5],["2026-09-16",286.44],["2026-09-17",286.6],["2026-09-18",286.57],["2026-09-19",286.41],["2026-09-20",286.17],["2026-09-21",286.22],["2026-09-22",286.18],["2026-09-23",286.34],["2026-09-24",286.32],["2026-09-25",286.27],["2026-09-26",286.22],["2026-09-27",286.29],["2026-09-28",286.57],["2026-09-29",286.35]],"fc":[["2026-09-30",286.342],["2026-10-01",286.39],["2026-10-02",286.415],["2026-10-03",286.389],["2026-10-04",286.404],["2026-10-05",286.272],["2026-10-06",286.343]]},{"dam":"Ipo","risk":"Normal","rwl":100.07,"nhwl":101.1,"rule":null,"obs":[["2026-08-31",100.93],["2026-09-01",100.93],["2026-09-02",100.54],["2026-09-03",100.84],["2026-09-04",100.37],["2026-09-05",100.38],["2026-09-06",100.4],["2026-09-07",99.81],["2026-09-08",99.99],["2026-09-09",100.23],["2026-09-10",99.95],["2026-09-11",100.58],["2026-09-12",100.38],["2026-09-13",100.12],["2026-09-14",100.08],["2026-09-15",100.2],["2026-09-16",100.16],["2026-09-17",99.91],["2026-09-18",100.12],["2026-09-19",100.49],["2026-09-20",100.5],["2026-09-21",100.53],["2026-09-22",100.34],["2026-09-23",100.46],["2026-09-24",100.23],["2026-09-25",100.33],["2026-09-26",100.27],["2026-09-27",100.16],["2026-09-28",99.88],["2026-09-29",100.07]],"fc":[["2026-09-30",100.064],["2026-10-01",100.025],["2026-10-02",99.98],["2026-10-03",100.067],["2026-10-04",100.121],["2026-10-05",100.147],["2026-10-06",100.114]]},{"dam":"La Mesa","risk":"Normal","rwl":79.07,"nhwl":80.15,"rule":null,"obs":[["2026-08-31",79.88],["2026-09-01",79.61],["2026-09-02",79.27],["2026-09-03",78.96],["2026-09-04",78.66],["2026-09-05",78.5],["2026-09-06",78.32],["2026-09-07",78.13],["2026-09-08",78.18],["2026-09-09",78.36],["2026-09-10",78.27],["2026-09-11",78.17],["2026-09-12",78.04],["2026-09-13",78.03],["2026-09-14",78.03],["2026-09-15",78.04],["2026-09-16",78.1],["2026-09-17",78.15],["2026-09-18",78.31],["2026-09-19",100.49],["2026-09-20",78.58],["2026-09-21",78.55],["2026-09-22",78.53],["2026-09-23",78.64],["2026-09-24",78.73],["2026-09-25",78.77],["2026-09-26",78.89],["2026-09-27",78.91],["2026-09-28",78.95],["2026-09-29",79.07]],"fc":[["2026-09-30",79.374],["2026-10-01",78.864],["2026-10-02",78.932],["2026-10-03",78.833],["2026-10-04",79.197],["2026-10-05",78.973],["2026-10-06",78.771]]},{"dam":"Magat","risk":"Spill Watch","rwl":189.89,"nhwl":190.0,"rule":185.88,"obs":[["2026-08-31",178.42],["2026-09-01",179.53],["2026-09-02",180.05],["2026-09-03",180.42],["2026-09-04",180.74],["2026-09-05",181.06],["2026-09-06",181.24],["2026-09-07",181.32],["2026-09-08",181.34],["2026-09-09",181.83],["2026-09-10",184.28],["2026-09-11",185.9],["2026-09-12",186.64],["2026-09-13",188.32],["2026-09-14",188.94],["2026-09-15",188.98],["2026-09-16",189.12],["2026-09-17",189.01],["2026-09-18",189.18],["2026-09-19",189.16],["2026-09-20",189.06],["2026-09-21",189.06],["2026-09-22",189.01],["2026-09-23",189.07],["2026-09-24",189.05],["2026-09-25",189.29],["2026-09-26",189.41],["2026-09-27",189.54],["2026-09-28",189.66],["2026-09-29",189.89]],"fc":[["2026-09-30",190.125],["2026-10-01",190.198],["2026-10-02",190.218],["2026-10-03",190.345],["2026-10-04",190.494],["2026-10-05",190.579],["2026-10-06",191.017]]},{"dam":"Pantabangan","risk":"Normal","rwl":207.51,"nhwl":218.5,"rule":215.97,"obs":[["2026-08-31",194.01],["2026-09-01",194.55],["2026-09-02",195.03],["2026-09-03",195.53],["2026-09-04",196.2],["2026-09-05",196.75],["2026-09-06",197.25],["2026-09-07",197.61],["2026-09-08",198.17],["2026-09-09",198.86],["2026-09-10",200.12],["2026-09-11",201.27],["2026-09-12",201.95],["2026-09-13",202.41],["2026-09-14",202.76],["2026-09-15",203.05],["2026-09-16",203.34],["2026-09-17",203.81],["2026-09-18",204.3],["2026-09-19",204.66],["2026-09-20",205.0],["2026-09-21",205.28],["2026-09-22",205.63],["2026-09-23",205.99],["2026-09-24",206.28],["2026-09-25",206.62],["2026-09-26",206.9],["2026-09-27",207.14],["2026-09-28",207.33],["2026-09-29",207.51]],"fc":[["2026-09-30",207.675],["2026-10-01",207.857],["2026-10-02",207.876],["2026-10-03",208.014],["2026-10-04",208.261],["2026-10-05",208.304],["2026-10-06",208.52]]},{"dam":"San Roque","risk":"Spill Watch","rwl":281.85,"nhwl":280.0,"rule":268.07,"obs":[["2026-08-31",279.85],["2026-09-01",283.27],["2026-09-02",284.75],["2026-09-03",284.54],["2026-09-04",285.15],["2026-09-05",283.97],["2026-09-06",282.08],["2026-09-07",279.46],["2026-09-08",277.92],["2026-09-09",277.44],["2026-09-10",277.99],["2026-09-11",279.12],["2026-09-12",279.36],["2026-09-13",279.48],["2026-09-14",279.37],["2026-09-15",280.57],["2026-09-16",281.33],["2026-09-17",282.26],["2026-09-18",282.3],["2026-09-19",282.01],["2026-09-20",281.69],["2026-09-21",281.72],["2026-09-22",281.6],["2026-09-23",281.71],["2026-09-24",282.06],["2026-09-25",282.46],["2026-09-26",282.61],["2026-09-27",282.08],["2026-09-28",281.68],["2026-09-29",281.85]],"fc":[["2026-09-30",282.171],["2026-10-01",282.163],["2026-10-02",281.977],["2026-10-03",282.216],["2026-10-04",281.996],["2026-10-05",282.151],["2026-10-06",281.621]]}],"curve":[["2026-08-10",null,null],["2026-08-11",null,null],["2026-08-12",2.306,3.1651],["2026-08-13",2.2885,3.0727],["2026-08-14",2.223,2.9814],["2026-08-15",2.178,2.9144],["2026-08-16",2.1446,2.858],["2026-08-17",2.0392,2.7538],["2026-08-18",1.9431,2.6521],["2026-08-19",1.8726,2.5679],["2026-08-20",1.8111,2.496],["2026-08-21",1.7549,2.4274],["2026-08-22",1.6963,2.3501],["2026-08-23",1.6321,2.2644],["2026-08-24",1.5699,2.1799],["2026-08-25",1.5084,2.0968],["2026-08-26",1.4519,2.0181],["2026-08-27",1.4043,1.9416],["2026-08-28",1.3665,1.8757],["2026-08-29",1.3443,1.8284],["2026-08-30",1.2814,1.7206],["2026-08-31",1.235,1.6525],["2026-09-01",1.2015,1.6228],["2026-09-02",1.1679,1.5964],["2026-09-03",1.1382,1.5694],["2026-09-04",1.1062,1.5398],["2026-09-05",1.0682,1.497],["2026-09-06",1.06,1.4685],["2026-09-07",1.0684,1.45],["2026-09-08",1.0711,1.4351],["2026-09-09",1.0679,1.4157],["2026-09-10",1.0769,1.407],["2026-09-11",1.0925,1.4102],["2026-09-12",1.1106,1.4208],["2026-09-13",1.1296,1.4371],["2026-09-14",1.1448,1.4533],["2026-09-15",1.156,1.4684],["2026-09-16",1.1627,1.4833],["2026-09-17",1.1632,1.4897],["2026-09-18",1.1486,1.478],["2026-09-19",1.2441,1.5676],["2026-09-20",1.2305,1.5213],["2026-09-21",1.1946,1.4462],["2026-09-22",1.1595,1.3708],["2026-09-23",1.1356,1.3033],["2026-09-24",1.1209,1.2409],["2026-09-25",1.1098,1.195],["2026-09-26",1.0994,1.1599],["2026-09-27",1.0586,1.1053],["2026-09-28",1.0185,1.051],["2026-09-29",0.9839,0.9991]]};
+const NS = "http://www.w3.org/2000/svg";
+const svg = (tag, attrs) => { const el = document.createElementNS(NS, tag); for (const k in attrs) el.setAttribute(k, attrs[k]); return el; };
+const text = (s, attrs, str) => { const t = svg("text", Object.assign({ "font-family": "var(--mono)", "font-size": 11, fill: "var(--ink-3)" }, attrs)); t.textContent = str; s.appendChild(t); return t; };
+const HS = Object.keys(D.live).sort((a, b) => a - b);
+
+/* ---------- hero: today's forecast per dam ---------- */
+const WORD = { "Spill Watch": "SPILL WATCH", "Watch": "WATCH", "Normal": "NORMAL", "Not rated": "NOT RATED" };
+function damChart(d) {
+  const W = 640, H = 124, PL = 50, PR = 14, PT = 12, PB = 26;
+  const pts = d.obs.concat(d.fc);
+  const vals = pts.map(p => p[1]).concat(d.nhwl ? [d.nhwl] : []);
+  const y0 = Math.min(...vals) - 0.5, y1 = Math.max(...vals) + 0.5;
+  const X = i => PL + i / (pts.length - 1) * (W - PL - PR);
+  const Y = v => PT + (1 - (v - y0) / (y1 - y0)) * (H - PT - PB);
+  const s = svg("svg", { viewBox: `0 0 ${W} ${H}`, role: "img",
+    "aria-label": `${d.dam}: last 30 days measured and 7-day forecast` });
+  for (let i = 0; i <= 3; i++) {
+    const v = y0 + i / 3 * (y1 - y0);
+    s.appendChild(svg("line", { x1: PL, x2: W - PR, y1: Y(v), y2: Y(v), stroke: "var(--rule)" }));
+    text(s, { x: PL - 8, y: Y(v) + 4, "text-anchor": "end" }, v.toFixed(1));
+  }
+  if (d.nhwl) {
+    s.appendChild(svg("line", { x1: PL, x2: W - PR, y1: Y(d.nhwl), y2: Y(d.nhwl), stroke: "var(--ink-3)", "stroke-dasharray": "4 4" }));
+    text(s, { x: PL + 6, y: Y(d.nhwl) - 5 }, "full mark");
+  }
+  const path = (arr, off) => arr.map((p, i) => (i ? "L" : "M") + X(i + off).toFixed(1) + " " + Y(p[1]).toFixed(1)).join(" ");
+  s.appendChild(svg("path", { d: path(d.obs, 0), fill: "none", stroke: "var(--ink)", "stroke-width": 2 }));
+  const n = d.obs.length - 1;
+  s.appendChild(svg("path", { d: path([d.obs[n]].concat(d.fc), n), fill: "none", stroke: "var(--proj)", "stroke-width": 2, "stroke-dasharray": "5 4" }));
+  text(s, { x: PL, y: H - 6 }, d.obs[0][0]);
+  text(s, { x: W - PR, y: H - 6, "text-anchor": "end", fill: "var(--proj)" }, "forecast to " + d.fc[d.fc.length - 1][0]);
+  return s;
+}
+function pickDam(name) {
+  const d = D.dams.find(x => x.dam === name);
+  document.querySelectorAll("#dam-chips .chip").forEach(b => b.setAttribute("aria-pressed", b.dataset.dam === name));
+  document.getElementById("dam-chart").replaceChildren(damChart(d));
+  document.getElementById("r-now").textContent = d.rwl.toFixed(2) + " m";
+  document.getElementById("r-7").textContent = d.fc[d.fc.length - 1][1].toFixed(2) + " m";
+  document.getElementById("r-risk").textContent = WORD[d.risk] || d.risk;
+}
+(() => {
+  const box = document.getElementById("dam-chips");
+  D.dams.forEach(d => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.dataset.dam = d.dam; b.textContent = d.dam;
+    b.addEventListener("click", () => pickDam(d.dam));
+    box.appendChild(b);
+  });
+  pickDam((D.dams.find(d => d.risk === "Spill Watch") || D.dams[0]).dam);
+})();
+
+/* ---------- 01: live error per horizon ---------- */
+function liveChart() {
+  const W = 760, H = 250, PL = 50, PR = 20, PT = 16, PB = 46;
+  const max = Math.ceil(Math.max(...HS.map(h => D.live[h].persistence)) * 2) / 2;
+  const X = i => PL + (i + 0.5) / HS.length * (W - PL - PR);
+  const Y = v => PT + (1 - v / max) * (H - PT - PB);
+  const s = svg("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Live error per forecast range, APAW versus the naive guess" });
+  for (let v = 0; v <= max + 1e-9; v += 0.5) {
+    s.appendChild(svg("line", { x1: PL, x2: W - PR, y1: Y(v), y2: Y(v), stroke: "var(--rule)" }));
+    text(s, { x: PL - 8, y: Y(v) + 4, "text-anchor": "end" }, v.toFixed(1));
+  }
+  HS.forEach((h, i) => {
+    const r = D.live[h];
+    s.appendChild(svg("line", { x1: X(i), x2: X(i), y1: Y(r.model), y2: Y(r.persistence), stroke: "var(--rule-2)", "stroke-width": 2 }));
+    s.appendChild(svg("circle", { cx: X(i), cy: Y(r.persistence), r: 6, fill: "var(--tide)" }));
+    s.appendChild(svg("circle", { cx: X(i), cy: Y(r.model), r: 6, fill: "var(--proj)", stroke: "var(--card)", "stroke-width": 2 }));
+    text(s, { x: X(i) + 10, y: Y(r.model) + 4, fill: "var(--ink-2)" }, r.model.toFixed(2));
+    text(s, { x: X(i), y: H - 26, "text-anchor": "middle", fill: "var(--ink)", "font-size": 12 }, "+" + h + "d");
+    text(s, { x: X(i), y: H - 10, "text-anchor": "middle" }, "n=" + r.n);
+  });
+  document.getElementById("chart-live").appendChild(s);
+}
+
+/* ---------- 03: learning curve ---------- */
+function curveChart() {
+  const pts = D.curve.filter(p => p[1] != null && p[2] != null);
+  const W = 760, H = 240, PL = 50, PR = 14, PT = 14, PB = 30;
+  const max = Math.ceil(Math.max(...pts.map(p => Math.max(p[1], p[2]))) * 2) / 2;
+  const X = i => PL + i / (pts.length - 1) * (W - PL - PR);
+  const Y = v => PT + (1 - v / max) * (H - PT - PB);
+  const s = svg("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Running error of live forecasts over time" });
+  for (let v = 0; v <= max + 1e-9; v += max / 4) {
+    s.appendChild(svg("line", { x1: PL, x2: W - PR, y1: Y(v), y2: Y(v), stroke: "var(--rule)" }));
+    text(s, { x: PL - 8, y: Y(v) + 4, "text-anchor": "end" }, v.toFixed(1));
+  }
+  const line = (k, c, dash) => s.appendChild(svg("path", { d: pts.map((p, i) => (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(p[k]).toFixed(1)).join(" "),
+    fill: "none", stroke: c, "stroke-width": 2, "stroke-dasharray": dash || "none" }));
+  line(2, "var(--tide)", "5 4"); line(1, "var(--proj)");
+  text(s, { x: PL, y: H - 8 }, pts[0][0]);
+  text(s, { x: W - PR, y: H - 8, "text-anchor": "end" }, pts[pts.length - 1][0]);
+  document.getElementById("chart-curve").appendChild(s);
+}
+
+/* ---------- 05: backtest vs live margin ---------- */
+function gapChart() {
+  const W = 760, H = 44 * HS.length + 40, PL = 50, PR = 70, PT = 8;
+  const max = 50;
+  const X = v => PL + Math.max(v, 0) / max * (W - PL - PR);
+  const s = svg("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Percent better than the naive guess, backtest versus live, per forecast range" });
+  for (let v = 0; v <= max; v += 10) {
+    s.appendChild(svg("line", { x1: X(v), x2: X(v), y1: PT, y2: H - 28, stroke: "var(--rule)" }));
+    text(s, { x: X(v), y: H - 10, "text-anchor": "middle" }, v + "%");
+  }
+  HS.forEach((h, i) => {
+    const y = PT + i * 44;
+    text(s, { x: PL - 10, y: y + 20, "text-anchor": "end", fill: "var(--ink)", "font-size": 12 }, "+" + h + "d");
+    [["backtest", "var(--tide)", 4], ["live", "var(--proj)", 20]].forEach(([k, c, dy]) => {
+      const g = D[k][h].gain;
+      s.appendChild(svg("rect", { x: PL, y: y + dy, width: X(g) - PL, height: 14, fill: c }));
+      text(s, { x: X(g) + 6, y: y + dy + 11, fill: "var(--ink-2)" }, g.toFixed(0) + "%");
+    });
+  });
+  document.getElementById("chart-gap").appendChild(s);
+}
+
+/* ---------- 06: seed ranges ---------- */
+function seedChart() {
+  const names = { incumbent: "Shipped model", A_amf100_noagg: "100 trees", B_trend: "Trend inputs", C_both: "Both" };
+  const rows = Object.keys(names).map(k => ({ k, label: names[k], v: D.attempt.h1[k] }));
+  const all = rows.flatMap(r => r.v.per_seed);
+  const lo = Math.floor(Math.min(...all) * 200) / 200, hi = Math.ceil(Math.max(...all) * 200) / 200;
+  const W = 760, H = 44 * rows.length + 40, PL = 130, PR = 70, PT = 14;
+  const X = v => PL + (v - lo) / (hi - lo) * (W - PL - PR);
+  const s = svg("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "One-day error over five repeat runs for each design" });
+  for (let v = lo; v <= hi + 1e-9; v += 0.005) {
+    s.appendChild(svg("line", { x1: X(v), x2: X(v), y1: PT - 6, y2: H - 28, stroke: "var(--rule)" }));
+    text(s, { x: X(v), y: H - 10, "text-anchor": "middle" }, v.toFixed(3));
+  }
+  rows.forEach((r, i) => {
+    const y = PT + 8 + i * 44, c = r.k === "incumbent" ? "var(--tide)" : "var(--proj)";
+    text(s, { x: PL - 14, y: y + 4, "text-anchor": "end", fill: "var(--ink)", "font-size": 12, "font-family": "var(--sans)" }, r.label);
+    s.appendChild(svg("line", { x1: X(r.v.min), x2: X(r.v.max), y1: y, y2: y, stroke: c, "stroke-width": 3, opacity: .45 }));
+    s.appendChild(svg("circle", { cx: X(r.v.mean), cy: y, r: 6, fill: c }));
+    text(s, { x: X(r.v.max) + 10, y: y + 4, fill: "var(--ink-2)" }, r.v.mean.toFixed(4));
+  });
+  document.getElementById("chart-seeds").appendChild(s);
+}
+liveChart(); curveChart(); gapChart(); seedChart();
+
+/* ---------- controls ---------- */
+const root = document.documentElement;
+function setView(v) {
+  root.dataset.view = v;
+  document.getElementById("m-plain").setAttribute("aria-pressed", v === "plain");
+  document.getElementById("m-expert").setAttribute("aria-pressed", v === "expert");
+  try { localStorage.setItem("apaw-cs-view", v); } catch (e) {}
+}
+document.getElementById("m-plain").addEventListener("click", () => setView("plain"));
+document.getElementById("m-expert").addEventListener("click", () => setView("expert"));
+setView(root.dataset.view || "plain");
+document.getElementById("theme").addEventListener("click", () => {
+  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  const next = (root.dataset.theme || (dark ? "dark" : "light")) === "dark" ? "light" : "dark";
+  root.dataset.theme = next;
+  try { localStorage.setItem("apaw-cs-theme", next); } catch (e) {}
+});
+
+// Chapter rail: built from each section's label, current one highlighted.
+(() => {
+  const rail = document.querySelector(".rail");
+  const secs = [...document.querySelectorAll("main section[id]")];
+  const links = secs.map(sec => {
+    const no = sec.querySelector(".console-head .step-no");
+    const title = sec.querySelector(".console-head .caps");
+    if (!no || !title) return null;
+    const a = document.createElement("a");
+    a.href = "#" + sec.id;
+    a.innerHTML = `<span>${no.textContent.trim()}</span>${title.textContent.trim()}`;
+    rail.appendChild(a);
+    return [sec, a];
+  }).filter(Boolean);
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    links.forEach(([sec, a]) => a.setAttribute("aria-current", sec === e.target));
+  }), { rootMargin: "-45% 0px -50% 0px" });
+  links.forEach(([sec]) => io.observe(sec));
+})();
+
+// Border glow: same maths as the portfolio's BorderGlow.jsx, one listener for every card.
+document.querySelectorAll(".console").forEach(card => {
+  card.prepend(Object.assign(document.createElement("span"), { className: "edge-light" }));
+  card.addEventListener("pointermove", e => {
+    const r = card.getBoundingClientRect();
+    const dx = e.clientX - r.left - r.width / 2, dy = e.clientY - r.top - r.height / 2;
+    // 0 at the centre, 1 on the edge, whichever edge is nearer in proportion
+    const edge = Math.min(Math.max(Math.abs(dx) / (r.width / 2), Math.abs(dy) / (r.height / 2)), 1);
+    let angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+    if (angle < 0) angle += 360;
+    card.style.setProperty("--edge", (edge * 100).toFixed(1));
+    card.style.setProperty("--angle", angle.toFixed(1) + "deg");
+  });
+});
+
+// Dot field: a grid of dots that grow, turn teal and lean toward the pointer.
+// Same approach as the portfolio's ParticleField.jsx; sleeps when the pointer is still.
+(() => {
+  const canvas = document.querySelector(".dot-field");
+  const ctx = canvas.getContext("2d");
+  const dpr = Math.min(devicePixelRatio || 1, 2), GAP = 22, RADIUS = 140;
+  let dots = [], mouse = { x: -9999, y: -9999 }, raf = null, idle = 0, colours;
+  const readColours = () => {
+    const cs = getComputedStyle(document.documentElement);
+    colours = { dot: cs.getPropertyValue("--dot").trim() || "rgba(28,25,23,.13)",
+                hot: cs.getPropertyValue("--proj").trim() || "#00587c" };
+  };
+  const build = () => {
+    canvas.width = innerWidth * dpr; canvas.height = innerHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    dots = [];
+    for (let x = GAP / 2; x < innerWidth; x += GAP)
+      for (let y = GAP / 2; y < innerHeight; y += GAP) dots.push({ ox: x, oy: y, x, y });
+  };
+  const draw = () => {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    let moving = false;
+    for (const d of dots) {
+      const dx = mouse.x - d.ox, dy = mouse.y - d.oy, dist = Math.hypot(dx, dy);
+      const t = dist < RADIUS ? 1 - dist / RADIUS : 0;           // 0 far away, 1 under the pointer
+      const tx = d.ox + dx * 0.08 * t, ty = d.oy + dy * 0.08 * t;
+      d.x += (tx - d.x) * 0.2; d.y += (ty - d.y) * 0.2;
+      if (Math.abs(tx - d.x) > 0.05 || Math.abs(ty - d.y) > 0.05) moving = true;
+      const size = 2 + t * 2;
+      ctx.globalAlpha = t ? 0.35 + t * 0.65 : 1;
+      ctx.fillStyle = t ? colours.hot : colours.dot;
+      ctx.beginPath(); ctx.arc(d.x, d.y, size / 2, 0, 7); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    idle = mouse.x === -9999 && !moving ? idle + 1 : 0;
+    raf = idle > 30 ? null : requestAnimationFrame(draw);
+  };
+  const wake = () => { if (raf === null) raf = requestAnimationFrame(draw); };
+  readColours(); build(); draw();
+  addEventListener("resize", () => { build(); wake(); });
+  // theme switch changes the colours: re-read them
+  new MutationObserver(() => { readColours(); wake(); })
+    .observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;   // static dots only
+  addEventListener("pointermove", e => { mouse.x = e.clientX; mouse.y = e.clientY; wake(); }, { passive: true });
+  document.addEventListener("pointerleave", () => { mouse.x = mouse.y = -9999; });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) wake(); });
+})();
+</script>
+</body>
+</html>

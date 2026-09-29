@@ -377,6 +377,10 @@ def main() -> int:
     r = subprocess.run([sys.executable, str(ROOT / "eval" / "render_readme.py")],
                        capture_output=True, text=True)
     print((r.stdout or r.stderr).strip())
+    # The case study quotes the live scores too; rebuild it so it cannot freeze.
+    r = subprocess.run([sys.executable, str(ROOT / "web" / "build_case_study.py")],
+                       capture_output=True, text=True)
+    print((r.stdout or r.stderr).strip())
 
     print(f"scored {scored} due predictions; "
           f"issued forecasts for {len(dashboard)} dams; "
