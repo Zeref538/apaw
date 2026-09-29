@@ -1230,6 +1230,11 @@ function applyMode(m) {
 fetch("data/forecasts.json", { cache: "no-store" })
   .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
   .then(j => {
+    // Dam and basin names are scraped from PAGASA and go into innerHTML all
+    // over this page. Escape them once here so outside HTML can never run.
+    const esc = s => String(s).replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
+    (j.dams || []).forEach(d => { d.dam = esc(d.dam); });
+    (j.basins || []).forEach(b => { b.basin = esc(b.basin); });
     DATA = j;
     pick = (j.dams.find(x => x.risk === "Spill Watch") || j.dams[0]).dam;
     document.getElementById("stamp").textContent = "read " + (j.generated_at || "").replace("T", " ");
