@@ -156,13 +156,6 @@
     border: 1px solid var(--rule-2); background: var(--card); color: var(--ink-2);
   }
   .chip:hover { border-color: var(--switch); color: var(--switch); }
-  #text {
-    padding: 17px 16px; font-size: 17px; line-height: 1.85; min-height: 92px;
-    outline: none;
-  }
-  #text w { border-radius: 3px; padding: 1px 2px; }
-  #text w.tl { background: var(--clay-w); color: var(--proj); font-weight: 600; }
-  #text w.en { background: var(--tide-w); color: var(--ink-2); font-weight: 600; }
   .readout {
     border-top: 1px solid var(--rule); padding: 13px 16px;
     display: grid; grid-template-columns: 1fr 1fr auto; gap: 14px; align-items: center;
@@ -171,20 +164,10 @@
     .readout { grid-template-columns: 1fr 1fr; }
     .readout .verdict { grid-column: 1 / -1; }
   }
-  .meter .lbl {
-    font-family: var(--mono); font-size: 11px; letter-spacing: .06em;
-    display: flex; justify-content: space-between; margin-bottom: 5px;
-  }
-  .meter .lbl b { font-weight: 700; }
-  .bar-track { height: 7px; background: var(--track); border-radius: 999px; overflow: hidden; }
-  .bar-fill { height: 100%; width: 0; border-radius: 999px; transition: width .18s ease; }
-  .m-tl .bar-fill { background: var(--proj); } .m-tl .lbl { color: var(--proj); }
-  .m-en .bar-fill { background: var(--tide); } .m-en .lbl { color: var(--tide); }
   .verdict {
     font-family: var(--mono); font-size: 12px; font-weight: 700;
     padding: 7px 13px; border-radius: 999px; text-align: center; white-space: nowrap;
   }
-  .verdict.keep { background: var(--sw-w); color: var(--switch); }
   .verdict.drop { background: var(--sunk); color: var(--ink-3); }
 
   /* ---------------- blocks ---------------- */
@@ -224,14 +207,6 @@
     font-size: 15.5px;
   }
   blockquote.clay { border-left-color: var(--proj); }
-  blockquote.tide { border-left-color: var(--tide); }
-  blockquote.fail { border-left-color: var(--ash); color: var(--ink-2); }
-  .gen-tag {
-    font-family: var(--mono); font-size: 11px; color: var(--ink-3);
-    display: block; margin-bottom: 6px;
-  }
-  .gen-tag em { color: var(--proj); font-style: normal; }
-  .gen-tag i  { color: var(--tide); font-style: normal; }
 
   .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   @media (max-width: 620px) { .two { grid-template-columns: 1fr; } }
@@ -240,8 +215,7 @@
     font-family: var(--mono); font-size: clamp(30px, 7vw, 42px);
     font-weight: 700; letter-spacing: -.03em; line-height: 1;
   }
-  .big.clay { color: var(--proj); } .big.tide { color: var(--tide); }
-
+  .big.clay { color: var(--proj); } 
   figure { margin: 32px 0; }
   figcaption { font-size: 13px; color: var(--ink-3); margin-top: 9px; }
   svg { display: block; max-width: 100%; height: auto; }
@@ -282,9 +256,6 @@
     letter-spacing: -.05em; color: var(--proj);
   }
   .headline-num p { font-size: 18px; color: var(--ink-2); max-width: 30ch; margin: 0; }
-  .pair { gap: 22px; margin-top: 8px; }
-  .pair > div { display: flex; flex-direction: column; }
-  .pair blockquote { flex: 1; }
 
   /* Failures: hanging numerals, because it is a counted list. */
   #broke { counter-reset: fail; }
@@ -347,8 +318,6 @@
                   border-bottom: 1px solid var(--rule); }
   .step-no { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 999px;
              border: 1px solid var(--rule-2); font-size: 11px; font-weight: 700; color: var(--ink-3); }
-  .status { margin-left: auto; color: var(--ink); display: flex; align-items: center; gap: 8px; }
-  .status i { width: 6px; height: 6px; border-radius: 99px; background: var(--ink); }
   .console-body { display: grid; grid-template-columns: minmax(300px, 1fr) 2fr; }
   .console-side { padding: 32px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; }
   .console-main { padding: 32px; min-width: 0; }
@@ -402,7 +371,6 @@
   @media (max-width: 560px) {
     .bar .brand { display: none; }
     .bar .wrap { padding: 0 12px; gap: 8px; }
-    .console-head .status { display: none; }
   }
 
   /* ---------------- every section is a console panel ---------------- */
@@ -415,15 +383,13 @@
   .console-main > h3:first-child, .console-main > p:first-child { margin-top: 0; }
 
   /* cards: notes, quotes, tables and code share the steps' bordered look */
-  .note, blockquote, .card, pre, .tw, .doc-fig img {
+  .note, blockquote, .card, pre, .tw {
     background: var(--card); border: 1px solid var(--rule-2); border-radius: 12px; }
   .note { border-left: 1px solid var(--rule-2); padding: 20px 24px; }
   blockquote { border-left: 3px solid var(--rule-2); border-radius: 0 12px 12px 0; }
   blockquote.clay { border-left-color: var(--proj); }
-  blockquote.tide { border-left-color: var(--tide); }
   .tw { padding: 4px 16px; }
   .tw table { margin: 0; }
-  .doc-fig img { display: block; width: 100%; height: auto; padding: 12px; }
 
   #broke h3::before { position: static; display: block; margin-bottom: 4px; font-size: 32px;
     font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--ink-3); }
@@ -575,9 +541,6 @@
   body { background-image: none; }
   .dot-field { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 
-  .fig-open { display: block; }
-  @media (max-width: 700px) { .fig-open::after { content: "Tap to open full size"; display: block;
-    font-size: 12.5px; color: var(--ink-3); margin-top: 6px; } }
   @media (max-width: 560px) { .hero .specs { grid-template-columns: 1fr; } }
 
   /* softer glow: lights up only close to the edge, narrower wedge, fainter halo */
@@ -606,7 +569,6 @@
   .readout .stat .lbl { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--ink-3); }
   .readout .stat b { display: block; font-family: var(--mono); font-size: 17px; }
   .chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .warnline { font-size: 13px; color: var(--ink-2); margin: 10px 0 0; }
 </style>
 <script>
   // Before paint: saved theme and reading level, so neither flashes.
