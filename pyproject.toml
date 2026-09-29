@@ -5,7 +5,7 @@ description = "Self-improving PAGASA dam level and spill-risk nowcaster"
 requires-python = ">=3.11"
 dependencies = [
     "pandas>=2.2,<3",
-    "lxml>=5.2,<6",       # pandas.read_html backend
+    "lxml>=6.1,<7",       # pandas.read_html backend
     "requests>=2.32,<3",
     # 0.21 ships no cp313 wheel and its sdist fails to cythonize; 0.25 has
     # wheels for 3.11-3.14.
