@@ -81,6 +81,18 @@ pooled something. Per-dam target scaling is required to make that work, since
 the dams differ in how far their level moves by a factor of twelve (La Mesa
 0.16 m, San Roque 1.91 m); pooled raw, San Roque would write the model.
 
+### A later attempt at +1 day, and why it didn't ship
+
++1 day is the weak spot: about 3% better than persistence on the dev dates, while every other horizon is 40-50% better. In September 2026 three changes were tested on 5 random seeds each, with the rule for "it won" [written down before running](docs/ATTEMPT_NEXT.md): 100 trees instead of 50, 3-day and 7-day level-trend inputs, and both together.
+
+| Config | Dev +1d MAE, mean (range) over 5 seeds | vs current |
+|---|---|---|
+| Current, 50 trees | 0.3051 (0.3009 to 0.3094) | |
+| 100 trees | 0.3014 (0.2978 to 0.3045) | -1.2% |
+| Trend inputs | 0.3022 (0.2986 to 0.3068) | -1.0% |
+| Both | 0.2980 (0.2944 to 0.3007) | -2.3% |
+
+None reached the 3% bar, so nothing shipped and the holdout was not opened. Across seeds the current model's dev mean ratio is **0.618 to 0.628**. The 0.615 above came from one seed, at the lucky end of that range. Script: `eval/attempt_next.py`; raw numbers: `eval/attempt_next.json`.
 
 Regenerate with `uv run python eval/backtest.py`. That command also rebuilds
 the model state, by replaying the committed history in order — which is why
