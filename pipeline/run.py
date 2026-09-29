@@ -95,6 +95,25 @@ def refresh_sources() -> bool:
     return True
 
 
+def live_metrics(gate: int = 200) -> dict:
+    """Per-horizon scoreboard of the live ledger, in the backtest's shape."""
+    if not ERRORS.exists():
+        return {}
+    e = pd.read_csv(ERRORS)
+    out = {}
+    for h, d in e.groupby("horizon"):
+        base = {k: float(d[f"abs_err_{k}"].mean()) for k in ("persistence", "drift")
+                if f"abs_err_{k}" in d}
+        best = min(base, key=base.get)
+        out[str(int(h))] = {
+            "n": len(d), "enough_data": len(d) >= gate, "min_scored": gate,
+            "mae_model": round(float(d["abs_err_model"].mean()), 4),
+            "mae_persistence": round(base["persistence"], 4),
+            "best_baseline": best, "mae_best_baseline": round(base[best], 4),
+            "beats_baseline": bool(d["abs_err_model"].mean() < base[best])}
+    return out
+
+
 def score_due(table: pd.DataFrame, model, detectors: dict) -> tuple[int, list]:
     """Score every outstanding prediction whose target date now has an actual."""
     if not LEDGER.exists():
@@ -310,7 +329,11 @@ def publish(dashboard: list[dict], scored: int, drift_rows: list) -> None:
         "dams": dashboard,
         "basins": basins,
         "basin_forecast": basin_metrics,
-        "metrics": metrics.get("per_horizon", {}),
+        # Live first: forecasts issued before the day and scored after it.
+        # The backtest stays published beside it, labelled, not replaced.
+        "metrics": live_metrics() or metrics.get("per_horizon", {}),
+        "metrics_source": "live" if live_metrics() else "backtest",
+        "metrics_backtest": metrics.get("per_horizon", {}),
         "metrics_by_rain_source": metrics.get("by_rain_source", {}),
         "learning_curve": curve,
         "scored_this_run": scored,
