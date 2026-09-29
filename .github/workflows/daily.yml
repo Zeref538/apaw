@@ -32,7 +32,7 @@ jobs:
 
       - run: uv sync --group dev
 
-      # Model state is a Mondrian forest that grows a node per observation —
+      # Model state is a Mondrian forest that grows a node per observation: 
       # ~88 MB and rising. Committing that twice a day would bloat the repo
       # until it hit GitHub's file limit, so it lives in the Actions cache
       # (free) instead of in git. The cache is restorable, not reliable: on a

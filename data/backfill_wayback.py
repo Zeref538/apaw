@@ -1,6 +1,6 @@
 """One-shot: recover historical dam levels from Wayback Machine snapshots.
 
-PAGASA keeps no archive — the page shows today and yesterday only. The Internet
+PAGASA keeps no archive, the page shows today and yesterday only. The Internet
 Archive happens to have ~90 daily snapshots of /flood since 2021, roughly 1.5
 per month. That is far too sparse to train on, but it anchors the early
 learning curve and gives the backtest something to chew on before the

@@ -4,7 +4,7 @@ __pycache__/
 .pytest_cache/
 uv.lock.bak
 
-# Derived — rebuilt by data/build_table.py from the two source CSVs.
+# Derived: rebuilt by data/build_table.py from the two source CSVs.
 data/modeling_table.csv
 
 # Not derived, never ignore: data/dam_levels.csv and data/weather.csv are the

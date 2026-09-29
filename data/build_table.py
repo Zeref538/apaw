@@ -33,7 +33,7 @@ RAIN_WINDOWS = (1, 3, 7, 14, 30)
 
 # Forward rainfall prefers the real archived forecast at the lead time we would
 # have had (data/rain_forecast.csv). Open-Meteo's previous-runs archive only
-# reaches back to 2025, so earlier rows fall back to ERA5 observed rain — a
+# reaches back to 2025, so earlier rows fall back to ERA5 observed rain, a
 # perfect-foresight proxy that flatters them. Every row records which it got in
 # `fcst_source`, and the backtest reports the two separately so the optimism is
 # measured rather than assumed away.
@@ -45,7 +45,7 @@ def daily_levels() -> pd.DataFrame:
     The scraped `dev_24h_m` column is NOT usable as a feature: PAGASA prints a
     single 24-hour deviation per snapshot, and the page shows it against both
     the today row and the yesterday row. On the yesterday row that number is
-    the change from t to t+1 — the future. Using it as-is let a naive drift
+    the change from t to t+1, the future. Using it as-is let a naive drift
     baseline "predict" the next day to 0.05 m.
 
     So the deviation is recomputed here from our own series, and is defined
@@ -94,7 +94,7 @@ def forecast_rain() -> pd.DataFrame:
     """Rain expected over the next 3 and 7 days, as known on the issue date.
 
     rain_next_Nd(t) = sum over k=1..N of the forecast for day t+k issued k days
-    earlier — which is precisely `lead == k` on date t+k.
+    earlier, which is precisely `lead == k` on date t+k.
     """
     if not RAIN_FCST.exists():
         return pd.DataFrame(columns=["dam", "date", "fc_rain_next_3d",

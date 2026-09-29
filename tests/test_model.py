@@ -30,7 +30,7 @@ def test_horizon_reaches_the_model():
 
 
 def test_missing_features_are_omitted_not_zeroed():
-    """A dam with no rule curve must not be told its rule curve is 0.0 —
+    """A dam with no rule curve must not be told its rule curve is 0.0, 
     that is the difference between 'unknown' and 'at the limit'."""
     assert "rule_curve_m" not in Nowcaster.raw_features(ROW, 1)
 

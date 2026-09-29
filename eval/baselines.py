@@ -2,7 +2,7 @@
 
 Both predict the CHANGE in reservoir level over the horizon, matching the
 model's target. Persistence is the one to beat, and at short horizons it is
-genuinely hard to beat — a reservoir tomorrow is very nearly a reservoir today.
+genuinely hard to beat, a reservoir tomorrow is very nearly a reservoir today.
 """
 
 from __future__ import annotations

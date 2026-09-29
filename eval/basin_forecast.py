@@ -2,7 +2,7 @@
 
 The dam models predict a number; this predicts a yes/no, and it covers the
 whole country rather than Luzon's nine reservoirs. Same discipline as the dam
-side — online learning, prequential scoring, and a naive baseline that simply
+side, online learning, prequential scoring, and a naive baseline that simply
 assumes today's status holds.
 
 Flood watch is heavily persistent (basins stay quiet for weeks), so accuracy

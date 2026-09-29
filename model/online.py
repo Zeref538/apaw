@@ -4,7 +4,7 @@ Never retrained from scratch. `learn_one` is called once per observation as
 its label arrives, and the state is pickled between runs so learning is
 cumulative across GitHub Actions runs.
 
-State lives in model/state/ and is committed — it is small, and versioning it
+State lives in model/state/ and is committed, it is small, and versioning it
 means the learning curve is reproducible from git history alone.
 
 Why one model instead of 63
@@ -15,8 +15,8 @@ coefficients from, and it lost to persistence at most horizons.
 
 `eval/experiment.py` searched 3,776 configurations on dates before
 2025-11-01 and scored the winner once on the untouched dates after. Pooling
-every dam and horizon into a single model — with the dam as a one-hot feature
-and the horizon as a numeric one — was worth far more than any change of
+every dam and horizon into a single model, with the dam as a one-hot feature
+and the horizon as a numeric one, was worth far more than any change of
 estimator, because it turns ~94 rows into ~1,750.
 
 The chosen configuration beat both naive baselines at all seven horizons on
@@ -131,7 +131,7 @@ class Nowcaster:
 
         The ledger stores exactly this, so a forecast is always re-learnable
         from what it actually saw. Missing values are omitted rather than
-        imputed — the forest simply doesn't use an absent feature, which is
+        imputed, the forest simply doesn't use an absent feature, which is
         right for the dams that have no rule curve at all.
         """
         out = {}

@@ -5,7 +5,7 @@ is a claim which rots: the counts climb every day, horizons cross the ranking
 gate, and the file quietly starts lying about what the system can defend.
 
 So the table is generated from eval/metrics.json on every pipeline run and
-committed by the Action. The verdict wording is derived, not written — when a
+committed by the Action. The verdict wording is derived, not written, when a
 horizon crosses MIN_SCORED the sentence changes by itself, with nobody
 reading this repo.
 
@@ -35,7 +35,7 @@ END = "<!-- APAW:SCOREBOARD:END -->"
 # Kept in the generated text so a reader never has to guess what "certified"
 # means, and so the number moves if backtest.py's gate ever moves.
 _GATE_NOTE = ("A horizon with fewer than {gate} scored forecasts is shown with "
-              "its count and **not ranked** — small-n verdicts are noise, not "
+              "its count and **not ranked**: small-n verdicts are noise, not "
               "skill.")
 
 
@@ -131,7 +131,7 @@ def render(metrics: dict, today: date | None = None,
         lines.append(
             f"**APAW is ahead of both naive baselines at all {len(hs)} "
             f"horizons.** {len(certified)} of {len(hs)} clear the {gate}-forecast "
-            f"bar and are ranked; the rest are ahead but still counting — the "
+            f"bar and are ranked; the rest are ahead but still counting; the "
             f"next one needs {need} more scored forecasts. Being unranked is a "
             "statement about sample size, not about accuracy.")
     else:

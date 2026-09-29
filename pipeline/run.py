@@ -6,7 +6,7 @@
 Scoring is deferred and never retrofitted: a forecast is written to the ledger
 at issue time with the exact features it saw, and is only scored once the
 observation it predicted actually arrives. That is what makes the learning
-curve honest — nothing is ever rescored with hindsight.
+curve honest, nothing is ever rescored with hindsight.
 
 Fails safe: if the scrape breaks, the previous dashboard JSON stays up and the
 gap is logged rather than written as nulls.
@@ -46,7 +46,7 @@ def _clean(obj):
     """NaN -> null.
 
     Python's json writes a bare `NaN`, which is not valid JSON and makes
-    JSON.parse throw — one missing reference elevation (Caliraya has no NHWL)
+    JSON.parse throw, one missing reference elevation (Caliraya has no NHWL)
     is enough to blank the entire dashboard.
     """
     if isinstance(obj, dict):
@@ -73,7 +73,7 @@ def refresh_sources() -> bool:
     """Scrape today's levels and refresh weather.
 
     Only the dam scrape is fatal. PAGASA publishes today and yesterday and
-    nothing else, so a missed reading is gone forever — but weather has years
+    nothing else, so a missed reading is gone forever, but weather has years
     of committed history and an archive we can re-pull any time, so a flaky
     Open-Meteo call degrades to slightly stale rainfall instead of costing us
     the run.

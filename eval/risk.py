@@ -1,7 +1,7 @@
 """Translate a forecast reservoir level into a plain-language risk level.
 
 Thresholds are PAGASA's own published elevations, not invented ones. Dams with
-no published reference get "Not rated" rather than a guess — Caliraya has no
+no published reference get "Not rated" rather than a guess, Caliraya has no
 NHWL at all, and Ipo, La Mesa and Caliraya have no rule curve.
 """
 
@@ -52,7 +52,7 @@ def demo() -> None:
     assert classify([209.0, 211.0], 210.0, 180.79) == SPILL_WATCH
     # Caliraya: no references at all.
     assert classify([286.8], float("nan"), float("nan")) == NOT_RATED
-    # La Mesa: NHWL but no rule curve — still ratable for spill.
+    # La Mesa: NHWL but no rule curve, still ratable for spill.
     assert classify([79.4], 80.15, float("nan")) == NORMAL
     assert classify([80.2], 80.15, float("nan")) == SPILL_WATCH
     # No usable forecast.

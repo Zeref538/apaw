@@ -17,7 +17,7 @@ from data.fetch_dams import append, parse  # noqa: E402
 FIXTURE = Path(__file__).parent / "fixtures" / "flood_20260807.html"
 SCRAPED_AT = datetime(2026, 8, 7, 13, 40)
 
-# Canonical names — the fixture page says "Magat Dam", older pages say "Magat".
+# Canonical names, the fixture page says "Magat Dam", older pages say "Magat".
 EXPECTED_DAMS = {
     "Angat", "Ipo", "La Mesa", "Ambuklao", "Binga",
     "San Roque", "Pantabangan", "Magat", "Caliraya",
@@ -94,7 +94,7 @@ def test_basin_flood_watch():
 
 
 def test_non_flood_watch_is_not_a_watch():
-    """"Non-Flood Watch" contains "Flood Watch" — a substring test inverts
+    """"Non-Flood Watch" contains "Flood Watch", a substring test inverts
     every quiet basin into an alarm."""
     from data.fetch_dams import parse_basins
     b = parse_basins(BASIN_FIXTURE.read_text(encoding="utf-8"), SCRAPED_AT)

@@ -79,7 +79,7 @@ def parse(html: str, scraped_at: datetime) -> pd.DataFrame:
             raw = t
             break
     else:
-        raise ValueError("dam table not found — PAGASA layout changed")
+        raise ValueError("dam table not found, PAGASA layout changed")
 
     raw = raw.copy()
     raw.columns = COLUMNS
@@ -115,7 +115,7 @@ def parse(html: str, scraped_at: datetime) -> pd.DataFrame:
     # PAGASA writes 0.00 for dams that have no NHWL or rule curve defined
     # (Caliraya, and the rule curve for Ipo / La Mesa / Caliraya). A real
     # reference elevation is never zero, so treat it as missing and blank the
-    # deviations computed against it — otherwise every risk rule reads a
+    # deviations computed against it, otherwise every risk rule reads a
     # 286 m reservoir as 286 m above its limit.
     for ref, dev in (("nhwl_m", "dev_nhwl_m"), ("rule_curve_m", "dev_rule_curve_m")):
         missing = df[ref].fillna(0).eq(0)
@@ -134,7 +134,7 @@ def parse_basins(html: str, scraped_at: datetime) -> pd.DataFrame:
     """PAGASA's flood-watch table: 18 river basins + 4 dam sub-basins.
 
     It sits on the same page as the dam levels and costs nothing extra to
-    collect, and it is the only nationwide flood signal here — the dams only
+    collect, and it is the only nationwide flood signal here, the dams only
     cover Luzon. Stored one row per basin per day so a history of flood-watch
     days accrues alongside the levels.
     """
@@ -147,7 +147,7 @@ def parse_basins(html: str, scraped_at: datetime) -> pd.DataFrame:
             raw = t
             break
     else:
-        raise ValueError("basin status table not found — PAGASA layout changed")
+        raise ValueError("basin status table not found, PAGASA layout changed")
 
     raw = raw.copy()
     raw.columns = ["basin", "status"]

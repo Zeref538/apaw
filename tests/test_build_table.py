@@ -89,7 +89,7 @@ def test_dev_24h_never_looks_forward(table):
         yesterday = lookup.get((r.dam, r.date - day))
         assert yesterday is not None, "deviation defined without a prior day"
         # Backward-looking by construction. Note this cannot be written as
-        # "must differ from tomorrow's change" — a steady reservoir really can
+        # "must differ from tomorrow's change", a steady reservoir really can
         # move the same amount two days running.
         assert r.dev_24h_m == pytest.approx(r.rwl_m - yesterday, abs=1e-6)
         checked += 1

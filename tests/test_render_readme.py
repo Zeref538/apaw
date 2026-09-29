@@ -2,7 +2,7 @@
 
 The point of generating the scoreboard is that nobody has to remember to
 update it. That only holds if the wording actually changes when the counts
-cross the gate — otherwise the file rots exactly as a hand-typed one would,
+cross the gate, otherwise the file rots exactly as a hand-typed one would,
 but with more machinery.
 """
 

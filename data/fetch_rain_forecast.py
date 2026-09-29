@@ -1,6 +1,6 @@
 """What the rain forecast actually said, at the lead time we would have had.
 
-The backtest's biggest lie was using ERA5 observed rain for the days ahead —
+The backtest's biggest lie was using ERA5 observed rain for the days ahead, 
 training on rainfall nobody could have known. Open-Meteo's previous-runs API
 archives each model run, so `precipitation_previous_dayN` on date D is the
 rain predicted for D by the run issued N days earlier. That is exactly the

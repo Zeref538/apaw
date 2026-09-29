@@ -7,8 +7,8 @@ regress the moment new data lands.
 
 So the calendar is cut in two, once, before anything runs:
 
-    dev      dates <  SPLIT   — every configuration is scored here
-    holdout  dates >= SPLIT   — scored once, by the single winner, at the end
+    dev      dates <  SPLIT, every configuration is scored here
+    holdout  dates >= SPLIT, scored once, by the single winner, at the end
 
 Both scores come from ONE prequential pass per config, exactly as
 eval/backtest.py runs: predict with a model that has seen only strictly
@@ -160,7 +160,7 @@ MODELS = {
     "arf30": lambda: forest.ARFRegressor(n_models=30, seed=7),
     "amf": lambda: forest.AMFRegressor(n_estimators=10, seed=7),
     # AMF won the broad sweep at its default size, so its own knobs get a
-    # sweep of their own — more trees, and the step that controls how fast
+    # sweep of their own, more trees, and the step that controls how fast
     # each Mondrian tree's aggregation weights move.
     "amf25": lambda: forest.AMFRegressor(n_estimators=25, seed=7),
     "amf50": lambda: forest.AMFRegressor(n_estimators=50, seed=7),
@@ -193,7 +193,7 @@ class RunningStandardizer:
 
     Updated only after a row has been predicted, so no row is ever scaled
     using statistics that contain itself. Features whose spread is still
-    effectively zero — one-hot dam indicators, most obviously — are passed
+    effectively zero, one-hot dam indicators, most obviously, are passed
     through untouched instead of being divided by ~0.
     """
 
@@ -206,7 +206,7 @@ class RunningStandardizer:
             n = self.n.get(k, 0)
             if n < 2:
                 # No spread known yet. Emit 0, as River's own StandardScaler
-                # does — passing the raw value through means rwl_m ~ 200 hits
+                # does, passing the raw value through means rwl_m ~ 200 hits
                 # the first SGD step and the weights never recover.
                 out[k] = 0.0
                 continue
@@ -241,7 +241,7 @@ class ExpertBlend:
     the set grows like sqrt(T), so over time it cannot do much worse than the
     best baseline, and it does better whenever the model has real signal.
 
-    The cost is honesty about what it is — a hedge, not a better forecaster.
+    The cost is honesty about what it is, a hedge, not a better forecaster.
     It wins by refusing to lose, and on horizons where persistence is simply
     right it converges to persistence and says nothing new.
     """
@@ -438,7 +438,7 @@ def sweep(labeled, cfgs, label):
         dev = score(res, "dev")
         if dev:
             # The holdout score is computed here but deliberately NOT used for
-            # ranking anywhere — sorting only ever reads cfg["dev"]. Keeping
+            # ranking anywhere, sorting only ever reads cfg["dev"]. Keeping
             # the number rather than the frame is what makes thousands of
             # configs fit in memory; keeping it out of the sort is what keeps
             # the comparison honest.
@@ -501,7 +501,7 @@ def main():
         return 1
 
     # Refine: take the estimator families that survived the coarse sweep and
-    # give them the full grid — every feature set, interactions, shrinkage.
+    # give them the full grid, every feature set, interactions, shrinkage.
     if not args.no_fine:
         results.sort(key=lambda r: r["dev"]["_overall"]["mean_ratio"])
         keep, seen = [], set()

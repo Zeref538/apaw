@@ -1,4 +1,4 @@
-# APAW — working contract
+# APAW: working contract
 
 Self-improving nowcaster for PAGASA dam reservoir levels and spill risk.
 Spec: [PRD.md](PRD.md) · phases: [PLAN.md](PLAN.md)
@@ -11,7 +11,7 @@ Spec: [PRD.md](PRD.md) · phases: [PLAN.md](PLAN.md)
    a chronological split. Report losses. A horizon where persistence wins gets
    published saying so.
 3. **Incremental, never retrain-from-scratch.** River `learn_one`; model state
-   persists between runs — via the Actions cache, not git. The forest reaches
+   persists between runs, via the Actions cache, not git. The forest reaches
    ~88 MB, which cannot be committed twice a day. On a cache miss the state is
    rebuilt by replaying the committed history in order with `learn_one`, which
    is the same prequential pass, not a batch refit. The observation record is
@@ -22,7 +22,7 @@ Spec: [PRD.md](PRD.md) · phases: [PLAN.md](PLAN.md)
 ## Data facts worth not rediscovering
 
 - **PAGASA keeps no archive.** `/flood` shows today and yesterday only. A
-  missed collector run is a permanently lost observation — this is why the
+  missed collector run is a permanently lost observation, this is why the
   cron runs twice daily and why `data/dam_levels.csv` is committed, never
   gitignored.
 - **9 dams**, not 8: San Roque is in the table alongside the seven usual ones.
@@ -34,7 +34,7 @@ Spec: [PRD.md](PRD.md) · phases: [PLAN.md](PLAN.md)
   and Caliraya have no rule curve. Left as zero, every spill rule fires.
 - The Wayback seed is sparse (166 dates over 5 years) and mostly supports
   h=1. Longer horizons fill in as the collector accrues its own history.
-- **"Non-Flood Watch" contains "Flood Watch"** — a substring test turns every
+- **"Non-Flood Watch" contains "Flood Watch"**, a substring test turns every
   quiet basin into an alarm. Test the negative first.
 - **Open-Meteo's previous-runs archive starts in 2025.** Earlier dates return
   nulls, so those rows fall back to ERA5 observed rain and are scored under
@@ -67,11 +67,11 @@ uv run python pipeline/run.py         # one full cycle
 - Target is **ΔRWL over the horizon**, never the raw level. Levels are so
   autocorrelated that predicting them looks impressive while beating nothing.
 - Features at issue-time *t* use observations up to *t* plus the rainfall
-  *forecast* for t+1..t+h. Backward windows must never include t+1 — there are
+  *forecast* for t+1..t+h. Backward windows must never include t+1, there are
   tests for this; keep them.
 - Forward rain uses the **archived forecast at the lead time we would have
   had**, not observed reanalysis. Where the archive doesn't reach, the row is
-  marked `era5_proxy` and scored separately — never silently mixed in.
+  marked `era5_proxy` and scored separately, never silently mixed in.
 - Rainfall is a **catchment mean** over sampled points, not a reading at the
   wall.
 - A horizon under `MIN_SCORED` (200) scored forecasts is published with its n
@@ -80,10 +80,10 @@ uv run python pipeline/run.py         # one full cycle
   upgrade path. One is live: the catchment cross is a stand-in for real
   watershed polygons.
 - **One pooled model, not one per (dam, horizon).** Dam is a one-hot feature
-  and horizon is numeric. Splitting them back out starves each model — it was
+  and horizon is numeric. Splitting them back out starves each model, it was
   13-94 rows each before pooling, and it lost. Target is scaled per dam
   because their movement differs 12x.
 - **Model changes go through `eval/experiment.py`, never a hunch.** It ranks
   only on dates before `SPLIT` and touches the holdout once. If you widen the
-  search, do not also start reading the holdout to choose — that is how a
+  search, do not also start reading the holdout to choose, that is how a
   search starts reporting its own luck.

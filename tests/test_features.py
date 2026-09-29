@@ -36,7 +36,7 @@ def test_catchment_offsets_are_roughly_the_requested_radius():
 
 def test_forecast_rain_sums_the_right_lead_times(tmp_path, monkeypatch):
     """rain_next_3d issued on day t must be the forecasts for t+1..t+3 that
-    were made 1, 2 and 3 days ahead respectively — not any other combination."""
+    were made 1, 2 and 3 days ahead respectively, not any other combination."""
     import build_table
 
     rows = []

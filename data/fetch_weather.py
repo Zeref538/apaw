@@ -1,8 +1,8 @@
 """Fetch daily rainfall/temperature per dam from Open-Meteo (free, no key).
 
 Two endpoints, one table:
-  archive  — ERA5 reanalysis, 1940-present, ~5 day lag. History and training.
-  forecast — the next 7 days, plus recent past days to bridge the archive lag.
+  archive, ERA5 reanalysis, 1940-present, ~5 day lag. History and training.
+  forecast, the next 7 days, plus recent past days to bridge the archive lag.
 
 The forecast rows are what make a 1-7 day dam-level forecast operational
 rather than merely autoregressive: tomorrow's rainfall is a known input.
@@ -37,7 +37,7 @@ TZ = "Asia/Manila"
 KEY = ["dam", "date"]
 
 # Rainfall is averaged over a cross of points around each dam rather than read
-# at the wall — see dams.catchment_points. Open-Meteo takes many coordinates in
+# at the wall, see dams.catchment_points. Open-Meteo takes many coordinates in
 # one request, so the spatial mean costs no extra calls.
 
 
@@ -126,7 +126,7 @@ def fetch_forecast(past_days: int = 14, forecast_days: int = 7) -> pd.DataFrame:
 
 
 def merge(new: pd.DataFrame, out: Path = OUT) -> pd.DataFrame:
-    """Archive beats forecast for the same day — reanalysis is the better truth.
+    """Archive beats forecast for the same day, reanalysis is the better truth.
 
     Forecast rows are provisional and must be overwritten once the archive
     catches up, otherwise the model trains on predicted rain as if observed.

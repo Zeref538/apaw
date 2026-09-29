@@ -2,11 +2,11 @@
 
 Coordinates come from PAGASA's own placemark file,
 https://pubfiles.pagasa.dost.gov.ph/hmd/Previous_Dam_Status/LocationsFinal.kml
-— note that Magat's placemark is mislabelled `<name>Layers</name>` there; its
+note that Magat's placemark is mislabelled `<name>Layers</name>` there; its
 description HTML identifies it as MAGAT.
 """
 
-# PAGASA has changed its own labels over the years — the Wayback history has
+# PAGASA has changed its own labels over the years, the Wayback history has
 # both "Magat" and "Magat Dam" for the same reservoir. Everything is
 # canonicalised on the way in so one dam stays one dam.
 ALIASES = {
@@ -46,7 +46,7 @@ NO_RULE_CURVE = {"Ipo", "La Mesa", "Caliraya"}
 NO_NHWL = {"Caliraya"}
 
 
-# Rain at the dam wall is not what fills a reservoir — rain over the upstream
+# Rain at the dam wall is not what fills a reservoir, rain over the upstream
 # catchment is. Without watershed polygons we sample a cross around each dam
 # and average, which is a coarse stand-in for a catchment mean but strictly
 # better than a single point.

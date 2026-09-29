@@ -1,4 +1,4 @@
-# APAW — Context for a fresh session
+# APAW: Context for a fresh session
 
 > What someone (or some agent) needs to know before touching this repo, with
 > no prior conversation. Spec: [PRD.md](PRD.md) · status: [PLAN.md](PLAN.md) ·
@@ -6,7 +6,7 @@
 
 ## What this is
 
-**APAW** — *Adaptive Prediction of Accumulating Water*; also *apaw*, Filipino
+**APAW**, *Adaptive Prediction of Accumulating Water*; also *apaw*, Filipino
 for *to overflow*. It forecasts reservoir water level 1–7 days ahead for the
 nine major Luzon dams, flags spill risk in plain language, tracks which river
 basins are under flood watch nationwide, and improves itself on every run.
@@ -14,7 +14,7 @@ basins are under flood watch nationwide, and improves itself on every run.
 Live: https://zeref538.github.io/apaw/ · Repo: https://github.com/Zeref538/apaw
 
 The one-sentence identity: **a live ML system that learns every cycle and
-proves it with a visible learning curve — all on free infrastructure.**
+proves it with a visible learning curve, all on free infrastructure.**
 
 ## Who's building it
 
@@ -23,7 +23,7 @@ portfolio at johnandrei.vercel.app.
 
 Sibling project: **Hangin'** (github.com/Zeref538/hangin), a PH air-quality
 forecaster. APAW reuses its refresh-and-publish pattern and its
-plain-English-then-technical voice, but has its own visual identity — a light
+plain-English-then-technical voice, but has its own visual identity, a light
 bathymetric chart rather than Hangin's dark console.
 
 ## Non-negotiable constraints
@@ -33,7 +33,7 @@ bathymetric chart rather than Hangin's dark console.
 2. **Honest evaluation.** Every result against a naive baseline, prequentially.
    Horizons where the baseline wins are published as losses.
 3. **Incremental, not retrain-from-scratch.** River `learn_one`. State persists
-   in the **Actions cache**, not git — the forest is ~88 MB and growing, which
+   in the **Actions cache**, not git, the forest is ~88 MB and growing, which
    a twice-daily commit would turn into a dead repo. A cache miss replays the
    committed history with `learn_one` to rebuild it.
 4. **Educational framing.** Not an official warning. PAGASA and the LGUs are
@@ -41,7 +41,7 @@ bathymetric chart rather than Hangin's dark console.
 
 ## The things that will bite you
 
-These cost real debugging time to find. All are pinned by tests — keep them.
+These cost real debugging time to find. All are pinned by tests, keep them.
 
 - **PAGASA keeps no archive.** `/flood` shows today and yesterday only. A
   missed collector run is a permanently lost observation. This is why the cron
@@ -77,20 +77,20 @@ These cost real debugging time to find. All are pinned by tests — keep them.
 - **Never commit `model/state/*.pkl`.** A Mondrian forest adds nodes forever;
   it is already ~88 MB. It is gitignored, cached by the Action, and rebuilt
   from the committed history on a miss. Capping the forest to fit in git costs
-  most of the accuracy (holdout mean ratio 0.64 uncapped vs 0.82 at 50 MB) —
+  most of the accuracy (holdout mean ratio 0.64 uncapped vs 0.82 at 50 MB), 
   that trade was measured, not assumed.
-- **`json.dump` writes bare `NaN`**, which is invalid JSON — one missing
+- **`json.dump` writes bare `NaN`**, which is invalid JSON, one missing
   reference elevation blanked the whole dashboard until `_clean()` was added.
 
 ## First moves in a fresh session
 
-1. `uv sync --group dev && uv run pytest -q` — 32 tests; they encode the traps
+1. `uv sync --group dev && uv run pytest -q`, 32 tests; they encode the traps
    above.
-2. `uv run python pipeline/run.py` — one full cycle locally.
+2. `uv run python pipeline/run.py`, one full cycle locally.
 3. Check the Action is still green. If the parser broke, PAGASA changed the
    page; fix the parser and refresh `tests/fixtures/`.
 
-## Definition of done (v1) — reached
+## Definition of done (v1): reached
 
 A live dashboard, a green twice-daily Action running unattended, an honest
 baseline comparison including losses, and a growing archive that PAGASA itself

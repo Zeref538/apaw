@@ -138,7 +138,7 @@ def main() -> int:
 
     # Warm-start the live loop. The backtest walked the history in order and
     # learned from it exactly as the loop would have, so the resulting state is
-    # the legitimate starting point — otherwise the recovered Wayback history
+    # the legitimate starting point, otherwise the recovered Wayback history
     # is scored and then thrown away.
     save(results.attrs["model"])
 
