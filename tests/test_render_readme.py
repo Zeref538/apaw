@@ -74,3 +74,12 @@ def test_refuses_to_guess_when_the_markers_are_gone():
 def test_the_real_readme_still_has_its_markers():
     text = (ROOT / "README.md").read_text(encoding="utf-8")
     assert text.count(START) == 1 and text.count(END) == 1
+
+
+def test_live_table_shows_real_forecasts_and_marks_small_n():
+    live = {"1": {"n": 459, "mae_model": 0.5, "mae_persistence": 0.6},
+            "2": {"n": 12, "mae_model": 0.9, "mae_persistence": 0.6}}
+    out = render(metrics({1, 2}), today=date(2026, 9, 29), live=live)
+    assert "| +1d | 0.500 | 0.600 | 17% better | 459 |" in out
+    assert "| +2d | 0.900 | 0.600 | 50% worse (unranked) | 12 |" in out
+    assert out.index("**Live") < out.index("**Backtest")
