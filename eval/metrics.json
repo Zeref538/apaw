@@ -1,20 +1,20 @@
 {
   "per_horizon": {
     "1": {
-      "n": 1321,
+      "n": 1330,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.3788,
-      "mae_persistence": 0.4163,
+      "mae_model": 0.3783,
+      "mae_persistence": 0.4149,
       "best_baseline": "persistence",
-      "mae_best_baseline": 0.4163,
+      "mae_best_baseline": 0.4149,
       "beats_baseline": true
     },
     "2": {
       "n": 683,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.5045,
+      "mae_model": 0.5034,
       "mae_persistence": 0.8806,
       "best_baseline": "persistence",
       "mae_best_baseline": 0.8806,
@@ -24,64 +24,64 @@
       "n": 655,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.5049,
+      "mae_model": 0.5059,
       "mae_persistence": 1.1825,
       "best_baseline": "persistence",
       "mae_best_baseline": 1.1825,
       "beats_baseline": true
     },
     "4": {
-      "n": 629,
+      "n": 638,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.5264,
-      "mae_persistence": 1.4483,
+      "mae_model": 0.5248,
+      "mae_persistence": 1.437,
       "best_baseline": "persistence",
-      "mae_best_baseline": 1.4483,
+      "mae_best_baseline": 1.437,
       "beats_baseline": true
     },
     "5": {
-      "n": 585,
+      "n": 603,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.4981,
-      "mae_persistence": 1.7376,
+      "mae_model": 0.4942,
+      "mae_persistence": 1.7035,
       "best_baseline": "persistence",
-      "mae_best_baseline": 1.7376,
+      "mae_best_baseline": 1.7035,
       "beats_baseline": true
     },
     "6": {
-      "n": 576,
-      "enough_data": true,
-      "min_scored": 200,
-      "mae_model": 0.5302,
-      "mae_persistence": 1.9644,
-      "best_baseline": "persistence",
-      "mae_best_baseline": 1.9644,
-      "beats_baseline": true
-    },
-    "7": {
       "n": 594,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.5767,
-      "mae_persistence": 2.077,
+      "mae_model": 0.5247,
+      "mae_persistence": 1.9215,
       "best_baseline": "persistence",
-      "mae_best_baseline": 2.077,
+      "mae_best_baseline": 1.9215,
+      "beats_baseline": true
+    },
+    "7": {
+      "n": 612,
+      "enough_data": true,
+      "min_scored": 200,
+      "mae_model": 0.5702,
+      "mae_persistence": 2.0343,
+      "best_baseline": "persistence",
+      "mae_best_baseline": 2.0343,
       "beats_baseline": true
     }
   },
-  "per_horizon_table": "         abs_err_model  abs_err_persistence  abs_err_drift     n\nhorizon                                                         \n1               0.3788               0.4163         0.5601  1321\n2               0.5045               0.8806         1.0734   683\n3               0.5049               1.1825         1.6047   655\n4               0.5264               1.4483         2.1624   629\n5               0.4981               1.7376         2.8105   585\n6               0.5302               1.9644         3.2664   576\n7               0.5767               2.0770         3.6676   594",
+  "per_horizon_table": "         abs_err_model  abs_err_persistence  abs_err_drift     n\nhorizon                                                         \n1               0.3783               0.4149         0.5601  1330\n2               0.5034               0.8806         1.0734   683\n3               0.5059               1.1825         1.6047   655\n4               0.5248               1.4370         2.1441   638\n5               0.4942               1.7035         2.7470   603\n6               0.5247               1.9215         3.1885   594\n7               0.5702               2.0343         3.5926   612",
   "by_rain_source": {
     "era5_proxy": {
-      "mae_model": 0.4649562358775565,
-      "n": 4161
+      "mae_model": 0.46312290845710813,
+      "n": 4233
     },
     "forecast": {
       "mae_model": 0.5798261116294777,
       "n": 882
     }
   },
-  "n_predictions": 5043,
+  "n_predictions": 5115,
   "drift_events": []
 }
