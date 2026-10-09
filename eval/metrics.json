@@ -1,43 +1,43 @@
 {
   "per_horizon": {
     "1": {
-      "n": 1348,
+      "n": 1357,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.3764,
-      "mae_persistence": 0.4117,
+      "mae_model": 0.3748,
+      "mae_persistence": 0.41,
       "best_baseline": "persistence",
-      "mae_best_baseline": 0.4117,
+      "mae_best_baseline": 0.41,
       "beats_baseline": true
     },
     "2": {
-      "n": 701,
+      "n": 710,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.498,
-      "mae_persistence": 0.8669,
+      "mae_model": 0.4935,
+      "mae_persistence": 0.8586,
       "best_baseline": "persistence",
-      "mae_best_baseline": 0.8669,
+      "mae_best_baseline": 0.8586,
       "beats_baseline": true
     },
     "3": {
-      "n": 664,
+      "n": 673,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.503,
-      "mae_persistence": 1.1729,
+      "mae_model": 0.4997,
+      "mae_persistence": 1.1623,
       "best_baseline": "persistence",
-      "mae_best_baseline": 1.1729,
+      "mae_best_baseline": 1.1623,
       "beats_baseline": true
     },
     "4": {
-      "n": 638,
+      "n": 647,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.5253,
-      "mae_persistence": 1.437,
+      "mae_model": 0.5208,
+      "mae_persistence": 1.4237,
       "best_baseline": "persistence",
-      "mae_best_baseline": 1.437,
+      "mae_best_baseline": 1.4237,
       "beats_baseline": true
     },
     "5": {
@@ -71,17 +71,17 @@
       "beats_baseline": true
     }
   },
-  "per_horizon_table": "         abs_err_model  abs_err_persistence  abs_err_drift     n\nhorizon                                                         \n1               0.3764               0.4117         0.5483  1348\n2               0.4980               0.8669         1.0617   701\n3               0.5030               1.1729         1.6047   664\n4               0.5253               1.4370         2.1441   638\n5               0.4954               1.7035         2.7470   603\n6               0.5202               1.9025         3.1562   603\n7               0.5591               1.9940         3.5124   630",
+  "per_horizon_table": "         abs_err_model  abs_err_persistence  abs_err_drift     n\nhorizon                                                         \n1               0.3748               0.4100         0.5430  1357\n2               0.4935               0.8586         1.0503   710\n3               0.4997               1.1623         1.5864   673\n4               0.5208               1.4237         2.1441   647\n5               0.4954               1.7035         2.7470   603\n6               0.5202               1.9025         3.1562   603\n7               0.5591               1.9940         3.5124   630",
   "by_rain_source": {
     "era5_proxy": {
-      "mae_model": 0.45963396043522803,
-      "n": 4305
+      "mae_model": 0.4573865868186955,
+      "n": 4341
     },
     "forecast": {
       "mae_model": 0.5798261116294777,
       "n": 882
     }
   },
-  "n_predictions": 5187,
+  "n_predictions": 5223,
   "drift_events": []
 }
