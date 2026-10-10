@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-10T06:26:01",
+  "generated_at": "2026-10-10T13:20:04",
   "latest_observation": "2026-10-10",
   "data_age_days": 0,
   "dams": [
@@ -14,8 +14,8 @@
       "risk": "Watch",
       "risk_note": "Forecast level crosses the rule curve within the next 7 days.",
       "extrapolating": false,
-      "rain_7d": 28.2,
-      "rain_next_7d": 13.8,
+      "rain_7d": 28.7,
+      "rain_next_7d": 14.9,
       "observed": [
         {
           "date": "2026-08-11",
@@ -254,50 +254,50 @@
         {
           "horizon": 1,
           "target_date": "2026-10-11",
-          "pred_delta": -0.232,
-          "pred_rwl_m": 750.838,
+          "pred_delta": -0.229,
+          "pred_rwl_m": 750.841,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-10-12",
-          "pred_delta": -0.26,
-          "pred_rwl_m": 750.81,
+          "pred_delta": -0.321,
+          "pred_rwl_m": 750.749,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-10-13",
-          "pred_delta": -0.254,
-          "pred_rwl_m": 750.816,
+          "pred_delta": -0.224,
+          "pred_rwl_m": 750.846,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-10-14",
-          "pred_delta": -0.351,
-          "pred_rwl_m": 750.719,
+          "pred_delta": -0.289,
+          "pred_rwl_m": 750.781,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-10-15",
-          "pred_delta": -0.212,
-          "pred_rwl_m": 750.858,
+          "pred_delta": -0.26,
+          "pred_rwl_m": 750.81,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-10-16",
-          "pred_delta": -0.217,
-          "pred_rwl_m": 750.853,
+          "pred_delta": -0.247,
+          "pred_rwl_m": 750.823,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-10-17",
-          "pred_delta": -0.228,
-          "pred_rwl_m": 750.842,
+          "pred_delta": -0.249,
+          "pred_rwl_m": 750.821,
           "beyond_observed_rise": false
         }
       ]
@@ -313,8 +313,8 @@
       "risk": "Watch",
       "risk_note": "Forecast level crosses the rule curve within the next 7 days.",
       "extrapolating": false,
-      "rain_7d": 28.0,
-      "rain_next_7d": 15.0,
+      "rain_7d": 28.6,
+      "rain_next_7d": 23.4,
       "observed": [
         {
           "date": "2026-08-11",
@@ -553,50 +553,50 @@
         {
           "horizon": 1,
           "target_date": "2026-10-11",
-          "pred_delta": 0.013,
-          "pred_rwl_m": 207.693,
+          "pred_delta": 0.029,
+          "pred_rwl_m": 207.709,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-10-12",
-          "pred_delta": 0.135,
-          "pred_rwl_m": 207.815,
+          "pred_delta": -0.064,
+          "pred_rwl_m": 207.616,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-10-13",
-          "pred_delta": -0.156,
-          "pred_rwl_m": 207.524,
+          "pred_delta": 0.017,
+          "pred_rwl_m": 207.697,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-10-14",
-          "pred_delta": -0.311,
-          "pred_rwl_m": 207.369,
+          "pred_delta": -0.11,
+          "pred_rwl_m": 207.57,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-10-15",
-          "pred_delta": 0.276,
-          "pred_rwl_m": 207.956,
+          "pred_delta": 0.598,
+          "pred_rwl_m": 208.278,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-10-16",
-          "pred_delta": 0.274,
-          "pred_rwl_m": 207.954,
+          "pred_delta": 0.427,
+          "pred_rwl_m": 208.107,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-10-17",
-          "pred_delta": 0.139,
-          "pred_rwl_m": 207.819,
+          "pred_delta": 0.322,
+          "pred_rwl_m": 208.002,
           "beyond_observed_rise": false
         }
       ]
@@ -612,8 +612,8 @@
       "risk": "Watch",
       "risk_note": "Forecast level crosses the rule curve within the next 7 days.",
       "extrapolating": false,
-      "rain_7d": 28.4,
-      "rain_next_7d": 18.4,
+      "rain_7d": 28.8,
+      "rain_next_7d": 17.0,
       "observed": [
         {
           "date": "2026-08-11",
@@ -852,50 +852,50 @@
         {
           "horizon": 1,
           "target_date": "2026-10-11",
-          "pred_delta": -0.113,
-          "pred_rwl_m": 573.967,
+          "pred_delta": -0.067,
+          "pred_rwl_m": 574.013,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-10-12",
-          "pred_delta": -0.109,
-          "pred_rwl_m": 573.971,
+          "pred_delta": -0.12,
+          "pred_rwl_m": 573.96,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-10-13",
-          "pred_delta": -0.092,
-          "pred_rwl_m": 573.988,
+          "pred_delta": -0.08,
+          "pred_rwl_m": 574.0,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-10-14",
-          "pred_delta": -0.103,
-          "pred_rwl_m": 573.977,
+          "pred_delta": -0.11,
+          "pred_rwl_m": 573.97,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-10-15",
-          "pred_delta": -0.3,
-          "pred_rwl_m": 573.78,
+          "pred_delta": -0.227,
+          "pred_rwl_m": 573.853,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-10-16",
-          "pred_delta": -0.252,
-          "pred_rwl_m": 573.828,
+          "pred_delta": -0.258,
+          "pred_rwl_m": 573.822,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-10-17",
-          "pred_delta": -0.284,
-          "pred_rwl_m": 573.796,
+          "pred_delta": -0.297,
+          "pred_rwl_m": 573.783,
           "beyond_observed_rise": false
         }
       ]
@@ -911,8 +911,8 @@
       "risk": "Not rated",
       "risk_note": "PAGASA publishes no reference elevation for this dam.",
       "extrapolating": false,
-      "rain_7d": 40.0,
-      "rain_next_7d": 46.7,
+      "rain_7d": 47.4,
+      "rain_next_7d": 48.2,
       "observed": [
         {
           "date": "2026-08-11",
@@ -1151,50 +1151,50 @@
         {
           "horizon": 1,
           "target_date": "2026-10-11",
-          "pred_delta": 0.024,
-          "pred_rwl_m": 286.234,
+          "pred_delta": 0.04,
+          "pred_rwl_m": 286.25,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-10-12",
-          "pred_delta": 0.005,
-          "pred_rwl_m": 286.215,
+          "pred_delta": -0.015,
+          "pred_rwl_m": 286.195,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-10-13",
-          "pred_delta": -0.002,
-          "pred_rwl_m": 286.208,
+          "pred_delta": -0.042,
+          "pred_rwl_m": 286.168,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-10-14",
-          "pred_delta": -0.024,
-          "pred_rwl_m": 286.186,
+          "pred_delta": -0.046,
+          "pred_rwl_m": 286.164,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-10-15",
-          "pred_delta": -0.02,
-          "pred_rwl_m": 286.19,
+          "pred_delta": -0.022,
+          "pred_rwl_m": 286.188,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-10-16",
-          "pred_delta": 0.032,
-          "pred_rwl_m": 286.242,
+          "pred_delta": 0.026,
+          "pred_rwl_m": 286.236,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-10-17",
-          "pred_delta": 0.021,
-          "pred_rwl_m": 286.231,
+          "pred_delta": 0.027,
+          "pred_rwl_m": 286.237,
           "beyond_observed_rise": false
         }
       ]
@@ -1210,8 +1210,8 @@
       "risk": "Normal",
       "risk_note": "Forecast level stays below the operating rule curve.",
       "extrapolating": false,
-      "rain_7d": 27.7,
-      "rain_next_7d": 20.7,
+      "rain_7d": 29.0,
+      "rain_next_7d": 33.2,
       "observed": [
         {
           "date": "2026-08-11",
@@ -1450,50 +1450,50 @@
         {
           "horizon": 1,
           "target_date": "2026-10-11",
-          "pred_delta": -0.06,
-          "pred_rwl_m": 100.1,
+          "pred_delta": -0.057,
+          "pred_rwl_m": 100.103,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-10-12",
-          "pred_delta": -0.097,
-          "pred_rwl_m": 100.063,
+          "pred_delta": -0.079,
+          "pred_rwl_m": 100.081,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-10-13",
-          "pred_delta": -0.017,
-          "pred_rwl_m": 100.143,
+          "pred_delta": -0.043,
+          "pred_rwl_m": 100.117,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-10-14",
-          "pred_delta": -0.013,
-          "pred_rwl_m": 100.147,
+          "pred_delta": -0.027,
+          "pred_rwl_m": 100.133,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-10-15",
-          "pred_delta": 0.072,
-          "pred_rwl_m": 100.232,
+          "pred_delta": 0.028,
+          "pred_rwl_m": 100.188,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-10-16",
-          "pred_delta": 0.088,
-          "pred_rwl_m": 100.248,
+          "pred_delta": 0.042,
+          "pred_rwl_m": 100.202,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-10-17",
-          "pred_delta": 0.146,
-          "pred_rwl_m": 100.306,
+          "pred_delta": 0.041,
+          "pred_rwl_m": 100.201,
           "beyond_observed_rise": false
         }
       ]
@@ -1506,11 +1506,11 @@
       "rwl_m": 79.44,
       "nhwl_m": 80.15,
       "rule_curve_m": null,
-      "risk": "Spill Watch",
-      "risk_note": "Forecast level reaches the normal high water level within 7 days; a gate release becomes likely.",
+      "risk": "Normal",
+      "risk_note": "Forecast level stays below the operating rule curve.",
       "extrapolating": false,
-      "rain_7d": 29.5,
-      "rain_next_7d": 29.8,
+      "rain_7d": 31.2,
+      "rain_next_7d": 41.1,
       "observed": [
         {
           "date": "2026-08-11",
@@ -1749,50 +1749,50 @@
         {
           "horizon": 1,
           "target_date": "2026-10-11",
-          "pred_delta": -0.121,
-          "pred_rwl_m": 79.319,
+          "pred_delta": -0.527,
+          "pred_rwl_m": 78.913,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-10-12",
-          "pred_delta": -0.468,
-          "pred_rwl_m": 78.972,
+          "pred_delta": -0.756,
+          "pred_rwl_m": 78.684,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-10-13",
-          "pred_delta": -0.027,
-          "pred_rwl_m": 79.413,
+          "pred_delta": -0.706,
+          "pred_rwl_m": 78.734,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-10-14",
-          "pred_delta": -0.169,
-          "pred_rwl_m": 79.271,
+          "pred_delta": -0.088,
+          "pred_rwl_m": 79.352,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-10-15",
-          "pred_delta": -0.046,
-          "pred_rwl_m": 79.394,
+          "pred_delta": 0.034,
+          "pred_rwl_m": 79.474,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-10-16",
-          "pred_delta": 0.38,
-          "pred_rwl_m": 79.82,
+          "pred_delta": 0.63,
+          "pred_rwl_m": 80.07,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-10-17",
-          "pred_delta": 0.863,
-          "pred_rwl_m": 80.303,
+          "pred_delta": 0.667,
+          "pred_rwl_m": 80.107,
           "beyond_observed_rise": false
         }
       ]
@@ -1808,8 +1808,8 @@
       "risk": "Watch",
       "risk_note": "Forecast level crosses the rule curve within the next 7 days.",
       "extrapolating": false,
-      "rain_7d": 86.2,
-      "rain_next_7d": 45.5,
+      "rain_7d": 88.9,
+      "rain_next_7d": 47.7,
       "observed": [
         {
           "date": "2026-08-11",
@@ -2048,50 +2048,50 @@
         {
           "horizon": 1,
           "target_date": "2026-10-11",
-          "pred_delta": 0.179,
-          "pred_rwl_m": 192.159,
+          "pred_delta": 0.082,
+          "pred_rwl_m": 192.062,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-10-12",
-          "pred_delta": 0.239,
-          "pred_rwl_m": 192.219,
+          "pred_delta": 0.155,
+          "pred_rwl_m": 192.135,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-10-13",
-          "pred_delta": 0.184,
-          "pred_rwl_m": 192.164,
+          "pred_delta": 0.091,
+          "pred_rwl_m": 192.071,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-10-14",
-          "pred_delta": 0.159,
-          "pred_rwl_m": 192.139,
+          "pred_delta": 0.048,
+          "pred_rwl_m": 192.028,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-10-15",
-          "pred_delta": 0.132,
-          "pred_rwl_m": 192.112,
+          "pred_delta": -0.002,
+          "pred_rwl_m": 191.978,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-10-16",
-          "pred_delta": 0.098,
-          "pred_rwl_m": 192.078,
+          "pred_delta": 0.032,
+          "pred_rwl_m": 192.012,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-10-17",
-          "pred_delta": 0.199,
-          "pred_rwl_m": 192.179,
+          "pred_delta": 0.111,
+          "pred_rwl_m": 192.091,
           "beyond_observed_rise": false
         }
       ]
@@ -2107,8 +2107,8 @@
       "risk": "Normal",
       "risk_note": "Forecast level stays below the operating rule curve.",
       "extrapolating": false,
-      "rain_7d": 35.1,
-      "rain_next_7d": 15.2,
+      "rain_7d": 34.7,
+      "rain_next_7d": 15.5,
       "observed": [
         {
           "date": "2026-08-11",
@@ -2347,50 +2347,50 @@
         {
           "horizon": 1,
           "target_date": "2026-10-11",
-          "pred_delta": 0.065,
-          "pred_rwl_m": 209.125,
+          "pred_delta": 0.063,
+          "pred_rwl_m": 209.123,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-10-12",
-          "pred_delta": 0.117,
-          "pred_rwl_m": 209.177,
+          "pred_delta": 0.167,
+          "pred_rwl_m": 209.227,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-10-13",
-          "pred_delta": 0.252,
-          "pred_rwl_m": 209.312,
+          "pred_delta": 0.194,
+          "pred_rwl_m": 209.254,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-10-14",
-          "pred_delta": 0.349,
-          "pred_rwl_m": 209.409,
+          "pred_delta": 0.362,
+          "pred_rwl_m": 209.422,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-10-15",
-          "pred_delta": 0.528,
-          "pred_rwl_m": 209.588,
+          "pred_delta": 0.236,
+          "pred_rwl_m": 209.296,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-10-16",
-          "pred_delta": 0.668,
-          "pred_rwl_m": 209.728,
+          "pred_delta": 0.426,
+          "pred_rwl_m": 209.486,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-10-17",
-          "pred_delta": 0.912,
-          "pred_rwl_m": 209.972,
+          "pred_delta": 0.842,
+          "pred_rwl_m": 209.902,
           "beyond_observed_rise": false
         }
       ]
@@ -2406,8 +2406,8 @@
       "risk": "Spill Watch",
       "risk_note": "Forecast level reaches the normal high water level within 7 days; a gate release becomes likely.",
       "extrapolating": false,
-      "rain_7d": 27.5,
-      "rain_next_7d": 15.8,
+      "rain_7d": 27.1,
+      "rain_next_7d": 17.2,
       "observed": [
         {
           "date": "2026-08-11",
@@ -2646,50 +2646,50 @@
         {
           "horizon": 1,
           "target_date": "2026-10-11",
-          "pred_delta": 0.198,
-          "pred_rwl_m": 283.548,
+          "pred_delta": 0.035,
+          "pred_rwl_m": 283.385,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-10-12",
-          "pred_delta": 0.271,
-          "pred_rwl_m": 283.621,
+          "pred_delta": -0.109,
+          "pred_rwl_m": 283.241,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-10-13",
-          "pred_delta": 0.2,
-          "pred_rwl_m": 283.55,
+          "pred_delta": -0.142,
+          "pred_rwl_m": 283.208,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-10-14",
-          "pred_delta": 0.342,
-          "pred_rwl_m": 283.692,
+          "pred_delta": -0.014,
+          "pred_rwl_m": 283.336,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-10-15",
-          "pred_delta": 1.121,
-          "pred_rwl_m": 284.471,
+          "pred_delta": 0.511,
+          "pred_rwl_m": 283.861,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-10-16",
-          "pred_delta": 0.964,
-          "pred_rwl_m": 284.314,
+          "pred_delta": 0.51,
+          "pred_rwl_m": 283.86,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-10-17",
-          "pred_delta": 0.776,
-          "pred_rwl_m": 284.126,
+          "pred_delta": 0.919,
+          "pred_rwl_m": 284.269,
           "beyond_observed_rise": false
         }
       ]
@@ -2977,53 +2977,53 @@
   "metrics_source": "live",
   "metrics_backtest": {
     "1": {
-      "n": 1357,
+      "n": 1366,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.3748,
-      "mae_persistence": 0.41,
+      "mae_model": 0.3733,
+      "mae_persistence": 0.4082,
       "best_baseline": "persistence",
-      "mae_best_baseline": 0.41,
+      "mae_best_baseline": 0.4082,
       "beats_baseline": true
     },
     "2": {
-      "n": 710,
+      "n": 719,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.4936,
-      "mae_persistence": 0.8586,
+      "mae_model": 0.4894,
+      "mae_persistence": 0.851,
       "best_baseline": "persistence",
-      "mae_best_baseline": 0.8586,
+      "mae_best_baseline": 0.851,
       "beats_baseline": true
     },
     "3": {
-      "n": 673,
+      "n": 682,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.4994,
-      "mae_persistence": 1.1623,
+      "mae_model": 0.4956,
+      "mae_persistence": 1.1507,
       "best_baseline": "persistence",
-      "mae_best_baseline": 1.1623,
+      "mae_best_baseline": 1.1507,
       "beats_baseline": true
     },
     "4": {
-      "n": 647,
+      "n": 656,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.5205,
-      "mae_persistence": 1.4237,
+      "mae_model": 0.5152,
+      "mae_persistence": 1.4104,
       "best_baseline": "persistence",
-      "mae_best_baseline": 1.4237,
+      "mae_best_baseline": 1.4104,
       "beats_baseline": true
     },
     "5": {
-      "n": 603,
+      "n": 612,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.4954,
-      "mae_persistence": 1.7035,
+      "mae_model": 0.4911,
+      "mae_persistence": 1.6865,
       "best_baseline": "persistence",
-      "mae_best_baseline": 1.7035,
+      "mae_best_baseline": 1.6865,
       "beats_baseline": true
     },
     "6": {
@@ -3049,8 +3049,8 @@
   },
   "metrics_by_rain_source": {
     "era5_proxy": {
-      "mae_model": 0.4573019396646237,
-      "n": 4341
+      "mae_model": 0.4543447763312534,
+      "n": 4386
     },
     "forecast": {
       "mae_model": 0.5798261116294777,
@@ -3472,7 +3472,7 @@
       "roll_abs_err_persistence": 0.6767
     }
   ],
-  "scored_this_run": 36,
+  "scored_this_run": 0,
   "drift_events_this_run": [],
   "disclaimer": "Educational forecast, not an official warning. PAGASA and your local disaster risk reduction office are the authorities."
 }

@@ -47,11 +47,11 @@ A horizon with fewer than 200 scored forecasts is shown with its count and **not
 
 | Horizon | APAW | Persistence | Best baseline | n | Verdict |
 |---|---|---|---|---|---|
-| +1d | **0.375** | 0.410 | 0.410 persistence | 1357 | **APAW** |
-| +2d | **0.494** | 0.859 | 0.859 persistence | 710 | **APAW** |
-| +3d | **0.499** | 1.162 | 1.162 persistence | 673 | **APAW** |
-| +4d | **0.520** | 1.424 | 1.424 persistence | 647 | **APAW** |
-| +5d | **0.495** | 1.704 | 1.704 persistence | 603 | **APAW** |
+| +1d | **0.373** | 0.408 | 0.408 persistence | 1366 | **APAW** |
+| +2d | **0.489** | 0.851 | 0.851 persistence | 719 | **APAW** |
+| +3d | **0.496** | 1.151 | 1.151 persistence | 682 | **APAW** |
+| +4d | **0.515** | 1.410 | 1.410 persistence | 656 | **APAW** |
+| +5d | **0.491** | 1.687 | 1.687 persistence | 612 | **APAW** |
 | +6d | **0.520** | 1.903 | 1.903 persistence | 603 | **APAW** |
 | +7d | **0.559** | 1.994 | 1.994 persistence | 630 | **APAW** |
 
@@ -59,7 +59,7 @@ A horizon with fewer than 200 scored forecasts is shown with its count and **not
 
 **APAW beats both naive baselines at all 7 horizons, and every one of them clears the 200-forecast bar.** This is the full claim: no horizon is resting on a small sample.
 
-Split by rain source: 0.457 m for ERA5-proxy rows (n=4341) against 0.580 m for real archived forecasts (n=882). Those groups differ by **era** as well as by rain source, so the gap is not a clean measure of what the shortcut is worth. It is published because the shortcut exists, not as a finding.
+Split by rain source: 0.454 m for ERA5-proxy rows (n=4386) against 0.580 m for real archived forecasts (n=882). Those groups differ by **era** as well as by rain source, so the gap is not a clean measure of what the shortcut is worth. It is published because the shortcut exists, not as a finding.
 
 <!-- APAW:SCOREBOARD:END -->
 
