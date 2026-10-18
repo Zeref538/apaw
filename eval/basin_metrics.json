@@ -1,49 +1,49 @@
 {
-  "days_collected": 66,
+  "days_collected": 67,
   "min_days": 30,
   "basins": 18,
-  "watch_days_seen": 266,
+  "watch_days_seen": 269,
   "status": "scored",
   "per_horizon": {
     "1": {
-      "n": 1152,
+      "n": 1170,
       "model": {
-        "accuracy": 0.8532986111111112,
-        "recall": 0.8279569892473119,
-        "precision": 0.3347826086956522
+        "accuracy": 0.8555555555555555,
+        "recall": 0.8297872340425532,
+        "precision": 0.33766233766233766
       },
       "persistence": {
-        "accuracy": 0.9713541666666666,
-        "recall": 0.8387096774193549,
-        "precision": 0.8125
+        "accuracy": 0.9717948717948718,
+        "recall": 0.8404255319148937,
+        "precision": 0.8144329896907216
       },
       "beats_baseline": false
     },
     "2": {
-      "n": 1116,
+      "n": 1134,
       "model": {
-        "accuracy": 0.8494623655913979,
-        "recall": 0.7752808988764045,
-        "precision": 0.31797235023041476
+        "accuracy": 0.8500881834215167,
+        "recall": 0.7777777777777778,
+        "precision": 0.3181818181818182
       },
       "persistence": {
-        "accuracy": 0.9489247311827957,
-        "recall": 0.7078651685393258,
-        "precision": 0.6702127659574468
+        "accuracy": 0.9488536155202821,
+        "recall": 0.7111111111111111,
+        "precision": 0.6666666666666666
       },
       "beats_baseline": true
     },
     "3": {
-      "n": 1080,
+      "n": 1098,
       "model": {
-        "accuracy": 0.8435185185185186,
-        "recall": 0.6428571428571429,
-        "precision": 0.27979274611398963
+        "accuracy": 0.8460837887067395,
+        "recall": 0.6470588235294118,
+        "precision": 0.28350515463917525
       },
       "persistence": {
-        "accuracy": 0.9388888888888889,
-        "recall": 0.6547619047619048,
-        "precision": 0.5978260869565217
+        "accuracy": 0.9371584699453552,
+        "recall": 0.6470588235294118,
+        "precision": 0.5851063829787234
       },
       "beats_baseline": false
     }
