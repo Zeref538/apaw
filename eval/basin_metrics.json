@@ -1,47 +1,47 @@
 {
-  "days_collected": 81,
+  "days_collected": 82,
   "min_days": 30,
   "basins": 18,
   "watch_days_seen": 269,
   "status": "scored",
   "per_horizon": {
     "1": {
-      "n": 1422,
+      "n": 1440,
       "model": {
-        "accuracy": 0.8804500703234881,
+        "accuracy": 0.8819444444444444,
         "recall": 0.8297872340425532,
         "precision": 0.33620689655172414
       },
       "persistence": {
-        "accuracy": 0.9760900140646976,
+        "accuracy": 0.9763888888888889,
         "recall": 0.8404255319148937,
         "precision": 0.8061224489795918
       },
       "beats_baseline": false
     },
     "2": {
-      "n": 1386,
+      "n": 1404,
       "model": {
-        "accuracy": 0.8766233766233766,
+        "accuracy": 0.8782051282051282,
         "recall": 0.7777777777777778,
         "precision": 0.3167420814479638
       },
       "persistence": {
-        "accuracy": 0.9567099567099567,
+        "accuracy": 0.9572649572649573,
         "recall": 0.7111111111111111,
         "precision": 0.6530612244897959
       },
       "beats_baseline": true
     },
     "3": {
-      "n": 1350,
+      "n": 1368,
       "model": {
-        "accuracy": 0.8740740740740741,
+        "accuracy": 0.8757309941520468,
         "recall": 0.6470588235294118,
         "precision": 0.28205128205128205
       },
       "persistence": {
-        "accuracy": 0.945925925925926,
+        "accuracy": 0.9466374269005848,
         "recall": 0.6470588235294118,
         "precision": 0.5612244897959183
       },
