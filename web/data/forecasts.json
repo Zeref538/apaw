@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T06:39:56",
+  "generated_at": "2026-11-02T16:40:18",
   "latest_observation": "2026-11-02",
   "data_age_days": 0,
   "dams": [
@@ -254,50 +254,50 @@
         {
           "horizon": 1,
           "target_date": "2026-11-03",
-          "pred_delta": 0.01,
-          "pred_rwl_m": 751.65,
+          "pred_delta": 0.049,
+          "pred_rwl_m": 751.689,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-11-04",
-          "pred_delta": -0.058,
-          "pred_rwl_m": 751.582,
+          "pred_delta": 0.003,
+          "pred_rwl_m": 751.643,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-11-05",
-          "pred_delta": -0.01,
-          "pred_rwl_m": 751.63,
+          "pred_delta": 0.036,
+          "pred_rwl_m": 751.676,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-11-06",
-          "pred_delta": -0.07,
-          "pred_rwl_m": 751.57,
+          "pred_delta": 0.006,
+          "pred_rwl_m": 751.646,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-11-07",
-          "pred_delta": -0.054,
-          "pred_rwl_m": 751.586,
+          "pred_delta": 0.008,
+          "pred_rwl_m": 751.648,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-11-08",
-          "pred_delta": -0.051,
-          "pred_rwl_m": 751.589,
+          "pred_delta": 0.015,
+          "pred_rwl_m": 751.655,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-11-09",
-          "pred_delta": -0.034,
-          "pred_rwl_m": 751.606,
+          "pred_delta": 0.039,
+          "pred_rwl_m": 751.679,
           "beyond_observed_rise": false
         }
       ]
@@ -553,50 +553,50 @@
         {
           "horizon": 1,
           "target_date": "2026-11-03",
-          "pred_delta": -0.258,
-          "pred_rwl_m": 208.382,
+          "pred_delta": -0.19,
+          "pred_rwl_m": 208.45,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-11-04",
-          "pred_delta": -0.233,
-          "pred_rwl_m": 208.407,
+          "pred_delta": -0.267,
+          "pred_rwl_m": 208.373,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-11-05",
-          "pred_delta": -0.131,
-          "pred_rwl_m": 208.509,
+          "pred_delta": -0.236,
+          "pred_rwl_m": 208.404,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-11-06",
-          "pred_delta": -0.127,
-          "pred_rwl_m": 208.513,
+          "pred_delta": -0.212,
+          "pred_rwl_m": 208.428,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-11-07",
-          "pred_delta": -0.273,
-          "pred_rwl_m": 208.367,
+          "pred_delta": -0.319,
+          "pred_rwl_m": 208.321,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-11-08",
-          "pred_delta": -0.497,
-          "pred_rwl_m": 208.143,
+          "pred_delta": -0.689,
+          "pred_rwl_m": 207.951,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-11-09",
-          "pred_delta": -0.503,
-          "pred_rwl_m": 208.137,
+          "pred_delta": -0.561,
+          "pred_rwl_m": 208.079,
           "beyond_observed_rise": false
         }
       ]
@@ -852,50 +852,50 @@
         {
           "horizon": 1,
           "target_date": "2026-11-03",
-          "pred_delta": -0.095,
-          "pred_rwl_m": 574.265,
+          "pred_delta": -0.017,
+          "pred_rwl_m": 574.343,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-11-04",
-          "pred_delta": -0.144,
-          "pred_rwl_m": 574.216,
+          "pred_delta": -0.105,
+          "pred_rwl_m": 574.255,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-11-05",
-          "pred_delta": -0.151,
-          "pred_rwl_m": 574.209,
+          "pred_delta": -0.07,
+          "pred_rwl_m": 574.29,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-11-06",
-          "pred_delta": -0.138,
-          "pred_rwl_m": 574.222,
+          "pred_delta": -0.046,
+          "pred_rwl_m": 574.314,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-11-07",
-          "pred_delta": -0.172,
-          "pred_rwl_m": 574.188,
+          "pred_delta": -0.092,
+          "pred_rwl_m": 574.268,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-11-08",
-          "pred_delta": -0.131,
-          "pred_rwl_m": 574.229,
+          "pred_delta": -0.013,
+          "pred_rwl_m": 574.347,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-11-09",
-          "pred_delta": -0.021,
-          "pred_rwl_m": 574.339,
+          "pred_delta": 0.025,
+          "pred_rwl_m": 574.385,
           "beyond_observed_rise": false
         }
       ]
@@ -1151,50 +1151,50 @@
         {
           "horizon": 1,
           "target_date": "2026-11-03",
-          "pred_delta": 0.077,
-          "pred_rwl_m": 286.797,
+          "pred_delta": 0.058,
+          "pred_rwl_m": 286.778,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-11-04",
-          "pred_delta": 0.156,
-          "pred_rwl_m": 286.876,
+          "pred_delta": 0.109,
+          "pred_rwl_m": 286.829,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-11-05",
-          "pred_delta": 0.065,
-          "pred_rwl_m": 286.785,
+          "pred_delta": 0.036,
+          "pred_rwl_m": 286.756,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-11-06",
-          "pred_delta": 0.096,
-          "pred_rwl_m": 286.816,
+          "pred_delta": 0.057,
+          "pred_rwl_m": 286.777,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-11-07",
-          "pred_delta": 0.08,
-          "pred_rwl_m": 286.8,
+          "pred_delta": 0.07,
+          "pred_rwl_m": 286.79,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-11-08",
-          "pred_delta": -0.014,
-          "pred_rwl_m": 286.706,
+          "pred_delta": 0.007,
+          "pred_rwl_m": 286.727,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-11-09",
-          "pred_delta": -0.014,
-          "pred_rwl_m": 286.706,
+          "pred_delta": 0.005,
+          "pred_rwl_m": 286.725,
           "beyond_observed_rise": false
         }
       ]
@@ -1450,50 +1450,50 @@
         {
           "horizon": 1,
           "target_date": "2026-11-03",
-          "pred_delta": -0.096,
-          "pred_rwl_m": 100.414,
+          "pred_delta": -0.094,
+          "pred_rwl_m": 100.416,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-11-04",
-          "pred_delta": -0.092,
-          "pred_rwl_m": 100.418,
+          "pred_delta": -0.077,
+          "pred_rwl_m": 100.433,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-11-05",
-          "pred_delta": -0.093,
-          "pred_rwl_m": 100.417,
+          "pred_delta": -0.074,
+          "pred_rwl_m": 100.436,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-11-06",
-          "pred_delta": -0.086,
-          "pred_rwl_m": 100.424,
+          "pred_delta": -0.102,
+          "pred_rwl_m": 100.408,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-11-07",
-          "pred_delta": -0.098,
-          "pred_rwl_m": 100.412,
+          "pred_delta": -0.081,
+          "pred_rwl_m": 100.429,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-11-08",
-          "pred_delta": -0.029,
-          "pred_rwl_m": 100.481,
+          "pred_delta": -0.007,
+          "pred_rwl_m": 100.503,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-11-09",
-          "pred_delta": -0.048,
-          "pred_rwl_m": 100.462,
+          "pred_delta": -0.081,
+          "pred_rwl_m": 100.429,
           "beyond_observed_rise": false
         }
       ]
@@ -1749,50 +1749,50 @@
         {
           "horizon": 1,
           "target_date": "2026-11-03",
-          "pred_delta": -0.089,
-          "pred_rwl_m": 79.411,
+          "pred_delta": -0.436,
+          "pred_rwl_m": 79.064,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-11-04",
-          "pred_delta": -0.274,
-          "pred_rwl_m": 79.226,
+          "pred_delta": -0.333,
+          "pred_rwl_m": 79.167,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-11-05",
-          "pred_delta": -0.085,
-          "pred_rwl_m": 79.415,
+          "pred_delta": -0.219,
+          "pred_rwl_m": 79.281,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-11-06",
-          "pred_delta": -0.242,
-          "pred_rwl_m": 79.258,
+          "pred_delta": -0.272,
+          "pred_rwl_m": 79.228,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-11-07",
-          "pred_delta": -0.473,
-          "pred_rwl_m": 79.027,
+          "pred_delta": -0.454,
+          "pred_rwl_m": 79.046,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-11-08",
-          "pred_delta": -0.285,
-          "pred_rwl_m": 79.215,
+          "pred_delta": -0.364,
+          "pred_rwl_m": 79.136,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-11-09",
-          "pred_delta": -0.538,
-          "pred_rwl_m": 78.962,
+          "pred_delta": -0.656,
+          "pred_rwl_m": 78.844,
           "beyond_observed_rise": false
         }
       ]
@@ -2048,50 +2048,50 @@
         {
           "horizon": 1,
           "target_date": "2026-11-03",
-          "pred_delta": -0.029,
-          "pred_rwl_m": 189.301,
+          "pred_delta": -0.061,
+          "pred_rwl_m": 189.269,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-11-04",
-          "pred_delta": -0.087,
-          "pred_rwl_m": 189.243,
+          "pred_delta": -0.097,
+          "pred_rwl_m": 189.233,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-11-05",
-          "pred_delta": -0.092,
-          "pred_rwl_m": 189.238,
+          "pred_delta": -0.174,
+          "pred_rwl_m": 189.156,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-11-06",
-          "pred_delta": -0.318,
-          "pred_rwl_m": 189.012,
+          "pred_delta": -0.38,
+          "pred_rwl_m": 188.95,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-11-07",
-          "pred_delta": -0.28,
-          "pred_rwl_m": 189.05,
+          "pred_delta": -0.311,
+          "pred_rwl_m": 189.019,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-11-08",
-          "pred_delta": -0.237,
-          "pred_rwl_m": 189.093,
+          "pred_delta": -0.249,
+          "pred_rwl_m": 189.081,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-11-09",
-          "pred_delta": -0.069,
-          "pred_rwl_m": 189.261,
+          "pred_delta": -0.088,
+          "pred_rwl_m": 189.242,
           "beyond_observed_rise": false
         }
       ]
@@ -2347,50 +2347,50 @@
         {
           "horizon": 1,
           "target_date": "2026-11-03",
-          "pred_delta": 0.031,
-          "pred_rwl_m": 210.401,
+          "pred_delta": 0.047,
+          "pred_rwl_m": 210.417,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-11-04",
-          "pred_delta": 0.016,
-          "pred_rwl_m": 210.386,
+          "pred_delta": 0.059,
+          "pred_rwl_m": 210.429,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-11-05",
-          "pred_delta": 0.096,
-          "pred_rwl_m": 210.466,
+          "pred_delta": 0.133,
+          "pred_rwl_m": 210.503,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-11-06",
-          "pred_delta": 0.105,
-          "pred_rwl_m": 210.475,
+          "pred_delta": 0.204,
+          "pred_rwl_m": 210.574,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-11-07",
-          "pred_delta": 0.079,
-          "pred_rwl_m": 210.449,
+          "pred_delta": 0.177,
+          "pred_rwl_m": 210.547,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-11-08",
-          "pred_delta": 0.126,
-          "pred_rwl_m": 210.496,
+          "pred_delta": 0.174,
+          "pred_rwl_m": 210.544,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-11-09",
-          "pred_delta": 0.179,
-          "pred_rwl_m": 210.549,
+          "pred_delta": 0.209,
+          "pred_rwl_m": 210.579,
           "beyond_observed_rise": false
         }
       ]
@@ -2646,50 +2646,50 @@
         {
           "horizon": 1,
           "target_date": "2026-11-03",
-          "pred_delta": -0.221,
-          "pred_rwl_m": 281.309,
+          "pred_delta": -0.234,
+          "pred_rwl_m": 281.296,
           "beyond_observed_rise": false
         },
         {
           "horizon": 2,
           "target_date": "2026-11-04",
-          "pred_delta": -0.178,
-          "pred_rwl_m": 281.352,
+          "pred_delta": -0.391,
+          "pred_rwl_m": 281.139,
           "beyond_observed_rise": false
         },
         {
           "horizon": 3,
           "target_date": "2026-11-05",
-          "pred_delta": -0.16,
-          "pred_rwl_m": 281.37,
+          "pred_delta": -0.259,
+          "pred_rwl_m": 281.271,
           "beyond_observed_rise": false
         },
         {
           "horizon": 4,
           "target_date": "2026-11-06",
-          "pred_delta": -0.104,
-          "pred_rwl_m": 281.426,
+          "pred_delta": -0.231,
+          "pred_rwl_m": 281.299,
           "beyond_observed_rise": false
         },
         {
           "horizon": 5,
           "target_date": "2026-11-07",
-          "pred_delta": -0.368,
-          "pred_rwl_m": 281.162,
+          "pred_delta": -0.466,
+          "pred_rwl_m": 281.064,
           "beyond_observed_rise": false
         },
         {
           "horizon": 6,
           "target_date": "2026-11-08",
-          "pred_delta": -0.381,
-          "pred_rwl_m": 281.149,
+          "pred_delta": -0.628,
+          "pred_rwl_m": 280.902,
           "beyond_observed_rise": false
         },
         {
           "horizon": 7,
           "target_date": "2026-11-09",
-          "pred_delta": -0.571,
-          "pred_rwl_m": 280.959,
+          "pred_delta": -0.837,
+          "pred_rwl_m": 280.693,
           "beyond_observed_rise": false
         }
       ]
@@ -2977,80 +2977,80 @@
   "metrics_source": "live",
   "metrics_backtest": {
     "1": {
-      "n": 1564,
+      "n": 1573,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.3513,
-      "mae_persistence": 0.3755,
+      "mae_model": 0.3504,
+      "mae_persistence": 0.3741,
       "best_baseline": "persistence",
-      "mae_best_baseline": 0.3755,
+      "mae_best_baseline": 0.3741,
       "beats_baseline": true
     },
     "2": {
-      "n": 917,
+      "n": 926,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.4282,
-      "mae_persistence": 0.7184,
+      "mae_model": 0.4274,
+      "mae_persistence": 0.7137,
       "best_baseline": "persistence",
-      "mae_best_baseline": 0.7184,
+      "mae_best_baseline": 0.7137,
       "beats_baseline": true
     },
     "3": {
-      "n": 880,
+      "n": 889,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.4287,
-      "mae_persistence": 0.9618,
+      "mae_model": 0.4258,
+      "mae_persistence": 0.954,
       "best_baseline": "persistence",
-      "mae_best_baseline": 0.9618,
+      "mae_best_baseline": 0.954,
       "beats_baseline": true
     },
     "4": {
-      "n": 854,
+      "n": 863,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.4495,
-      "mae_persistence": 1.1707,
+      "mae_model": 0.4458,
+      "mae_persistence": 1.1604,
       "best_baseline": "persistence",
-      "mae_best_baseline": 1.1707,
+      "mae_best_baseline": 1.1604,
       "beats_baseline": true
     },
     "5": {
-      "n": 810,
-      "enough_data": true,
-      "min_scored": 200,
-      "mae_model": 0.4296,
-      "mae_persistence": 1.3804,
-      "best_baseline": "persistence",
-      "mae_best_baseline": 1.3804,
-      "beats_baseline": true
-    },
-    "6": {
-      "n": 801,
-      "enough_data": true,
-      "min_scored": 200,
-      "mae_model": 0.4545,
-      "mae_persistence": 1.5518,
-      "best_baseline": "persistence",
-      "mae_best_baseline": 1.5518,
-      "beats_baseline": true
-    },
-    "7": {
       "n": 819,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.4813,
-      "mae_persistence": 1.654,
+      "mae_model": 0.4269,
+      "mae_persistence": 1.3678,
       "best_baseline": "persistence",
-      "mae_best_baseline": 1.654,
+      "mae_best_baseline": 1.3678,
+      "beats_baseline": true
+    },
+    "6": {
+      "n": 810,
+      "enough_data": true,
+      "min_scored": 200,
+      "mae_model": 0.4512,
+      "mae_persistence": 1.5379,
+      "best_baseline": "persistence",
+      "mae_best_baseline": 1.5379,
+      "beats_baseline": true
+    },
+    "7": {
+      "n": 828,
+      "enough_data": true,
+      "min_scored": 200,
+      "mae_model": 0.477,
+      "mae_persistence": 1.6394,
+      "best_baseline": "persistence",
+      "mae_best_baseline": 1.6394,
       "beats_baseline": true
     }
   },
   "metrics_by_rain_source": {
     "era5_proxy": {
-      "mae_model": 0.3987426668517735,
-      "n": 5763
+      "mae_model": 0.396320051484741,
+      "n": 5826
     },
     "forecast": {
       "mae_model": 0.5798261116294777,
@@ -3633,7 +3633,7 @@
       "roll_abs_err_persistence": 0.3415
     }
   ],
-  "scored_this_run": 63,
+  "scored_this_run": 0,
   "drift_events_this_run": [],
   "disclaimer": "Educational forecast, not an official warning. PAGASA and your local disaster risk reduction office are the authorities."
 }
