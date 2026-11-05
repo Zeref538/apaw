@@ -4,7 +4,7 @@
       "n": 1591,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.348,
+      "mae_model": 0.3481,
       "mae_persistence": 0.3711,
       "best_baseline": "persistence",
       "mae_best_baseline": 0.3711,
@@ -44,7 +44,7 @@
       "n": 837,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.4199,
+      "mae_model": 0.4198,
       "mae_persistence": 1.3438,
       "best_baseline": "persistence",
       "mae_best_baseline": 1.3438,
@@ -71,10 +71,10 @@
       "beats_baseline": true
     }
   },
-  "per_horizon_table": "         abs_err_model  abs_err_persistence  abs_err_drift     n\nhorizon                                                         \n1               0.3480               0.3711         0.4464  1591\n2               0.4221               0.7038         0.8444   944\n3               0.4218               0.9402         1.2609   907\n4               0.4409               1.1423         1.6938   881\n5               0.4199               1.3438         2.1581   837\n6               0.4452               1.5106         2.5273   828\n7               0.4714               1.6121         2.8647   846",
+  "per_horizon_table": "         abs_err_model  abs_err_persistence  abs_err_drift     n\nhorizon                                                         \n1               0.3481               0.3711         0.4464  1591\n2               0.4221               0.7038         0.8444   944\n3               0.4218               0.9402         1.2609   907\n4               0.4409               1.1423         1.6938   881\n5               0.4198               1.3438         2.1581   837\n6               0.4452               1.5106         2.5273   828\n7               0.4714               1.6121         2.8647   846",
   "by_rain_source": {
     "era5_proxy": {
-      "mae_model": 0.3915892533245899,
+      "mae_model": 0.3916121951189778,
       "n": 5952
     },
     "forecast": {
