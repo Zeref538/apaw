@@ -1,87 +1,87 @@
 {
   "per_horizon": {
     "1": {
-      "n": 1591,
+      "n": 1600,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.3481,
-      "mae_persistence": 0.3711,
+      "mae_model": 0.3468,
+      "mae_persistence": 0.3698,
       "best_baseline": "persistence",
-      "mae_best_baseline": 0.3711,
+      "mae_best_baseline": 0.3698,
       "beats_baseline": true
     },
     "2": {
-      "n": 944,
+      "n": 953,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.4221,
-      "mae_persistence": 0.7038,
+      "mae_model": 0.4199,
+      "mae_persistence": 0.6997,
       "best_baseline": "persistence",
-      "mae_best_baseline": 0.7038,
+      "mae_best_baseline": 0.6997,
       "beats_baseline": true
     },
     "3": {
-      "n": 907,
+      "n": 916,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.4218,
-      "mae_persistence": 0.9402,
+      "mae_model": 0.4186,
+      "mae_persistence": 0.9337,
       "best_baseline": "persistence",
-      "mae_best_baseline": 0.9402,
+      "mae_best_baseline": 0.9337,
       "beats_baseline": true
     },
     "4": {
-      "n": 881,
+      "n": 890,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.4409,
-      "mae_persistence": 1.1423,
+      "mae_model": 0.438,
+      "mae_persistence": 1.1337,
       "best_baseline": "persistence",
-      "mae_best_baseline": 1.1423,
+      "mae_best_baseline": 1.1337,
       "beats_baseline": true
     },
     "5": {
-      "n": 837,
-      "enough_data": true,
-      "min_scored": 200,
-      "mae_model": 0.4198,
-      "mae_persistence": 1.3438,
-      "best_baseline": "persistence",
-      "mae_best_baseline": 1.3438,
-      "beats_baseline": true
-    },
-    "6": {
-      "n": 828,
-      "enough_data": true,
-      "min_scored": 200,
-      "mae_model": 0.4452,
-      "mae_persistence": 1.5106,
-      "best_baseline": "persistence",
-      "mae_best_baseline": 1.5106,
-      "beats_baseline": true
-    },
-    "7": {
       "n": 846,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.4714,
-      "mae_persistence": 1.6121,
+      "mae_model": 0.418,
+      "mae_persistence": 1.333,
       "best_baseline": "persistence",
-      "mae_best_baseline": 1.6121,
+      "mae_best_baseline": 1.333,
+      "beats_baseline": true
+    },
+    "6": {
+      "n": 837,
+      "enough_data": true,
+      "min_scored": 200,
+      "mae_model": 0.4429,
+      "mae_persistence": 1.4977,
+      "best_baseline": "persistence",
+      "mae_best_baseline": 1.4977,
+      "beats_baseline": true
+    },
+    "7": {
+      "n": 855,
+      "enough_data": true,
+      "min_scored": 200,
+      "mae_model": 0.4686,
+      "mae_persistence": 1.5987,
+      "best_baseline": "persistence",
+      "mae_best_baseline": 1.5987,
       "beats_baseline": true
     }
   },
-  "per_horizon_table": "         abs_err_model  abs_err_persistence  abs_err_drift     n\nhorizon                                                         \n1               0.3481               0.3711         0.4464  1591\n2               0.4221               0.7038         0.8444   944\n3               0.4218               0.9402         1.2609   907\n4               0.4409               1.1423         1.6938   881\n5               0.4198               1.3438         2.1581   837\n6               0.4452               1.5106         2.5273   828\n7               0.4714               1.6121         2.8647   846",
+  "per_horizon_table": "         abs_err_model  abs_err_persistence  abs_err_drift     n\nhorizon                                                         \n1               0.3468               0.3698         0.4429  1600\n2               0.4199               0.6997         0.8390   953\n3               0.4186               0.9337         1.2520   916\n4               0.4380               1.1337         1.6796   890\n5               0.4180               1.3330         2.1393   846\n6               0.4429               1.4977         2.5046   837\n7               0.4686               1.5987         2.8358   855",
   "by_rain_source": {
     "era5_proxy": {
-      "mae_model": 0.3916121951189778,
-      "n": 5952
+      "mae_model": 0.3893453402458215,
+      "n": 6015
     },
     "forecast": {
       "mae_model": 0.5798261116294777,
       "n": 882
     }
   },
-  "n_predictions": 6834,
+  "n_predictions": 6897,
   "drift_events": []
 }
