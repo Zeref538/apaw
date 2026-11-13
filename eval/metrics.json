@@ -4,7 +4,7 @@
       "n": 1663,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.3411,
+      "mae_model": 0.3413,
       "mae_persistence": 0.3623,
       "best_baseline": "persistence",
       "mae_best_baseline": 0.3623,
@@ -14,7 +14,7 @@
       "n": 1016,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.407,
+      "mae_model": 0.4067,
       "mae_persistence": 0.6737,
       "best_baseline": "persistence",
       "mae_best_baseline": 0.6737,
@@ -34,7 +34,7 @@
       "n": 953,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.4249,
+      "mae_model": 0.425,
       "mae_persistence": 1.0854,
       "best_baseline": "persistence",
       "mae_best_baseline": 1.0854,
@@ -54,7 +54,7 @@
       "n": 900,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.4288,
+      "mae_model": 0.4286,
       "mae_persistence": 1.4234,
       "best_baseline": "persistence",
       "mae_best_baseline": 1.4234,
@@ -71,10 +71,10 @@
       "beats_baseline": true
     }
   },
-  "per_horizon_table": "         abs_err_model  abs_err_persistence  abs_err_drift     n\nhorizon                                                         \n1               0.3411               0.3623         0.4247  1663\n2               0.4070               0.6737         0.8029  1016\n3               0.4076               0.8962         1.1972   979\n4               0.4249               1.0854         1.6026   953\n5               0.4063               1.2708         2.0368   909\n6               0.4288               1.4234         2.3768   900\n7               0.4537               1.5195         2.6824   918",
+  "per_horizon_table": "         abs_err_model  abs_err_persistence  abs_err_drift     n\nhorizon                                                         \n1               0.3413               0.3623         0.4247  1663\n2               0.4067               0.6737         0.8029  1016\n3               0.4076               0.8962         1.1972   979\n4               0.4250               1.0854         1.6026   953\n5               0.4063               1.2708         2.0368   909\n6               0.4286               1.4234         2.3768   900\n7               0.4537               1.5195         2.6824   918",
   "by_rain_source": {
     "era5_proxy": {
-      "mae_model": 0.3787361692427426,
+      "mae_model": 0.3787113648669259,
       "n": 6456
     },
     "forecast": {
