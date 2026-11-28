@@ -14,7 +14,7 @@
       "n": 1151,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.3784,
+      "mae_model": 0.3781,
       "mae_persistence": 0.6215,
       "best_baseline": "persistence",
       "mae_best_baseline": 0.6215,
@@ -24,7 +24,7 @@
       "n": 1114,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.3799,
+      "mae_model": 0.3797,
       "mae_persistence": 0.8253,
       "best_baseline": "persistence",
       "mae_best_baseline": 0.8253,
@@ -34,7 +34,7 @@
       "n": 1088,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.3951,
+      "mae_model": 0.395,
       "mae_persistence": 0.9966,
       "best_baseline": "persistence",
       "mae_best_baseline": 0.9966,
@@ -44,7 +44,7 @@
       "n": 1044,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.3783,
+      "mae_model": 0.378,
       "mae_persistence": 1.1629,
       "best_baseline": "persistence",
       "mae_best_baseline": 1.1629,
@@ -54,7 +54,7 @@
       "n": 1035,
       "enough_data": true,
       "min_scored": 200,
-      "mae_model": 0.4014,
+      "mae_model": 0.4013,
       "mae_persistence": 1.3042,
       "best_baseline": "persistence",
       "mae_best_baseline": 1.3042,
@@ -71,10 +71,10 @@
       "beats_baseline": true
     }
   },
-  "per_horizon_table": "         abs_err_model  abs_err_persistence  abs_err_drift     n\nhorizon                                                         \n1               0.3278               0.3452         0.3899  1798\n2               0.3784               0.6215         0.7323  1151\n3               0.3799               0.8253         1.0919  1114\n4               0.3951               0.9966         1.4541  1088\n5               0.3783               1.1629         1.8347  1044\n6               0.4014               1.3042         2.1509  1035\n7               0.4233               1.3986         2.4341  1053",
+  "per_horizon_table": "         abs_err_model  abs_err_persistence  abs_err_drift     n\nhorizon                                                         \n1               0.3278               0.3452         0.3899  1798\n2               0.3781               0.6215         0.7323  1151\n3               0.3797               0.8253         1.0919  1114\n4               0.3950               0.9966         1.4541  1088\n5               0.3780               1.1629         1.8347  1044\n6               0.4013               1.3042         2.1509  1035\n7               0.4233               1.3986         2.4341  1053",
   "by_rain_source": {
     "era5_proxy": {
-      "mae_model": 0.3543853368631834,
+      "mae_model": 0.3542348245703312,
       "n": 7401
     },
     "forecast": {
